@@ -4,7 +4,9 @@ Plugsy SDK - Plugin Class - Holds methods for creating, deleting and editing a p
 
 # Import libs
 import os
+import shutil
 from .Exceptions import *
+from ..Exceptions import *
 
 class Plugin():
     '''
@@ -13,18 +15,16 @@ class Plugin():
 
     TEMPLATE_PLUGIN_NAME = "PluginTemplate"
 
-    def __init__(self, is_core_plugin, name, plugins_dir_path, description, version, author, dependencies=[]):
+    def __init__(self, plugins_dir_path, name):
         '''
-        Constructior
+        Constructor
+        @param plugins_dir_path: Path of the target plugins folder
+        @param name: The name of the plugin object
         '''
         self.__plugins_dir_path = plugins_dir_path
         self.__name = name
-
-        # Set home
-        if self.__is_core_plugin:
-            self.__home = os.path.join(plugins_dir_path, "core", self.__name)
-        else:
-            self.__home = os.path.join(plugins_dir_path, "addons", self.__name)
+        self.__is_core_plugin = None
+        self.__home = None
 
 
     def create(self):
@@ -32,6 +32,14 @@ class Plugin():
         Creates the plugin
         @return:
         '''
+
+        # Check core plugin is set
+        if self.__is_core_plugin is None:
+            raise PluginTypeNotSet()
+
+        # Check plugin doesn't exist
+        if self.does_plugin_exist():
+            raise PluginAlreadyExists(self.__name)
 
         # Create home
         try:
@@ -43,6 +51,53 @@ class Plugin():
         self.__create_init()
         self.__create_config()
         self.__create_class_file()
+
+
+    def does_plugin_exist(self):
+        '''
+        Checks if the plugin exists
+        @return: True if the plugin exists, otherwise False
+        '''
+
+        # Check core
+        plugin_path = os.path.join(self.__plugins_dir_path, "core", self.__name)
+        if os.path.isdir(plugin_path):
+            return True
+
+        # Check addon
+        plugin_path = os.path.join(self.__plugins_dir_path, "addon", self.__name)
+        if os.path.isdir(plugin_path):
+            return True
+
+        return False
+
+
+    def delete(self):
+        '''
+        Deletes the plugin
+        @return:
+        '''
+
+        # Check plugin exists
+        if not self.does_plugin_exist():
+            raise PluginDoesNotExist(self.__name)
+
+        # Set plugin type
+        if self.__is_core_plugin is None:
+            # Check core
+            if os.path.isdir(os.path.join(self.__plugins_dir_path, "core", self.__name)):
+                self.__is_core_plugin = True
+            # Check addon
+            elif os.path.isdir(os.path.join(self.__plugins_dir_path, "addon", self.__name )):
+                self.__is_core_plugin = False
+
+        # Set home
+        if self.__is_core_plugin:
+            self.__home = os.path.join(self.__plugins_dir_path, "core", self.__name)
+        else:
+            self.__home = os.path.join(self.__plugins_dir_path, "addon", self.__name)
+
+        shutil.rmtree(self.__home)
 
 
     def __create_init(self):
@@ -158,5 +213,24 @@ class Plugin():
         @return:
         '''
 
+        if core:
+            self.__is_core_plugin = True
+        else:
+            self.__is_core_plugin = False
 
+        # Set home
+        if core:
+            self.__home = os.path.join(self.__plugins_dir_path, "core", self.__name)
+        else:
+            self.__home = os.path.join(self.__plugins_dir_path, "addon", self.__name)
+
+
+    def set_description(self, description):
+        '''
+        Sets the plugin description
+        @param description:
+        @return:
+        '''
+
+        self.__description = description
 

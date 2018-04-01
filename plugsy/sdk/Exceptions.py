@@ -39,7 +39,16 @@ class PluginTypeNotSet(Exception):
     @todo Test
     '''
 
-    def __init__(self, name):
+    def __init__(self):
         message = "The plugin type must be set before calling create()"
         Exception.__init__(self, message)
 
+
+class BadPluginName(Exception):
+    '''
+    To be raised when a bad plugin name is specified
+    '''
+
+    def __init__(self, plugin_name):
+        message = "The specified plugin name is invalid: %s" % plugin_name
+        Exception.__init__(self, message)
