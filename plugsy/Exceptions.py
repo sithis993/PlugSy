@@ -189,3 +189,21 @@ class AddonPluginsStillRunning(Exception):
     def __str__(self):
         return self.message
 
+
+#################################################
+# PluginDoesNotExist
+#################################################
+class PluginDoesNotExist(Exception):
+    '''
+    To be raised if a plugin does not exist
+    '''
+
+    def __init__(self, name):
+        '''
+        Constructor
+        @param name: The name of the plugin
+        '''
+        message = "The plugin '%s' does not exist" % name
+        Exception.__init__(self, message)
+
+
