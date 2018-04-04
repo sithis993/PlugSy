@@ -224,13 +224,3 @@ class Plugin():
         else:
             self.__home = os.path.join(self.__plugins_dir_path, "addon", self.__name)
 
-
-    def set_description(self, description):
-        '''
-        Sets the plugin description
-        @param description:
-        @return:
-        '''
-
-        self.__description = description
-

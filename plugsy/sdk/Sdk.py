@@ -30,14 +30,19 @@ class Sdk():
         self.__plugins_dir_path = plugins_home_path
 
 
-    def create_plugin(self, plugin_type, name, description=None, version=None, author=None, dependencies=[]):
+    def create_plugin(self, plugin_type, name):
         '''
         Creates a new plugin
         :return:
         '''
 
         # Check name
-        self.__validate_plugin_name(name)
+        if not self.__is_valid_plugin_name(name):
+            raise BadPluginName(name)
+        # Check type
+        if not self.__is_valid_plugin_type(plugin_type):
+            raise BadPluginType(plugin_type)
+
 
         # Initiate plugin
         new_plugin = Plugin(
@@ -49,12 +54,6 @@ class Sdk():
             new_plugin.set_core_plugin(True)
         else:
             new_plugin.set_core_plugin(False)
-
-        # Set any additional options
-        # TODO Do this when at a good point and figure out where to add them
-        #if description:
-        #    new_plugin.set_description(description)
-        #if version:
 
         # Create
         new_plugin.create()
@@ -75,21 +74,6 @@ class Sdk():
 
         # Remove from init
         self.__remove_plugin_from_init(existing_plugin)
-
-
-    def __validate_plugin_name(self, name):
-        '''
-        Validates the specified plugin name
-        @param name: The name to check
-        @raise BadPluginName: If invalid
-        '''
-
-        if (
-                (not self.PLUGIN_NAME_REGEX.match(name)) or
-                (len(name) < self.PLUGIN_NAME_MIN_LEN) or
-                (len(name) > self.PLUGIN_NAME_MAX_LEN)
-        ):
-            raise BadPluginName(name)
 
 
     def __add_plugin_to_init(self, new_plugin):
@@ -143,4 +127,39 @@ class Sdk():
             # Write subpackage init
             with open(subpackage_init_path, "w") as init_file:
                 init_file.write(init_contents)
+
+
+    #############
+    ## GETTERS ##
+    #############
+    def __is_valid_plugin_name(self, name):
+        '''
+        Validates the specified plugin name
+        @param name: The name to check
+        @return: True if name is valid, otherwise False
+        '''
+
+        if (
+                (not self.PLUGIN_NAME_REGEX.match(name)) or
+                (len(name) < self.PLUGIN_NAME_MIN_LEN) or
+                (len(name) > self.PLUGIN_NAME_MAX_LEN)
+        ):
+            return False
+        else:
+            return True
+
+
+    def __is_valid_plugin_type(self, plugin_type):
+        '''
+        Validates the plugin type
+        @param plugin_type: plugin type
+        @return: True if valid, else False
+        '''
+
+        if plugin_type.lower() == "core" or plugin_type.lower() == "addon":
+            return True
+        else:
+            return False
+
+
 

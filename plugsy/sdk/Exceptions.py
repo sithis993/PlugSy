@@ -52,3 +52,14 @@ class BadPluginName(Exception):
     def __init__(self, plugin_name):
         message = "The specified plugin name is invalid: %s" % plugin_name
         Exception.__init__(self, message)
+
+
+class BadPluginType(Exception):
+    '''
+    To be raised when a bad plugin type is specified
+    '''
+
+    def __init__(self, plugin_type):
+        message = "The specified plugin type is invalid: %s" % plugin_type
+        Exception.__init__(self, message)
+
