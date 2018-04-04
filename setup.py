@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='plugsy',
-    version='0.1',
+    version='0.2',
     packages=['plugsy', 'sample_plugins', 'sample_plugins.core', 'sample_plugins.core.Car', 'sample_plugins.core.Boat', 'sample_plugins.addon',
               'sample_plugins.addon.Truck'],
     url='https://github.com/sithis993/PlugSy',
