@@ -5,6 +5,7 @@ Plugsy SDK - Plugin Class - Holds methods for creating, deleting and editing a p
 # Import libs
 import os
 import shutil
+import importlib
 from .Exceptions import *
 from ..Exceptions import *
 
@@ -15,7 +16,7 @@ class Plugin():
 
     TEMPLATE_PLUGIN_NAME = "PluginTemplate"
 
-    def __init__(self, plugins_dir_path, name):
+    def __init__(self, plugins_dir_path, name, plugin_type=None):
         '''
         Constructor
         @param plugins_dir_path: Path of the target plugins folder
@@ -23,8 +24,19 @@ class Plugin():
         '''
         self.__plugins_dir_path = plugins_dir_path
         self.__name = name
-        self.__is_core_plugin = None
         self.__home = None
+        self.__is_core_plugin = None
+
+        # Set plugin type
+        if plugin_type is not None:
+            if plugin_type.lower() == "core":
+                self.__is_core_plugin = True
+            elif plugin_type.lower() == "addon":
+                self.__is_core_plugin = False
+
+        # Load plugin config
+        if plugin_type is not None:
+            self.__load_plugin_config()
 
 
     def create(self):
@@ -42,6 +54,7 @@ class Plugin():
             raise PluginAlreadyExists(self.__name)
 
         # Create home
+        # How can we set the plugin home if?
         try:
             os.makedirs(self.__home)
         except FileExistsError:
@@ -146,6 +159,29 @@ class Plugin():
         # Write plugin class
         with open(os.path.join(self.__home, "%s.py" % self.__name), "w") as new_class_file:
             new_class_file.write(new_class_contents)
+
+
+    def __load_plugin_config(self):
+        '''
+        Loads the plugin config contents
+        @return:
+        '''
+
+        # Set subpackage name
+        if self.__is_core_plugin:
+            subpackage = "core"
+        else:
+            subpackage = "addon"
+
+
+        config_import = importlib.import_module("%s.%s.%s" % (
+            subpackage,
+            self.get_name(),
+            "Config"
+        ))
+
+        print(dir(config_import))
+
 
 
     #############

@@ -5,6 +5,9 @@ Plugsy - Software Development Kit
 # Import libs
 import os
 import re
+import sys
+import importlib
+import inspect
 from .Plugin import Plugin
 from .Exceptions import *
 from ..Exceptions import *
@@ -29,6 +32,9 @@ class Sdk():
 
         self.__plugins_dir_path = plugins_home_path
 
+        # Add plugins home dir to path
+        sys.path.append(plugins_home_path)
+
 
     def create_plugin(self, plugin_type, name):
         '''
@@ -46,14 +52,8 @@ class Sdk():
 
         # Initiate plugin
         new_plugin = Plugin(
-            plugins_dir_path=self.__plugins_dir_path, name=name
+            plugins_dir_path=self.__plugins_dir_path, name=name, plugin_type=plugin_type
         )
-
-        # Set type
-        if plugin_type.lower() == "core":
-            new_plugin.set_core_plugin(True)
-        else:
-            new_plugin.set_core_plugin(False)
 
         # Create
         new_plugin.create()
@@ -127,6 +127,36 @@ class Sdk():
             # Write subpackage init
             with open(subpackage_init_path, "w") as init_file:
                 init_file.write(init_contents)
+
+
+    def get_plugins(self):
+        '''
+        Fetches current plugins in plugin home
+        @return: Dict of core and addon plugin lists
+        '''
+        plugins = {
+            "core": [],
+            "addon": []
+        }
+
+        # Check for core and addon folders
+        plugin_subdirs = os.listdir(self.__plugins_dir_path)
+        for subpackage in ["core", "addon"]:
+            if subpackage in plugin_subdirs:
+                subpackage_path = os.path.join(self.__plugins_dir_path, subpackage)
+                subpackage_import = importlib.import_module(subpackage)
+
+                for member in inspect.getmembers(subpackage_import):
+                    if inspect.ismodule(member[1]):
+                        # Create object for plugin and Set type
+                        plugin = Plugin(self.__plugins_dir_path, member[0], plugin_type=subpackage)
+
+                        # Add to package plugins
+                        plugins[subpackage].append(plugin)
+
+
+        return plugins
+
 
 
     #############
