@@ -144,7 +144,7 @@ class Sdk():
         for subpackage in ["core", "addon"]:
             if subpackage in plugin_subdirs:
                 subpackage_path = os.path.join(self.__plugins_dir_path, subpackage)
-                subpackage_import = importlib.import_module(subpackage)
+                subpackage_import = importlib.reload(importlib.import_module(subpackage))
 
                 for member in inspect.getmembers(subpackage_import):
                     if inspect.ismodule(member[1]):

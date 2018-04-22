@@ -35,7 +35,7 @@ class Plugin():
                 self.__is_core_plugin = False
 
         # Load plugin config
-        if plugin_type is not None:
+        if plugin_type is not None and self.does_plugin_exist():
             self.__load_plugin_config()
 
 
@@ -52,6 +52,12 @@ class Plugin():
         # Check plugin doesn't exist
         if self.does_plugin_exist():
             raise PluginAlreadyExists(self.__name)
+
+        # Set home
+        if self.__is_core_plugin:
+            self.__home = os.path.join(self.__plugins_dir_path, "core", self.__name)
+        else:
+            self.__home = os.path.join(self.__plugins_dir_path, "addon", self.__name)
 
         # Create home
         # How can we set the plugin home if?
@@ -179,8 +185,6 @@ class Plugin():
             self.get_name(),
             "Config"
         ))
-
-        print(dir(config_import))
 
 
 
