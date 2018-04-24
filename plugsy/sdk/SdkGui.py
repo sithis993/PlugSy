@@ -26,6 +26,7 @@ class SdkGui(MainFrame):
         '''
         self.__sdk = None
         self.__plugins_home_dir = None
+        self.__plugins_tree = None
         self.__loaded_plugins = {}
         self.__selected_plugin = None
         MainFrame.__init__(self, parent=None)
@@ -36,6 +37,9 @@ class SdkGui(MainFrame):
         # Open Plugin home dir dialog
         self.__plugins_home_dir_dialog = _PluginsHomeDirDialog(parent=self)
         self.__plugins_home_dir_dialog.Show()
+
+        # Init plugins tree object
+        self.__plugins_tree = None
 
 
     def __set_events(self):
@@ -56,7 +60,11 @@ class SdkGui(MainFrame):
 
         #self.__loaded_plugins = self.__sdk.get_plugins()
         #self.__populate_tree()
-        self.set_plugins_home(self.__plugins_home_dir)
+        #self.set_plugins_home(self.__plugins_home_dir)
+
+        self.__loaded_plugins = self.__sdk.get_plugins()
+        self.__plugins_tree.populate_tree(self.__loaded_plugins)
+
 
 
     def set_plugins_home(self, plugins_home_dir):
@@ -70,31 +78,10 @@ class SdkGui(MainFrame):
         # Init SDK and load plugins
         self.__sdk = Sdk(plugins_home_dir)
         self.__loaded_plugins = self.__sdk.get_plugins()
-
-        # Add plugins to GUI
-        self.__populate_tree()
+        self.__plugins_tree = PluginTree(self.PluginsTreeCtrl, self.__loaded_plugins)
 
         # Set status bar
         self.__set_status_bar_message("Plugins Home - %s" % plugins_home_dir)
-
-
-    def __populate_tree(self):
-        '''
-        Populates the tree ctrl with loaded plugins
-        @return:
-        '''
-
-        # Clear tree. Might not be the most efficient approach... Should only add new item
-        self.PluginsTreeCtrl.DeleteAllItems()
-
-        #raise Exception(self.PluginsTreeCtrl.GetItemText(self.PluginsTreeCtrl.GetRootItem()))
-        tree_root = self.PluginsTreeCtrl.AddRoot("Plugins")
-        for cat in self.__loaded_plugins:
-            cat_id = self.PluginsTreeCtrl.AppendItem(tree_root, cat)
-
-            # Add each plugin under cat
-            for plugin in self.__loaded_plugins[cat]:
-                self.PluginsTreeCtrl.AppendItem(cat_id, plugin.get_name())
 
 
     def __set_status_bar_message(self, message):
@@ -122,8 +109,6 @@ class SdkGui(MainFrame):
         # New plugin button can be a Delete plugin button
         new_plugin_dialog = _NewPluginDialog(self, self.__plugins_home_dir, self.__sdk)
         new_plugin_dialog.Show()
-
-
 
 
     def __set_selected_plugin(self, event):
@@ -285,6 +270,10 @@ class _NewPluginDialog(NewPluginDialog):
         self.__sdk.create_plugin(_type, name)
         self.__parent.reload_plugins()
 
+        # Close
+        self.__parent.Enable()
+        self.Destroy()
+
 
     def __cancel(self, event):
         '''
@@ -297,5 +286,111 @@ class _NewPluginDialog(NewPluginDialog):
 
 
 
+class PluginTree():
+    '''
+    Represents the wx TreeCtrl for the SDK Plugins. Provides convenience methods
+    for getting tree items, adding items to the tree, checking for item presence etc.
+    '''
 
 
+    def __init__(self, tree, loaded_plugins):
+        '''
+        Constructor
+        @param tree: Handle to the wx TreeCtrl object
+        '''
+        self.__tree = tree
+        self.__categories = []
+        self.__loaded_plugins = loaded_plugins
+
+        # setup tree
+        self.__root = self.__tree.AddRoot("Plugins")
+
+        # Populate
+        self.populate_tree(loaded_plugins)
+
+
+    def populate_tree(self, loaded_plugins):
+        '''
+        Populates the tree ctrl with loaded pluginss
+        @param loaded_plugins: List of loaded plugin objects
+        @return:
+        '''
+
+        for cat in loaded_plugins:
+            # if cat in get_list_of_categiry_names() (children under the root node)
+            if cat not in self.get_category_names():
+                self.__tree.AppendItem(self.__root, cat)
+
+            # Add each plugin under cat
+            for plugin in loaded_plugins[cat]:
+                if plugin.get_name() not in self.get_category_plugin_names(cat):
+                    self.__tree.AppendItem(self.__get_category_id(cat), plugin.get_name())
+
+
+    def get_category_names(self):
+        '''
+        Fetches a list of the neames of categories in the Plugin tree ctrl
+        @return: List of strings
+        '''
+        category_names = []
+
+        # Get first child
+        category, cookie = self.__tree.GetFirstChild(self.__root)
+
+        # Iterate remaining children
+        while category.IsOk():
+            category_names.append(self.__tree.GetItemText(category))
+            category, cookie = self.__tree.GetNextChild(self.__root, cookie)
+
+        return category_names
+
+
+    def __get_category_id(self, category_name):
+        '''
+        Fetches and returns the cateogyr ID object of a specifid category
+        @param category: category name for which to return the ID object. If the category doesn't exist, then this will
+        be None
+        @return: id object or None
+        @todo TEST
+        '''
+        category_id = None
+
+        category, cookie = self.__tree.GetFirstChild(self.__root)
+
+        # Iterate categories
+        while category.IsOk() and self.__tree.GetItemText(category) != category_name:
+            category, cookie = self.__tree.GetNextChild(self.__root, cookie)
+
+        # Check category name
+        if self.__tree.GetItemText(category) == category_name:
+            category_id = category
+
+        return category_id
+
+    def get_category_plugin_names(self, category):
+        '''
+        Fetches a list of the plugin names under a specific category (root child)
+        @param category: The category of which to get plugin names
+        @return: A list of the plugin names under the cat
+        '''
+        plugin_names = []
+        cat_id = self.__get_category_id(category)
+
+        plugin_id, cookie = self.__tree.GetFirstChild(cat_id)
+
+        # Iterate plugins
+        while plugin_id.IsOk():
+            plugin_names.append(self.__tree.GetItemText(plugin_id))
+            plugin_id, cookie = self.__tree.GetNextChild(cat_id, cookie)
+
+        return plugin_names
+
+
+    def __get_category_plugin_ids(self, category):
+        '''
+        Fetches a list of the plugin ids under a specific category (root child)
+        @param category: The category of which to get plugin ids
+        @return: A list of the plugin ids under the cat
+        '''
+
+        pass
