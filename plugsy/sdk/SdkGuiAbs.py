@@ -309,3 +309,52 @@ class NewPluginDialog ( wx.Dialog ):
 		pass
 	
 
+###########################################################################
+## Class ConfirmationDialog
+###########################################################################
+
+class ConfirmationDialog ( wx.Dialog ):
+	
+	def __init__( self, parent ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"PlugSy - Are you Sure?", pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
+		
+		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+		
+		sbSizer5 = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Confirmation" ), wx.VERTICAL )
+		
+		sbSizer5.SetMinSize( wx.Size( 300,100 ) ) 
+		bSizer26 = wx.BoxSizer( wx.VERTICAL )
+		
+		
+		bSizer26.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.ConfirmationLabel = wx.StaticText( sbSizer5.GetStaticBox(), wx.ID_ANY, u"Are you sure you want to delete this Plugin?", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.ConfirmationLabel.Wrap( 250 )
+		bSizer26.Add( self.ConfirmationLabel, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5 )
+		
+		
+		bSizer26.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
+		sbSizer5.Add( bSizer26, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 5 )
+		
+		OkCancelSizer = wx.StdDialogButtonSizer()
+		self.OkCancelSizerOK = wx.Button( sbSizer5.GetStaticBox(), wx.ID_OK )
+		OkCancelSizer.AddButton( self.OkCancelSizerOK )
+		self.OkCancelSizerCancel = wx.Button( sbSizer5.GetStaticBox(), wx.ID_CANCEL )
+		OkCancelSizer.AddButton( self.OkCancelSizerCancel )
+		OkCancelSizer.Realize();
+		
+		sbSizer5.Add( OkCancelSizer, 1, wx.EXPAND, 5 )
+		
+		
+		self.SetSizer( sbSizer5 )
+		self.Layout()
+		sbSizer5.Fit( self )
+		
+		self.Centre( wx.BOTH )
+	
+	def __del__( self ):
+		pass
+	
+

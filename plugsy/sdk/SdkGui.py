@@ -10,11 +10,15 @@ import importlib
 from .SdkGuiAbs import PluginsHomeDirDialog
 from .SdkGuiAbs import MainFrame
 from .SdkGuiAbs import NewPluginDialog
+from .SdkGuiAbs import ConfirmationDialog
 from .Sdk import Sdk
 from .Exceptions import *
 from ..Plugsy import Plugsy
 
 
+# ======================================
+# = SdkGui Class
+# ======================================
 class SdkGui(MainFrame):
     '''
     SDK Gui - Main
@@ -50,6 +54,7 @@ class SdkGui(MainFrame):
 
         self.Bind(wx.EVT_TREE_SEL_CHANGED, self.__set_selected_plugin, self.PluginsTreeCtrl)
         self.Bind(wx.EVT_MENU, self.__create_new_plugin, self.NewPluginMenuItem)
+        self.Bind(wx.EVT_BUTTON, self.__delete_plugin, self.DeletePluginButton)
 
 
     def reload_plugins(self):
@@ -99,16 +104,24 @@ class SdkGui(MainFrame):
 
     def __create_new_plugin(self, event):
         '''
-        Creates Space for a new plugin
+        Open Plugin Creation Dialog
         @param event:
         @return:
         '''
 
-
-        # Where should this plugin be placed on the treectrl? Maybe we need a separate dialog and not a button
-        # New plugin button can be a Delete plugin button
         new_plugin_dialog = _NewPluginDialog(self, self.__plugins_home_dir, self.__sdk)
         new_plugin_dialog.Show()
+
+
+    def __delete_plugin(self, event):
+        '''
+        Open Plugin Creation Deletion
+        @return:
+        '''
+        plugin_name = self.__plugins_tree.get_current_selection_text()
+
+        delete_plugin_dialog = DeletePluginConfirmation(self, plugin_name)
+        delete_plugin_dialog.Show()
 
 
     def __set_selected_plugin(self, event):
@@ -118,12 +131,12 @@ class SdkGui(MainFrame):
         '''
 
         # Get plugin name and cat and set obj
-        selected_plugin_name = self.PluginsTreeCtrl.GetItemText(self.PluginsTreeCtrl.GetSelection())
+        selected_plugin_name = self.__plugins_tree.get_current_selection_text()
         # If plugin selected and not category
         if selected_plugin_name.lower() != "core" and selected_plugin_name.lower() != "addon":
             self.__selected_plugin = self.__loaded_plugins
             selected_plugin_cat = self.PluginsTreeCtrl.GetItemText(
-                self.PluginsTreeCtrl.GetItemParent(self.PluginsTreeCtrl.GetSelection())
+                self.PluginsTreeCtrl.GetItemParent(self.__plugins_tree.get_current_selection_id())
             )
 
             self.PluginNameTextCtrl.SetValue(selected_plugin_name)
@@ -135,6 +148,9 @@ class SdkGui(MainFrame):
             self.PluginTypeComboBox.SetValue("core")
 
 
+# ======================================
+# = _PluginsHomeDirDialog Class
+# ======================================
 class _PluginsHomeDirDialog(PluginsHomeDirDialog):
     '''
     Child Plugins Directory Dialog
@@ -213,6 +229,9 @@ class _PluginsHomeDirDialog(PluginsHomeDirDialog):
 
 
 
+# ======================================
+# = NewPluginDialog Class
+# ======================================
 class _NewPluginDialog(NewPluginDialog):
     ''''
     New Plugin Dialog box for creating a new plugin
@@ -286,6 +305,59 @@ class _NewPluginDialog(NewPluginDialog):
 
 
 
+# ======================================
+# = _ConfirmationDialogAbs Class
+# ======================================
+class _ConfirmationDialogAbs(ConfirmationDialog):
+    '''
+    Provides ab abstract confirmation dialog with a customisable message
+    '''
+
+    def __init__(self, parent, message):
+        '''
+        Constructor
+        @param parent: Handle to parent object
+        @param message: The dialog confirmation message
+        '''
+        ConfirmationDialog.__init__(self, parent=parent)
+        self.update_message(message)
+
+
+    def update_message(self, message):
+        '''
+        Sets the Dialog box message
+        @return:
+        '''
+
+        self.ConfirmationLabel.SetLabelText(message)
+        self.Update()
+        self.Refresh()
+        self.Layout()
+
+
+# ======================================
+# = DeletePluginConfirmation Class
+# ======================================
+class DeletePluginConfirmation(_ConfirmationDialogAbs):
+    '''
+    Provides ab abstract confirmation dialog with a customisable message
+    '''
+
+    def __init__(self, parent, plugin_name):
+        '''
+        Constructor
+        @param parent: Handle to parent object
+        @param plugin_name: The name of the plugin being deleted
+        '''
+        self.__parent = parent
+        self.__message = "Are you sure you want to delete the '%s' plugin?" % plugin_name
+        _ConfirmationDialogAbs.__init__(self, parent, self.__message)
+
+
+
+# ======================================
+# = PluginTree Class
+# ======================================
 class PluginTree():
     '''
     Represents the wx TreeCtrl for the SDK Plugins. Provides convenience methods
@@ -317,7 +389,7 @@ class PluginTree():
         '''
 
         for cat in loaded_plugins:
-            # if cat in get_list_of_categiry_names() (children under the root node)
+            # if cat in get_list_of_category_names() (children under the root node)
             if cat not in self.get_category_names():
                 self.__tree.AppendItem(self.__root, cat)
 
@@ -367,14 +439,14 @@ class PluginTree():
 
         return category_id
 
-    def get_category_plugin_names(self, category):
+    def get_category_plugin_names(self, category_name):
         '''
         Fetches a list of the plugin names under a specific category (root child)
-        @param category: The category of which to get plugin names
+        @param category_name: The category name of which to get plugin names
         @return: A list of the plugin names under the cat
         '''
         plugin_names = []
-        cat_id = self.__get_category_id(category)
+        cat_id = self.__get_category_id(category_name)
 
         plugin_id, cookie = self.__tree.GetFirstChild(cat_id)
 
@@ -394,3 +466,25 @@ class PluginTree():
         '''
 
         pass
+
+    def get_current_selection_text(self):
+        '''
+        Gets the text of the currently selected tree item
+        @return: string
+        '''
+
+        selected_plugin_name = self.__tree.GetItemText(self.__tree.GetSelection())
+
+        return selected_plugin_name
+
+
+    def get_current_selection_id(self):
+        '''
+        Gets the id of the currently selected tree item
+        @return: id object
+        '''
+
+        selected_plugin_id = self.__tree.GetSelection()
+
+        return selected_plugin_id
+
