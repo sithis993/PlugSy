@@ -96,11 +96,6 @@ class MainFrame ( wx.Frame ):
 		
 		sbSizer3.Add( ( 0, 0), 1, wx.EXPAND, 5 )
 		
-		self.SaveSettingsButton = wx.Button( sbSizer3.GetStaticBox(), wx.ID_ANY, u"Save Settings", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.SaveSettingsButton.SetFont( wx.Font( 9, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, "Arial" ) )
-		
-		sbSizer3.Add( self.SaveSettingsButton, 0, wx.ALL, 5 )
-		
 		self.DeletePluginButton = wx.Button( sbSizer3.GetStaticBox(), wx.ID_ANY, u"Delete Plugin", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.DeletePluginButton.SetFont( wx.Font( 9, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, "Arial" ) )
 		

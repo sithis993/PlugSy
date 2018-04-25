@@ -413,9 +413,6 @@ class DeletePluginConfirmation(_ConfirmationDialogAbs):
         self.Destroy()
 
 
-
-
-
 # ======================================
 # = PluginTree Class
 # ======================================
