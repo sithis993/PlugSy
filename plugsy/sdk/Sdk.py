@@ -147,7 +147,7 @@ class Sdk():
                 subpackage_import = importlib.reload(importlib.import_module(subpackage))
 
                 for member in inspect.getmembers(subpackage_import):
-                    if inspect.ismodule(member[1]):
+                    if inspect.ismodule(member[1]) and os.path.isfile(inspect.getfile(member[1])):
                         # Create object for plugin and Set type
                         plugin = Plugin(self.__plugins_dir_path, member[0], plugin_type=subpackage)
 

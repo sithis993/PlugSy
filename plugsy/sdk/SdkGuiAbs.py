@@ -323,20 +323,18 @@ class ConfirmationDialog ( wx.Dialog ):
 		sbSizer5 = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Confirmation" ), wx.VERTICAL )
 		
 		sbSizer5.SetMinSize( wx.Size( 300,100 ) ) 
-		bSizer26 = wx.BoxSizer( wx.VERTICAL )
+		self.MainPanel = wx.Panel( sbSizer5.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer17 = wx.BoxSizer( wx.VERTICAL )
 		
-		
-		bSizer26.Add( ( 0, 0), 1, wx.EXPAND, 5 )
-		
-		self.ConfirmationLabel = wx.StaticText( sbSizer5.GetStaticBox(), wx.ID_ANY, u"Are you sure you want to delete this Plugin?", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.ConfirmationLabel = wx.StaticText( self.MainPanel, wx.ID_ANY, u"Are you sure you want to delete this Plugin?", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.ConfirmationLabel.Wrap( 250 )
-		bSizer26.Add( self.ConfirmationLabel, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5 )
+		bSizer17.Add( self.ConfirmationLabel, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL|wx.EXPAND, 5 )
 		
 		
-		bSizer26.Add( ( 0, 0), 1, wx.EXPAND, 5 )
-		
-		
-		sbSizer5.Add( bSizer26, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 5 )
+		self.MainPanel.SetSizer( bSizer17 )
+		self.MainPanel.Layout()
+		bSizer17.Fit( self.MainPanel )
+		sbSizer5.Add( self.MainPanel, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL|wx.EXPAND, 10 )
 		
 		OkCancelSizer = wx.StdDialogButtonSizer()
 		self.OkCancelSizerOK = wx.Button( sbSizer5.GetStaticBox(), wx.ID_OK )
