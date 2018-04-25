@@ -98,6 +98,7 @@ class MainFrame ( wx.Frame ):
 		
 		self.DeletePluginButton = wx.Button( sbSizer3.GetStaticBox(), wx.ID_ANY, u"Delete Plugin", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.DeletePluginButton.SetFont( wx.Font( 9, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, "Arial" ) )
+		self.DeletePluginButton.Enable( False )
 		
 		sbSizer3.Add( self.DeletePluginButton, 0, wx.ALL, 5 )
 		

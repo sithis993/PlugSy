@@ -138,6 +138,7 @@ class SdkGui(MainFrame):
 
             self.PluginNameTextCtrl.SetValue(selected_plugin_name)
             self.PluginTypeComboBox.SetValue(selected_plugin_cat)
+            self.DeletePluginButton.Enable()
 
         else:
 
@@ -152,6 +153,7 @@ class SdkGui(MainFrame):
 
         self.PluginNameTextCtrl.SetValue("")
         self.PluginTypeComboBox.SetValue("core")
+        self.DeletePluginButton.Disable()
 
 
 # ======================================
