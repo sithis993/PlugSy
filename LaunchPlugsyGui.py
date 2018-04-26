@@ -1,7 +1,5 @@
 '''
-SDK TEST
-@todo: Add character checking to make sure the name doesn't contain bad chars
-@todo: Add dependency writing and other fields
+SDK GUI Launcher
 '''
 
 from plugsy.sdk.gui import SdkGui

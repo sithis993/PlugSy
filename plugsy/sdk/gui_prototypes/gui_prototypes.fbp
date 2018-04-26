@@ -47,7 +47,7 @@
             <property name="size">650,450</property>
             <property name="style">wxDEFAULT_FRAME_STYLE|wxSYSTEM_MENU</property>
             <property name="subclass">; forward_declare</property>
-            <property name="title">PlugSy</property>
+            <property name="title">PlugSy - v0.1.0</property>
             <property name="tooltip"></property>
             <property name="window_extra_style"></property>
             <property name="window_name"></property>

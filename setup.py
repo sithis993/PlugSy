@@ -1,21 +1,19 @@
 from setuptools import setup
 
 setup(
-    name='plugsy',
-    version='0.2',
-    packages=['plugsy', 'sample_plugins', 'sample_plugins.core', 'sample_plugins.core.Car', 'sample_plugins.core.Boat', 'sample_plugins.addon',
+    name='PlugSy',
+    version='0.1.0',
+    packages=[
+              'plugsy', 'plugsy.sdk', 'plugsy.sdk.gui',
+              'plugsy.sdk.PluginTemplate', 'plugins.core', 'plugins.core.Car', 'plugins.core.Boat', 'plugins.addon',
+              'plugins.addon.Keylogger', 'plugins_test.core', 'plugins_test.core.Lexi', 'plugins_test.core.Main',
+              'plugins_test.addon', 'plugins_test.addon.corey', 'plugins_test.addon.hello', 'sample_plugins',
+              'sample_plugins.core', 'sample_plugins.core.Car', 'sample_plugins.core.Boat', 'sample_plugins.addon',
               'sample_plugins.addon.Truck'],
-    url='https://github.com/sithis993/PlugSy',
-    license='GPLv3',
+    url='',
+    license='',
     author='Sithis',
-    author_email='sithis9993@gmail.com',
-    description='A threaded Plugin Framework',
-    long_description='A simple Plugin Framework for Python which uses threaded plugins to enable multi-tasking',
-    install_requires=["toposort"],
-
-    classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)'
-    ]
+    author_email='',
+    description='Threaded Plugin System with SDK',
+    install_requires=['toposort']
 )

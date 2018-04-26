@@ -1,5 +1,5 @@
 '''
-Plugsy - Plugin Manager
+Plugsy - Plugin Manager - v0.1.0
 '''
 
 # Import standard libs
