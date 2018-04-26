@@ -50,8 +50,9 @@ class SdkGui(MainFrame):
         '''
 
         self.Bind(wx.EVT_TREE_SEL_CHANGED, self.__set_selected_plugin, self.PluginsTreeCtrl)
-        self.Bind(wx.EVT_MENU, self.__create_new_plugin, self.NewPluginMenuItem)
         self.Bind(wx.EVT_BUTTON, self.__delete_plugin, self.DeletePluginButton)
+        self.Bind(wx.EVT_MENU, self.__create_new_plugin, self.NewPluginMenuItem)
+        self.Bind(wx.EVT_MENU, self.__close, self.ExitMenuItem)
 
 
     def reload_plugins(self):
@@ -60,13 +61,8 @@ class SdkGui(MainFrame):
         @return:
         '''
 
-        #self.__loaded_plugins = self.__sdk.get_plugins()
-        #self.__populate_tree()
-        #self.set_plugins_home(self.__plugins_home_dir)
-
         self.__loaded_plugins = self.__sdk.get_plugins()
         self.plugins_tree.populate_tree(self.__loaded_plugins)
-
 
 
     def set_plugins_home(self, plugins_home_dir):
@@ -154,6 +150,17 @@ class SdkGui(MainFrame):
         self.PluginNameTextCtrl.SetValue("")
         self.PluginTypeComboBox.SetValue("core")
         self.DeletePluginButton.Disable()
+
+
+    def __close(self, event):
+        '''
+        Event handler method for closing the application
+        @param event:
+        @return:
+        '''
+
+        self.Destroy()
+
 
 
 # ======================================

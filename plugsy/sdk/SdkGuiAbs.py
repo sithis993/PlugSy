@@ -126,9 +126,6 @@ class MainFrame ( wx.Frame ):
 		self.MenuBar.SetFont( wx.Font( 9, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, True, "Arial" ) )
 		
 		self.FileMenu = wx.Menu()
-		self.SetPluginsHomeMenuItem = wx.MenuItem( self.FileMenu, wx.ID_ANY, u"Change Plugins Home", wx.EmptyString, wx.ITEM_NORMAL )
-		self.FileMenu.Append( self.SetPluginsHomeMenuItem )
-		
 		self.FileMenu.AppendSeparator()
 		
 		self.ExitMenuItem = wx.MenuItem( self.FileMenu, wx.ID_ANY, u"Exit", wx.EmptyString, wx.ITEM_NORMAL )
