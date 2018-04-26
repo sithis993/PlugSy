@@ -26,6 +26,7 @@ class Sdk():
         Constructor
         @param plugins_home_path: The path of the plugins package directory
         '''
+        self.__plugins = {}
         # Check plugins home exists
         if not os.path.isdir(plugins_home_path):
             raise PluginsHomeNotFound(plugins_home_path)
@@ -60,6 +61,24 @@ class Sdk():
 
         # Add new plugin package to subpackage (core, addon) __init__
         self.__add_plugin_to_init(new_plugin)
+
+
+    def does_plugin_exist(self, plugin_name):
+        '''
+        Checks if a plugin exists with the specified name
+        @param plugin_name: The name of the plugin to check for
+        @return: True if plugin exists, otherwise False
+        '''
+
+        if not self.__plugins:
+            self.get_plugins()
+
+        for cat in self.__plugins:
+            for plugin in self.__plugins[cat]:
+                if plugin.get_name().lower() == plugin_name.lower():
+                    return True
+
+        return False
 
 
     def delete_plugin(self, name):
@@ -157,6 +176,7 @@ class Sdk():
                         # Add to package plugins
                         plugins[subpackage].append(plugin)
 
+        self.__plugins = plugins
 
         return plugins
 

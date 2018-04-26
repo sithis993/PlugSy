@@ -258,7 +258,8 @@ class _NewPluginDialog(NewPluginDialog):
     New Plugin Dialog box for creating a new plugin
     '''
 
-    PLUGIN_NAME_REGEX = re.compile(r"^[A-Za-z][A-Za-z_]{3,20}$")
+    PLUGIN_NAME_REGEX = re.compile(r"^[A-Za-z][A-Za-z_]{2,20}$")
+    RESERVED_PLUGIN_NAMES = ["core", "addon"]
 
 
     def __init__(self, parent, plugins_home_dir, sdk):
@@ -294,6 +295,16 @@ class _NewPluginDialog(NewPluginDialog):
         # Check plugin name
         if not self.PLUGIN_NAME_REGEX.match(name):
             self.StatusLabel.SetLabelText("Error: Invalid plugin name. Must be alphanumeric and 4-20 characters long")
+            return
+
+        # Check plugin doesn't already exist
+        if self.__sdk.does_plugin_exist(name):
+            self.StatusLabel.SetLabelText("Error: A plugin with the specified name already exists")
+            return
+
+        # Check plugin name isn't reserved
+        if name.lower() in self.RESERVED_PLUGIN_NAMES:
+            self.StatusLabel.SetLabelText("Error: Plugin name is reserved. Please choose another name")
             return
 
         # Create plugin
