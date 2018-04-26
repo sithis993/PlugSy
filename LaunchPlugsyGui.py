@@ -4,7 +4,7 @@ SDK TEST
 @todo: Add dependency writing and other fields
 '''
 
-from plugsy.sdk.SdkGui import SdkGui
+from plugsy.sdk.gui import SdkGui
 
 import wx
 app = wx.App()
