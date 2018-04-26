@@ -65,6 +65,52 @@ class SdkGui(MainFrame):
         self.plugins_tree.populate_tree(self.__loaded_plugins)
 
 
+    def __create_new_plugin(self, event):
+        '''
+        Open Plugin Creation Dialog
+        @param event:
+        @return:
+        '''
+
+        new_plugin_dialog = _NewPluginDialog(self, self.__plugins_home_dir, self.__sdk)
+        new_plugin_dialog.Show()
+
+
+    def __delete_plugin(self, event):
+        '''
+        Open Plugin Creation Deletion
+        @return:
+        '''
+        plugin_name = self.plugins_tree.get_current_selection_text()
+
+        delete_plugin_dialog = DeletePluginConfirmation(self, plugin_name, self.__sdk)
+        delete_plugin_dialog.Show()
+
+
+    def clear_config_fields(self):
+        '''
+        Convenience method to clear all configuration boxes and items and reset to default
+        @return:
+        '''
+
+        self.PluginNameTextCtrl.SetValue("")
+        self.PluginTypeComboBox.SetValue("core")
+        self.DeletePluginButton.Disable()
+
+
+    def __close(self, event):
+        '''
+        Event handler method for closing the application
+        @param event:
+        @return:
+        '''
+
+        self.Destroy()
+
+    #############
+    ## SETTERS ##
+    #############
+
     def set_plugins_home(self, plugins_home_dir):
         '''
         Sets the plugins home dir to the specified directory and loads contained plugins
@@ -95,28 +141,6 @@ class SdkGui(MainFrame):
         self.StatusBar.SetStatusText(message)
 
 
-    def __create_new_plugin(self, event):
-        '''
-        Open Plugin Creation Dialog
-        @param event:
-        @return:
-        '''
-
-        new_plugin_dialog = _NewPluginDialog(self, self.__plugins_home_dir, self.__sdk)
-        new_plugin_dialog.Show()
-
-
-    def __delete_plugin(self, event):
-        '''
-        Open Plugin Creation Deletion
-        @return:
-        '''
-        plugin_name = self.plugins_tree.get_current_selection_text()
-
-        delete_plugin_dialog = DeletePluginConfirmation(self, plugin_name, self.__sdk)
-        delete_plugin_dialog.Show()
-
-
     def __set_selected_plugin(self, event):
         '''
         Sets the selected plugin and updates the GUI
@@ -141,27 +165,6 @@ class SdkGui(MainFrame):
             self.clear_config_fields()
 
 
-    def clear_config_fields(self):
-        '''
-        Convenience method to clear all configuration boxes and items and reset to default
-        @return:
-        '''
-
-        self.PluginNameTextCtrl.SetValue("")
-        self.PluginTypeComboBox.SetValue("core")
-        self.DeletePluginButton.Disable()
-
-
-    def __close(self, event):
-        '''
-        Event handler method for closing the application
-        @param event:
-        @return:
-        '''
-
-        self.Destroy()
-
-
 
 # ======================================
 # = _PluginsHomeDirDialog Class
@@ -183,6 +186,31 @@ class _PluginsHomeDirDialog(PluginsHomeDirDialog):
         # Set events
         self.__set_events()
 
+
+    def Show(self):
+        '''
+        Shows
+        @return:
+        '''
+
+        # Disable Parent Window
+        self.__parent.Disable()
+        super(_PluginsHomeDirDialog, self).Show()
+
+
+    def __cancel(self, event):
+        '''
+        Bound to cancel Button. Closes entire app
+        @param event:
+        @return:
+        '''
+
+        self.__parent.Destroy()
+        self.Destroy()
+
+    #############
+    ## SETTERS ##
+    #############
 
     def __set_events(self):
         '''
@@ -220,28 +248,6 @@ class _PluginsHomeDirDialog(PluginsHomeDirDialog):
         self.__parent.set_plugins_home(self.__plugins_home_dir)
 
 
-    def Show(self):
-        '''
-        Shows
-        @return:
-        '''
-
-        # Disable Parent Window
-        self.__parent.Disable()
-        super(_PluginsHomeDirDialog, self).Show()
-
-
-    def __cancel(self, event):
-        '''
-        Bound to cancel Button. Closes entire app
-        @todo: Only Destroy everything if we're not changing the path
-        @param event:
-        @return:
-        '''
-
-        self.__parent.Destroy()
-        self.Destroy()
-
 
 
 # ======================================
@@ -272,16 +278,6 @@ class _NewPluginDialog(NewPluginDialog):
 
         # Disable parent
         self.__parent.Disable()
-
-
-    def __set_events(self):
-        '''
-        Bind events
-        @return:
-        '''
-
-        self.Bind(wx.EVT_BUTTON, self.__create_new_plugin, self.OkCanelSizerOK)
-        self.Bind(wx.EVT_BUTTON, self.__cancel, self.OkCanelSizerCancel)
 
 
     def __create_new_plugin(self, event):
@@ -317,6 +313,20 @@ class _NewPluginDialog(NewPluginDialog):
 
         self.__parent.Enable()
         self.Destroy()
+
+    #############
+    ## SETTERS ##
+    #############
+
+    def __set_events(self):
+        '''
+        Bind events
+        @return:
+        '''
+
+        self.Bind(wx.EVT_BUTTON, self.__create_new_plugin, self.OkCanelSizerOK)
+        self.Bind(wx.EVT_BUTTON, self.__cancel, self.OkCanelSizerCancel)
+
 
 
 
@@ -373,7 +383,9 @@ class PluginTree():
         plugin_id = self.get_current_selection_id()
         self.__tree.Delete(plugin_id)
 
-
+    #############
+    ## GETTERS ##
+    #############
 
     def get_category_names(self):
         '''
@@ -399,7 +411,6 @@ class PluginTree():
         @param category: category name for which to return the ID object. If the category doesn't exist, then this will
         be None
         @return: id object or None
-        @todo TEST
         '''
         category_id = None
 
@@ -464,3 +475,6 @@ class PluginTree():
 
         return selected_plugin_id
 
+    #############
+    ## SETTERS ##
+    #############

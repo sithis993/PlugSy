@@ -37,13 +37,25 @@ class _ConfirmationDialogAbs(ConfirmationDialog):
         '''
         Sets the Dialog box message
         @return:
-        @todo Fix refreshing so that size of dialog is adjusted... or rather so that word wrap works
         '''
 
         self.ConfirmationLabel.SetLabelText(message)
         self.ConfirmationLabel.Wrap(250)
         self.ConfirmationLabel.Layout()
 
+    def __cancel(self, event):
+        '''
+        Cancels plugin creation and re-enables Main GUI
+        @return:
+        '''
+
+        self.parent.Enable()
+        self.Destroy()
+
+
+    #############
+    ## SETTERS ##
+    #############
 
     def __set_events(self):
         '''
@@ -54,14 +66,6 @@ class _ConfirmationDialogAbs(ConfirmationDialog):
         self.Bind(wx.EVT_BUTTON, self.__cancel, self.OkCancelSizerCancel)
 
 
-    def __cancel(self, event):
-        '''
-        Cancels plugin creation and re-enables Main GUI
-        @return:
-        '''
-
-        self.parent.Enable()
-        self.Destroy()
 
 
 # ======================================
@@ -87,14 +91,6 @@ class DeletePluginConfirmation(_ConfirmationDialogAbs):
         self.__set_events()
 
 
-    def __set_events(self):
-        '''
-        Bind events
-        '''
-
-        self.Bind(wx.EVT_BUTTON, self.__delete_plugin, self.OkCancelSizerOK)
-
-
     def __delete_plugin(self, event):
         '''
         Deletes the specified plugin
@@ -108,4 +104,17 @@ class DeletePluginConfirmation(_ConfirmationDialogAbs):
         self.parent.clear_config_fields()
         self.parent.Enable()
         self.Destroy()
+
+
+    #############
+    ## SETTERS ##
+    #############
+
+    def __set_events(self):
+        '''
+        Bind events
+        '''
+
+        self.Bind(wx.EVT_BUTTON, self.__delete_plugin, self.OkCancelSizerOK)
+
 

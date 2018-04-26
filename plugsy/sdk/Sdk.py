@@ -128,6 +128,9 @@ class Sdk():
             with open(subpackage_init_path, "w") as init_file:
                 init_file.write(init_contents)
 
+    #############
+    ## GETTERS ##
+    #############
 
     def get_plugins(self):
         '''
@@ -158,10 +161,6 @@ class Sdk():
         return plugins
 
 
-
-    #############
-    ## GETTERS ##
-    #############
     def __is_valid_plugin_name(self, name):
         '''
         Validates the specified plugin name
