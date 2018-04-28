@@ -248,8 +248,6 @@ class _PluginsHomeDirDialog(PluginsHomeDirDialog):
         self.__parent.set_plugins_home(self.__plugins_home_dir)
 
 
-
-
 # ======================================
 # = NewPluginDialog Class
 # ======================================
@@ -337,8 +335,6 @@ class _NewPluginDialog(NewPluginDialog):
 
         self.Bind(wx.EVT_BUTTON, self.__create_new_plugin, self.OkCanelSizerOK)
         self.Bind(wx.EVT_BUTTON, self.__cancel, self.OkCanelSizerCancel)
-
-
 
 
 # ======================================

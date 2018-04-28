@@ -1,19 +1,29 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='PlugSy',
     version='0.1.0',
-    packages=[
-              'plugsy', 'plugsy.sdk', 'plugsy.sdk.gui',
-              'plugsy.sdk.PluginTemplate', 'plugins.core', 'plugins.core.Car', 'plugins.core.Boat', 'plugins.addon',
-              'plugins.addon.Keylogger', 'plugins_test.core', 'plugins_test.core.Lexi', 'plugins_test.core.Main',
-              'plugins_test.addon', 'plugins_test.addon.corey', 'plugins_test.addon.hello', 'sample_plugins',
-              'sample_plugins.core', 'sample_plugins.core.Car', 'sample_plugins.core.Boat', 'sample_plugins.addon',
-              'sample_plugins.addon.Truck'],
-    url='',
+    packages=find_packages(),
+    url='https://github.com/sithis993/PlugSy',
     license='',
     author='Sithis',
-    author_email='',
-    description='Threaded Plugin System with SDK',
-    install_requires=['toposort']
+    author_email='sithis999@gmail.com',
+    description='Threaded plugin system and SDK',
+    install_requires=[
+        "altgraph==0.15",
+        "future==0.16.0",
+        "macholib==1.9",
+        "pefile==2017.11.5",
+        "PyInstaller==3.3.1",
+        "pypiwin32==223",
+        "pywin32==223",
+        "six==1.11.0",
+        "toposort==1.5",
+        "wxPython==4.0.1"
+    ],
+
+    entry_points={
+        # SDK GUI
+        "console_scripts": ['LaunchPlugsyGui=plugsy.LaunchPlugsyGui:Go']
+    }
 )
