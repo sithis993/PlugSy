@@ -1,5 +1,5 @@
 '''
-Plugsy - Plugin Manager - v0.1.0
+Plugsy - Plugin System - v0.1.1
 '''
 
 # Import standard libs
@@ -8,6 +8,7 @@ import pkgutil
 import sys
 import time
 import inspect
+import logging
 from toposort import toposort, CircularDependencyError
 
 # Import project libs
@@ -22,14 +23,51 @@ class Plugsy():
     ADDON_DIR = "addon"
     CORE_DIR = "core"
 
-    def __init__(self, safe_mode=False):
+    def __init__(self, safe_mode=False, debug_level="", debug_log_path=""):
         '''
         Constructor
         @param: safe_mode: Boolean specifying whether Plugsy should be run in safe mode. In safe mode, only the
         core plugins will be loaded
+        @param debug_level: Level of debug. Should be one or INFO, DEBUG, WARNING or ERROR
         '''
+
+        self.__init_debug(debug_level, debug_log_path)
         self.__plugins = []
         self.__safe_mode = safe_mode
+
+
+    def __init_debug(self, debug_level, debug_log_path):
+        '''
+        Initialises the debug logger
+        @param debug_level: Level of debug. Should be one or INFO, DEBUG, WARNING or ERROR
+        @return:
+        '''
+        formatter = logging.Formatter("'%(asctime)s - %(name)s - %(levelname)s - %(message)s'")
+
+        # Set debug level (Defaults to warn)
+        if debug_level.lower() == "debug":
+            logging_lvl = logging.DEBUG
+        elif debug_level.lower() == "info":
+            logging_lvl = logging.INFO
+        elif debug_level.lower() == "error":
+            logging_lvl = logging.ERROR
+        else:
+            logging_lvl = logging.WARNING
+
+        # Setup logger
+        self.logger = logging.getLogger("Plugsy")
+        self.logger.setLevel(logging_lvl)
+
+        # Console logging
+        console = logging.StreamHandler()
+        console.setFormatter(formatter)
+        self.logger.addHandler(console)
+
+        # File logging
+        if debug_log_path:
+            logfile = logging.FileHandler(debug_log_path)
+            logfile.setFormatter(formatter)
+            self.logger.addHandler(logfile)
 
 
     def activate_plugins(self, plugin_names=[], ignore_addon_dep_failures=False):
@@ -45,7 +83,7 @@ class Plugsy():
         try:
             import plugins
         except ModuleNotFoundError:
-            print("Error: Plugins directory not found. There are no plugins to activate")
+            self.logger.error("Plugins directory not found. There are no plugins to activate")
             return
 
         # CORE - Start

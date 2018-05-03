@@ -4,6 +4,7 @@
 '''
 
 # Import libs
+import logging
 from threading import Thread
 from threading import Event
 
@@ -15,7 +16,6 @@ class AbstractPlugin(Thread):
         @param plugsy: Parent PlugSy object
         @param name: The name of the plugin. Optional, overrides package name
         '''
-        Thread.__init__(self)
         self.__activated = False
         self.__loaded = False
         self.__is_core_plugin = False
@@ -28,6 +28,13 @@ class AbstractPlugin(Thread):
             self.__set_name(self.__class__.__name__)
         else:
             self.__set_name(name)
+
+        # Init logging
+        self.logger = logging.getLogger("%s.%s" % (type(self.plugsy).__name__, self.__name))
+
+        # Super
+        Thread.__init__(self)
+
 
 
     def run(self):
