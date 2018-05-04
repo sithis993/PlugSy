@@ -309,7 +309,7 @@ class Plugsy():
 
         for member in inspect.getmembers(package_import):
             if inspect.ismodule(member[1]):
-                self.logger.error("__import_available_plugins(): member '%s' is a module. Adding import to available plugins" % member[0])
+                self.logger.debug("__import_available_plugins(): member '%s' is a module. Adding import to available plugins" % member[0])
                 plugin_location = ".".join([package_name, member[0]])
                 available_plugins.append([
                     member[0], importlib.import_module(plugin_location)
