@@ -35,6 +35,8 @@ class Plugsy():
         self.__plugins = []
         self.__safe_mode = safe_mode
 
+        self.logger.debug("__init__(): Safe mode enabled: %s" % self.__safe_mode)
+
 
     def __init_debug(self, debug_level, debug_log_path):
         '''
@@ -65,9 +67,14 @@ class Plugsy():
 
         # File logging
         if debug_log_path:
-            logfile = logging.FileHandler(debug_log_path)
+            logfile = logging.FileHandler(debug_log_path, mode="w")
             logfile.setFormatter(formatter)
             self.logger.addHandler(logfile)
+
+        # Initial debug
+        self.logger.debug("LOGGER INITIALISED")
+        if debug_log_path:
+            self.logger.debug("Log file enabled: '%s'" % debug_log_path)
 
 
     def activate_plugins(self, plugin_names=[], ignore_addon_dep_failures=False):
@@ -77,98 +84,160 @@ class Plugsy():
         @param ignore_addon_dep_failures: Boolean specifying whether dependency failures should be ignored
         or raised when loading Addon plugins
         '''
+        self.logger.debug("activate_plugins(): ENTRY")
         loaded_plugins = []
+        self.logger.debug("activate_plugins(): Ignoring Addon dependency failures: %s" % ignore_addon_dep_failures)
+
+        # Check plugin_names is correct type
+        if not isinstance(plugin_names, list):
+            self.logger.error(
+                "activate_plugins(): Expected plugin_names arg to be list, but got %s" %
+                type(plugin_names)
+            )
+            raise TypeError("plugin_names argument must be list")
+
+        if plugin_names:
+            self.logger.debug("activate_plugins(): plugin names specified. Trying to load '%s'")
+        else:
+            self.logger.debug("activate_plugins(): plugin names not specified. Activating all plugins")
 
         # Check for plugins package
         try:
             import plugins
+            self.logger.debug("activate_plugins(): plugins directory imported successfully")
         except ModuleNotFoundError:
-            self.logger.error("Plugins directory not found. There are no plugins to activate")
+            self.logger.critical("activate_plugins(): Plugins directory not found. There are no plugins to activate")
             return
 
         # CORE - Start
         # --------------------------------------
         # Load core plugins
+        self.logger.debug("activate_plugins(): Loading core plugins")
         core_plugins = self.__sort_by_dependencies(
             self.__load_plugins(
                 subpackage=".".join([self.ROOT_PLUGIN_PACKAGE, self.CORE_DIR]),
-                plugin_names=plugin_names
+                plugin_names=[plugin_name.lower() for plugin_name in plugin_names]
             ),
             False,
             loaded_plugins
         )
 
         if core_plugins:
-            print("Core plugins loaded successfully")
+            self.logger.info("activate_plugins(): %s Core plugins imported successfully" % len(core_plugins))
         else:
-            print("No core plugins were found")
+            self.logger.info("activate_plugins(): No core plugins were found")
 
         # Activate core plugins
+        self.logger.debug("activate_plugins(): Activating core plugins")
         for plugin in core_plugins:
+            self.logger.debug("activate_plugins(): Activating '%s'" % plugin.get_name())
             plugin.activate()
         loaded_plugins += core_plugins
+        self.logger.debug("activate_plugins(): Finished loading core plugins")
         # CORE - End
         # --------------------------------------
 
         # ADDON - Start
         # --------------------------------------
         # Load and activate addon plugins
+        self.logger.debug("activate_plugins(): Activating addon plugins")
         addon_plugins = self.__sort_by_dependencies(
             self.__load_plugins(
                 subpackage=".".join([self.ROOT_PLUGIN_PACKAGE, self.ADDON_DIR]),
-                plugin_names=plugin_names
+                plugin_names=[plugin_name.lower() for plugin_name in plugin_names]
             ),
             ignore_addon_dep_failures,
             loaded_plugins
         )
 
         if addon_plugins:
-            print("Addon plugins loaded successfully")
+            self.logger.info("activate_plugins(): %s Addon plugins imported successfully" % len(addon_plugins))
         else:
-            print("No addon plugins were found")
+            self.logger.info("activate_plugins(): No Addon plugins were found")
 
         # Activate addon plugins
+        self.logger.debug("activate_plugins(): Activating addon plugins")
         for plugin in addon_plugins:
+            self.logger.debug("activate_plugins(): Activating '%s'" % plugin.get_name())
             plugin.activate()
         loaded_plugins += addon_plugins
+        self.logger.debug("activate_plugins(): Finished activating core plugins")
         # ADDON - End
         # --------------------------------------
 
+        # Set Plugsy plugins
         self.__set_plugins(loaded_plugins)
-        time.sleep(2)
-        print("-" * 50)
+
+        self.logger.debug("activate_plugins(): EXIT")
 
 
     def deactivate_plugins(self, plugin_names=[]):
         '''
         @summary: Deactivates all plugins, or a specific plugin
         '''
+        self.logger.debug("deactivate_plugins(): ENTRY")
+
+        # Check plugin_names is correct type
+        if not isinstance(plugin_names, list):
+            self.logger.error(
+                "activate_plugins(): Expected plugin_names arg to be list, but got %s" %
+                type(plugin_names)
+            )
+            raise TypeError("plugin_names argument must be list")
 
         # Deactivate specified plugin
         if plugin_names:
+            self.logger.debug("deactivate_plugins(): plugin names specified. Deactivating '%s'" % plugin_names)
             for plugin_name in plugin_names:
+
+                # Get object of Plugin
                 plugin = self.get_plugin(plugin_name)
                 if plugin and plugin.is_activated():
+                    self.logger.debug("deativate_plugins(): plugin '%s' exists and is active" % plugin.get_name())
 
                     # Make sure there isn't a dependent running
+                    self.logger.debug("deactivate_plugins(): Checking for dependencies")
                     for active_plugin in self.get_plugins():
+
+                        # Check if there's a plugin running that depends on the plugin being deactivated
                         if plugin.get_name() in active_plugin.get_dependencies():
+                            self.logger.error(
+                                "deactivate_plugins(): '%s' is depended upon by running plugin '%s',"
+                                 "and cannot be deactivated" % (plugin_name, active_plugin.get_name())
+                            )
                             raise DependentRunning(plugin, active_plugin)
-                        if plugin.is_core_plugin() and not active_plugin.is_core_plugin():
+
+                        # If the plugin is a core plugin, make sure there are no addon plugins still running
+                        elif plugin.is_core_plugin() and not active_plugin.is_core_plugin():
+                            self.logger.error(
+                                "deactivate_plugins(): '%s' is a core plugin and there are still addon"
+                                " plugins currently running" % plugin_name
+                            )
                             raise AddonPluginsStillRunning(plugin)
 
+
                     # Deactive and remove plugin
-                    print("SHUTTING DOWN: %s" % plugin_name)
+                    self.logger.debug("deactivate_plugin(): shutting down plugin '%s' and removing from plugins array" % plugin_name)
                     plugin.deactivate()
                     self.__plugins.remove(plugin)
+
+                else:
+                    self.logger.error("deactivate_plugins(): No plugin object found for '%s', or plugin not active" %
+                                      plugin_name
+                                      )
 
         # Deactivate all plugins
         else:
+            self.logger.debug("activate_plugins(): plugin names not specified. Deactivating all plugins")
             for plugin in self.get_plugins():
                 if plugin.is_activated():
-                    print("SHUTTING DOWN: %s" % plugin.get_name())
+                    self.logger.debug("deactivate_plugin(): shutting down plugin '%s' and removing from plugins array" % plugin.get_name())
                     plugin.deactivate()
                     self.__plugins.remove(plugin)
+
+
+        self.logger.debug("deactivate_plugins(): plugins array: %s" % self.__plugins)
+        self.logger.debug("deactivate_plugins(): EXIT")
 
 
     def __load_plugins(self, subpackage, plugin_names=[]):
@@ -178,19 +247,24 @@ class Plugsy():
         @param plugin_names: An optional list of specific plugins to load
         @return: List of plugin objects
         '''
+        self.logger.debug("__load_plugins(): ENTRY")
         plugins = []
 
         # Iterate packages and contained plugins
         for plugin in self.__import_available_plugins(subpackage):
 
             # Skip plugin load if name specified and not matching plugin, or plugin already loaded
-            if (not plugin_names or plugin[0] in plugin_names) and not self.get_plugin(plugin[0]):
+            if (not plugin_names or plugin[0].lower() in plugin_names) and not self.get_plugin(plugin[0]):
+                self.logger.debug("__load_plugins(): Attempting to load '%s' plugin" % plugin[0])
                 try:
                     name, _class, plugin, configuration = self.__instantiate_plugin(plugin)
+                    self.logger.debug("__load_plugins(): '%s' loaded successfully" % name)
                     # Try to load the plugins
                     try:
-                        if subpackage.lower().split(".")[0] == "core":
+                        if subpackage.lower().split(".")[1] == "core":
+                            self.logger.debug("__load_plugins(): Setting plugin as core plugin")
                             plugin.set_core_plugin()
+                        self.logger.debug("__load_plugins(): Loading plugin config")
                         plugin.load_configuration(configuration)
                     except Exception as nx:
                         raise InvalidPlugin(
@@ -200,15 +274,18 @@ class Plugsy():
                     plugins.append(plugin)
                 except InvalidPlugin as ix:
                     # raise exception as "not a plugin or something"
-                    if subpackage.lower().split(".")[0] == "core":
+                    if subpackage.lower().split(".")[1] == "core":
+                        self.logger.critical("__load_plugins(): Could not import core plugin")
                         raise(ix)
                     else:
-                        print("Skipping addon plugin '%s' due to error: %s" % (
-                            ix.plugin_name,
-                            ix.message
+                        self.logger.error(
+                            "__load_plugins(): Skipping plugin '%s' due to load error: %s" % (
+                                ix.plugin_name,
+                                ix.message
                             )
                         )
 
+        self.logger.debug("__load_plugins(): EXIT")
         return plugins
 
 
@@ -218,22 +295,27 @@ class Plugsy():
         @param: package_name: The name of the package to load plugins from, such as "core"
         @return: List of tuples containing (<plugin_name>, <plugin_module_reference>)
         '''
+        self.logger.debug("__import_available_plugins(): ENTRY")
         available_plugins = []
-        print("Importing plugins from package %s" % package_name)
+        self.logger.debug("__import_available_plugins(): Importing plugins from package %s" % package_name)
 
         # Try to import parent_package
         try:
             package_import = importlib.import_module(package_name)
+            self.logger.debug("__import_available_plugins(): Subpackage '%s' successfully imported" % package_name)
         except Exception:
+            self.logger.error("__import_available_plugins(): Could not import subpackage '%s'" % package_name)
             return available_plugins
 
         for member in inspect.getmembers(package_import):
             if inspect.ismodule(member[1]):
+                self.logger.error("__import_available_plugins(): member '%s' is a module. Adding import to available plugins" % member[0])
                 plugin_location = ".".join([package_name, member[0]])
                 available_plugins.append([
                     member[0], importlib.import_module(plugin_location)
                 ])
 
+        self.logger.debug("__import_available_plugins(): EXIT")
         return available_plugins
 
 
@@ -243,9 +325,11 @@ class Plugsy():
         @param plugin_package: Namespace location of the plugin package to initiate, such as plugin.core.api
         @return: The name of the plugins's class, a class reference, an instance of the object and it's config
         '''
+        self.logger.debug("__instantiate_plugin(): ENTRY")
 
         plugin_name = plugin_package[0]
         module_reference = plugin_package[1]
+        self.logger.debug("__instantiate_plugin(): Attempting instantiation of '%s' plugin" % plugin_name)
 
         try:
             plugin_class = getattr(module_reference, plugin_name)
@@ -257,14 +341,20 @@ class Plugsy():
             # Check plugin is valid
             try:
                 if not plugin_object.is_initialised():
+                    self.logger.error("__instantiate_plugin(): Plugin not initialised")
                     raise InvalidPlugin(plugin_name, "Plugin Not correctly initialised. super() must first be called")
+                else:
+                    self.logger.debug("__instantiate_plugin(): Plugin has been initialised")
             except AttributeError:
+                self.logger.error("__instantiate_plugin(): Plugin is invalid (not an instance of AbstractPlugin)")
                 raise InvalidPlugin(plugin_name, "Not an instance of AbstractPlugin")
 
             plugin_name = plugin_object.get_name()
         except (TypeError, AttributeError) as ex:
+            self.logger.error("__instantiate_plugin(): Plugin is invalid (Bad type or initiation)")
             raise InvalidPlugin(plugin_name, ex)
 
+        self.logger.debug("__instantiate_plugin(): EXIT")
         return plugin_name, plugin_class, plugin_object, plugin_configuration
 
 
@@ -277,19 +367,23 @@ class Plugsy():
         @return: Plugin objects in a sorted list
         @raise: PluginCircularDependency
         '''
+        self.logger.debug("__sort_by_dependencies(): ENTRY")
         sorted_plugins = []
         dependency_dict = {}
-        plugin_names = [plugin.get_name() for plugin in plugins]
-        loaded_plugin_names = [loaded_plugin.get_name() for loaded_plugin in loaded_plugins]
+        plugin_names = [plugin.get_name().lower() for plugin in plugins]
+        loaded_plugin_names = [loaded_plugin.get_name().lower() for loaded_plugin in loaded_plugins]
 
         # If no plugins to sort, return empty list
         if not plugins:
+            self.logger.debug("__sort_by_dependencies(): No plugin objects to sort")
             return list()
 
         # Determine sort type
         if plugins[0].is_core_plugin():
+            self.logger.debug("__sort_by_dependencies(): Sorting core plugins")
             core_sort = True
         else:
+            self.logger.debug("__sort_by_dependencies(): Sorting addon plugins")
             core_sort = False
 
         # Check for unresolveable/missing dependencies
@@ -298,16 +392,26 @@ class Plugsy():
 
             # If no dependencies, add to list and skip
             if not plugin.get_dependencies():
+                self.logger.debug("__sort_by_dependencies(): plugin '%s' has no dependencies. Skipping" % plugin.get_name())
                 sorted_plugins.append(plugin)
                 continue
 
             # Check each dep is in the list of plugins to be loaded, or is already loaded or activated
-            for dependency in plugin.get_dependencies():
+            for dependency in [dependency.lower() for dependency in plugin.get_dependencies()]:
                 if dependency and dependency not in plugin_names and dependency not in loaded_plugin_names and not self.get_plugin(dependency):
                     if core_sort or (not core_sort and not ignore_dependency_failures):
+                        self.logger.critical(
+                            "__sort_by_dependencies(): core plugin '%s' has missing dependency '%s'" % (
+                                plugin.get_name(), dependency
+                            )
+                        )
                         raise MissingDependencyError(plugin, dependency)
                     elif not core_sort:
-                        print("Error: Skipping Addon plugin '%s' due to unresolvable/missing dependency '%s'" % (plugin.get_name(), dependency))
+                        self.logger.error(
+                            "__sort_by_dependencies(): Skipping addon plugin '%s' due to missing dependency" % (
+                                plugin.get_name(), dependency
+                            )
+                        )
                         dependency_failure = True
 
             # If dependency resolve failed and not fatal, skip plugin
@@ -315,21 +419,26 @@ class Plugsy():
                 continue
             else:
                 # Otherwise add plugins dependencies to dependency dict
-                dependency_dict[plugin.get_name()] = plugin.get_dependencies()
+                dependency_dict[plugin.get_name().lower()] = plugin.get_dependencies()
 
         # Perform Topological Sort
+        self.logger.debug("__sort_by_dependencies(): Performing topological sort: %s" % dependency_dict)
         try:
             for dependency_set in toposort(dependency_dict):
                 for dependency in dependency_set:
                     for plugin in plugins:
-                        if plugin.get_name() == dependency:
+                        if plugin.get_name().lower() == dependency and plugin not in sorted_plugins:
                             sorted_plugins.append(plugin)
         except CircularDependencyError as cx:
             if core_sort or (not core_sort and not ignore_dependency_failures):
+                self.logger.critical(
+                    "__sort_by_dependencies(): encountered fatal circular dependency error while loading plugins"
+                )
                 raise PluginCircularDependency()
             else:
-                print("Skipping Addon plugins due to Circular Dependency error")
+                self.logger.error("__sort_by_dependencies(): Skipping addon plugins due to circular dependency error")
 
+        self.logger.debug("__sort_by_dependencies(): EXIT with %s" % sorted_plugins)
         return sorted_plugins
 
 
@@ -341,7 +450,9 @@ class Plugsy():
         Return the boolean value of __safe_mode
         @return:
         '''
+        self.logger.debug("is_safe_mode_enabled(): ENTRY")
 
+        self.logger.debug("is_safe_mode_enabled(): EXIT: %s" % self.__safe_mode)
         return self.__safe_mode
 
 
@@ -351,12 +462,17 @@ class Plugsy():
         @param plugin_name: The name of the plugin to fet
         @return: The relevant plugin object
         '''
+        self.logger.debug("get_plugin(): ENTRY")
 
         plugin_object = self.get_plugins(plugin_name=plugin_name)
 
         if not plugin_object:
+            self.logger.debug("get_plugin(): Plugin object does not exist")
+            self.logger.debug("get_plugin(): EXIT")
             return None
         else:
+            self.logger.debug("get_plugin(): Plugin object does exist")
+            self.logger.debug("get_plugin(): EXIT")
             return plugin_object[0]
 
 
@@ -366,12 +482,15 @@ class Plugsy():
         @param plugin_name: The name of a specific plugin to get (optional)
         :return: A list of PlugSy plugin objects
         '''
+        self.logger.debug("get_plugins(): ENTRY")
         plugins_list = []
 
         for plugin in self.__plugins:
-            if not plugin_name or plugin.get_name() == plugin_name:
+            if not plugin_name or plugin.get_name().lower() == plugin_name.lower():
+                self.logger.debug("get_plugins(): Got plugin '%s'" % plugin.get_name())
                 plugins_list.append(plugin)
 
+        self.logger.debug("get_plugins(): EXIT")
         return plugins_list
 
 
@@ -380,13 +499,16 @@ class Plugsy():
         @summary: imports the plugins repository and returns the available subpackages
         @return: List of subpackages
         '''
+        self.logger.debug("__get_plugin_subpackages(): ENTRY")
         subpackages = []
 
         root_package_import = importlib.import_module(self.ROOT_PLUGIN_PACKAGE)
         for loader, modname, ispkg in pkgutil.iter_modules(root_package_import.__path__):
             if ispkg:
+                self.logger.debug("__get_plugin_subpackages(): ENTRY")
                 subpackages.append(modname)
 
+        self.logger.debug("__get_plugin_subpackages(): EXIT")
         return subpackages
 
 
@@ -395,10 +517,13 @@ class Plugsy():
         Checks if plugsy is running in a frozen context
         @return: True if frozen, otherwise False
         '''
+        self.logger.debug("__is_frozen(): ENTRY")
 
         if hasattr(sys, 'frozen'):
+            self.logger.debug("__is_frozen(): EXIT with %s" % True)
             return True
         else:
+            self.logger.debug("__is_frozen(): EXIT with %s" % False)
             return False
 
 
@@ -410,6 +535,8 @@ class Plugsy():
         Sets PlugSy's plugins
         @param plugins: A list of plugin objects
         '''
+        self.logger.debug("__set_plugins(): ENTRY")
 
         self.__plugins += plugins
+        self.logger.debug("__set_plugins(): EXIT")
 

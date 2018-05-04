@@ -68,15 +68,6 @@ class AbstractPlugin(Thread):
         self.set_dependencies(configuration.DEPENDENCIES)
 
 
-    def get_dependencies(self):
-        '''
-        Fetches the plugin's dependencies
-        @return: Plugin dependencies as a list of strings (plugin names)
-        '''
-
-        return self.__dependencies
-
-
     def activate(self):
         '''
         Activates the plugin and starts the thread
@@ -141,6 +132,16 @@ class AbstractPlugin(Thread):
             return False
 
 
+    def get_dependencies(self):
+        '''
+        Fetches the plugin's dependencies
+        @return: Plugin dependencies as a list of strings (plugin names)
+        '''
+
+        return self.__dependencies
+
+
+
 
 
     # =======================
@@ -163,7 +164,7 @@ class AbstractPlugin(Thread):
         dependency_set = set()
 
         for dependency in dependencies:
-            dependency_set.add(dependency)
+            dependency_set.add(dependency.lower())
 
         self.__dependencies = dependency_set
 
