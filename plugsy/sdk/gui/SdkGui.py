@@ -15,6 +15,7 @@ from ..Sdk import Sdk
 from ..Exceptions import *
 from ...Plugsy import Plugsy
 from ... import Config
+from ...Logger import Logger
 
 
 # ======================================
@@ -30,6 +31,7 @@ class SdkGui(MainFrame):
         '''
         Constructor
         '''
+        self.logger = Logger("%s.sdk.gui.%s" % (Config.FULL_NAME, self.__class__.__name__))
         self.__sdk = None
         self.__plugins_home_dir = None
         self.plugins_tree = None

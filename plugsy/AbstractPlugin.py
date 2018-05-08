@@ -4,9 +4,12 @@
 '''
 
 # Import libs
-import logging
 from threading import Thread
 from threading import Event
+
+# Import package modules
+from . import Config
+from .Logger import Logger
 
 class AbstractPlugin(Thread):
 
@@ -29,8 +32,7 @@ class AbstractPlugin(Thread):
         else:
             self.__set_name(name)
 
-        # Init logging
-        self.logger = logging.getLogger("%s.%s" % (type(self.plugsy).__name__, self.__name))
+        self.logger = Logger("%s.plugin.%s" % (Config.FULL_NAME, self.__name))
 
         # Super
         Thread.__init__(self)

@@ -13,6 +13,7 @@ from toposort import toposort, CircularDependencyError
 
 # Import project libs
 from . import Config
+from .Logger import Logger
 from .Exceptions import *
 
 ####################################
@@ -32,7 +33,8 @@ class Plugsy():
         @param debug_level: Level of debug. Should be one or INFO, DEBUG, WARNING or ERROR
         '''
 
-        self.__init_debug(debug_level, debug_log_path)
+        #self.__init_debug(debug_level, debug_log_path)
+        self.logger = Logger("PlugSy", debug_level, debug_log_path)
         self.__plugins = []
         self.__safe_mode = safe_mode
 
@@ -57,26 +59,34 @@ class Plugsy():
         else:
             logging_lvl = logging.WARNING
 
-        # Setup logger
-        self.logger = logging.getLogger("Plugsy")
-        self.logger.setLevel(logging_lvl)
+        # Init logger
+        self.logger = logging.getLogger(Config.FULL_NAME)
 
-        # Console logging
-        console = logging.StreamHandler()
-        console.setFormatter(formatter)
-        self.logger.addHandler(console)
+        # If logger not configured, perform set up
+        if not self.logger.hasHandlers():
+            self.logger.setLevel(logging_lvl)
 
-        # File logging
-        if debug_log_path:
-            logfile = logging.FileHandler(debug_log_path, mode="w")
-            logfile.setFormatter(formatter)
-            self.logger.addHandler(logfile)
+            # Console logging
+            console = logging.StreamHandler()
+            console.setFormatter(formatter)
+            self.logger.addHandler(console)
+
+            # File logging
+            if debug_log_path:
+                logfile = logging.FileHandler(debug_log_path, mode="w")
+                logfile.setFormatter(formatter)
+                self.logger.addHandler(logfile)
+
+            self.logger.debug("LOGGER INITIALISED")
+            if debug_log_path:
+                self.logger.debug("Log file enabled: '%s'" % debug_log_path)
+
+        # Logger already present
+        else:
+            self.logger.debug("USING EXISTING LOGGER")
 
         # Initial debug
-        self.logger.debug("LOGGER INITIALISED")
         self.logger.debug("PlugSy - %s" % Config.VERSION)
-        if debug_log_path:
-            self.logger.debug("Log file enabled: '%s'" % debug_log_path)
 
 
     def activate_plugins(self, plugin_names=[], ignore_addon_dep_failures=False):
