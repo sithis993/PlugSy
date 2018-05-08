@@ -94,7 +94,7 @@ class AbstractPlugin(Thread):
 
         self.stop()
 
-        # TODO Wait until we're no longer running before setting this and returning
+        # TODO Wait until we're no longer running before setting this and returning. Might need to close handles etc.
         self.__activated = True
         self.logger.info("Plugin deactivated!")
         self.logger.debug("deactivate(): EXIT")

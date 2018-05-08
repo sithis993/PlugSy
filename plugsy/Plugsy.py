@@ -1,5 +1,5 @@
 '''
-Plugsy - Plugin System - v0.1.1
+Plugsy - Plugin System
 '''
 
 # Import standard libs
@@ -12,6 +12,7 @@ import logging
 from toposort import toposort, CircularDependencyError
 
 # Import project libs
+from . import Config
 from .Exceptions import *
 
 ####################################
@@ -73,6 +74,7 @@ class Plugsy():
 
         # Initial debug
         self.logger.debug("LOGGER INITIALISED")
+        self.logger.debug("PlugSy - %s" % Config.VERSION)
         if debug_log_path:
             self.logger.debug("Log file enabled: '%s'" % debug_log_path)
 

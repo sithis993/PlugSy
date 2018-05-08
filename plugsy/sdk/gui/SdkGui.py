@@ -14,6 +14,7 @@ from .ConfirmationDialogs import *
 from ..Sdk import Sdk
 from ..Exceptions import *
 from ...Plugsy import Plugsy
+from ... import Config
 
 
 # ======================================
@@ -23,6 +24,7 @@ class SdkGui(MainFrame):
     '''
     SDK Gui - Main
     '''
+
 
     def __init__(self):
         '''
@@ -35,6 +37,9 @@ class SdkGui(MainFrame):
         self.__selected_plugin = None
         MainFrame.__init__(self, parent=None)
 
+        # Update visuals
+        self.__update_visuals()
+
         # Bind plugin events
         self.__set_events()
 
@@ -43,16 +48,38 @@ class SdkGui(MainFrame):
         self.__plugins_home_dir_dialog.Show()
 
 
+    def __update_visuals(self):
+        '''
+        Apply any post init visual changes
+        @return:
+        '''
+
+        # Update title
+        self.SetTitle("PlugSy - %s" % Config.VERSION)
+
+
     def __set_events(self):
         '''
         Set GUI event handlers
         @return:
         '''
 
+        # Keyboard shortcut IDs
+        new_plugin_id = wx.NewId()
+
+        # Bind events
         self.Bind(wx.EVT_TREE_SEL_CHANGED, self.__set_selected_plugin, self.PluginsTreeCtrl)
         self.Bind(wx.EVT_BUTTON, self.__delete_plugin, self.DeletePluginButton)
         self.Bind(wx.EVT_MENU, self.__create_new_plugin, self.NewPluginMenuItem)
+        self.Bind(wx.EVT_MENU, self.__create_new_plugin, id=new_plugin_id)
         self.Bind(wx.EVT_MENU, self.__close, self.ExitMenuItem)
+
+        # Set shortcuts (accelerators)
+        accelerator_tbl = wx.AcceleratorTable([
+            (wx.ACCEL_CTRL, ord("N"), new_plugin_id)
+        ])
+        self.SetAcceleratorTable(accelerator_tbl)
+
 
 
     def reload_plugins(self):
@@ -96,6 +123,15 @@ class SdkGui(MainFrame):
         self.PluginNameTextCtrl.SetValue("")
         self.PluginTypeComboBox.SetValue("core")
         self.DeletePluginButton.Disable()
+
+
+    def sync_config_fields(self):
+        '''
+        Synchronizes the config fields so that they are that of the currently selected tree item
+        @return:
+        '''
+
+        self.__set_selected_plugin(None)
 
 
     def __close(self, event):
@@ -485,3 +521,14 @@ class PluginTree():
     #############
     ## SETTERS ##
     #############
+
+
+    def set_focus_by_id(self, item_id):
+        '''
+        Sets the tree's current focus to item specified by ID
+        @param item_id: The ID of the item to focus on
+        @return:
+        '''
+
+        self.__tree.SetFocusedItem(item_id)
+

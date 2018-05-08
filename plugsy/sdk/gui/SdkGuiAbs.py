@@ -29,7 +29,7 @@ class MainFrame ( wx.Frame ):
 		
 		bSizer25 = wx.BoxSizer( wx.VERTICAL )
 		
-		self.PluginsTreeCtrl = wx.TreeCtrl( self.SdkPanel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TR_EDIT_LABELS|wx.TR_HAS_BUTTONS|wx.TR_HIDE_ROOT|wx.TR_LINES_AT_ROOT )
+		self.PluginsTreeCtrl = wx.TreeCtrl( self.SdkPanel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TR_HAS_BUTTONS|wx.TR_HIDE_ROOT|wx.TR_LINES_AT_ROOT )
 		bSizer25.Add( self.PluginsTreeCtrl, 88, wx.ALL|wx.EXPAND, 5 )
 		
 		
@@ -134,7 +134,7 @@ class MainFrame ( wx.Frame ):
 		self.MenuBar.Append( self.FileMenu, u"File" ) 
 		
 		self.PluginMenu = wx.Menu()
-		self.NewPluginMenuItem = wx.MenuItem( self.PluginMenu, wx.ID_ANY, u"New Plugin", wx.EmptyString, wx.ITEM_NORMAL )
+		self.NewPluginMenuItem = wx.MenuItem( self.PluginMenu, wx.ID_ANY, u"New Plugin"+ u"\t" + u"Ctrl + n", wx.EmptyString, wx.ITEM_NORMAL )
 		self.PluginMenu.Append( self.NewPluginMenuItem )
 		
 		self.MenuBar.Append( self.PluginMenu, u"Plugin" ) 
