@@ -24,6 +24,7 @@ from ...Logger import Logger
 class SdkGui(MainFrame):
     '''
     SDK Gui - Main
+    @todo: Add debug
     '''
 
 
@@ -31,7 +32,6 @@ class SdkGui(MainFrame):
         '''
         Constructor
         '''
-        self.logger = Logger("%s.sdk.gui.%s" % (Config.FULL_NAME, self.__class__.__name__))
         self.__sdk = None
         self.__plugins_home_dir = None
         self.plugins_tree = None
@@ -48,6 +48,24 @@ class SdkGui(MainFrame):
         # Open Plugin home dir dialog
         self.__plugins_home_dir_dialog = _PluginsHomeDirDialog(parent=self)
         self.__plugins_home_dir_dialog.Show()
+
+
+    def init_logger(self, level=None, log_path=None):
+        '''
+        Initialises debug logger
+        @param level: Debug level string
+        @param log_path: Debug log file path
+        @return:
+        '''
+        debug_name = "%s.sdk.gui.%s" % (Config.FULL_NAME, self.__class__.__name__)
+
+        self.log_level = level
+        self.log_path = log_path
+        # TODO This is the only way to use existing Debug right now. Create base logger
+        #global_logger = Logger(Config.FULL_NAME, self.log_level, self.log_path)
+        self.logger = Logger(debug_name)
+
+        self.logger.debug("init_logger(): EXIT")
 
 
     def __update_visuals(self):
@@ -83,15 +101,19 @@ class SdkGui(MainFrame):
         self.SetAcceleratorTable(accelerator_tbl)
 
 
-
     def reload_plugins(self):
         '''
         Reloads plugins from specified plugins home directory
         @return:
         '''
+        self.logger.debug("reload_plugins(): ENTRY")
 
         self.__loaded_plugins = self.__sdk.get_plugins()
+        self.logger.info("reload_plugins(): Loaded '%s' core plugins" % len(self.__loaded_plugins["core"]))
+        self.logger.info("reload_plugins(): Loaded '%s' addon plugins" % len(self.__loaded_plugins["addon"]))
         self.plugins_tree.populate_tree(self.__loaded_plugins)
+
+        self.logger.debug("reload_plugins(): ENTRY")
 
 
     def __create_new_plugin(self, event):
@@ -100,9 +122,12 @@ class SdkGui(MainFrame):
         @param event:
         @return:
         '''
+        self.logger.debug("__create_new_plugin(): ENTRY")
 
         new_plugin_dialog = _NewPluginDialog(self, self.__plugins_home_dir, self.__sdk)
         new_plugin_dialog.Show()
+
+        self.logger.debug("__create_new_plugin(): EXIT")
 
 
     def __delete_plugin(self, event):
@@ -110,10 +135,23 @@ class SdkGui(MainFrame):
         Open Plugin Creation Deletion
         @return:
         '''
+        self.logger.debug("__delete_plugin(): ENTRY")
         plugin_name = self.plugins_tree.get_current_selection_text()
+        self.logger.debug("__delete_plugin(): Attempting to delete '%s' plugin" % plugin_name)
 
         delete_plugin_dialog = DeletePluginConfirmation(self, plugin_name, self.__sdk)
         delete_plugin_dialog.Show()
+
+        self.logger.debug("__delete_plugin(): EXIT")
+
+
+    def sync_config_fields(self):
+        '''
+        Syncs config fields so they are that of the currently selected tree item
+        @return:
+        '''
+
+        self.__set_selected_plugin(None)
 
 
     def clear_config_fields(self):
@@ -121,19 +159,13 @@ class SdkGui(MainFrame):
         Convenience method to clear all configuration boxes and items and reset to default
         @return:
         '''
+        self.logger.debug("clear_config_fields(): ENTRY")
 
         self.PluginNameTextCtrl.SetValue("")
         self.PluginTypeComboBox.SetValue("core")
         self.DeletePluginButton.Disable()
 
-
-    def sync_config_fields(self):
-        '''
-        Synchronizes the config fields so that they are that of the currently selected tree item
-        @return:
-        '''
-
-        self.__set_selected_plugin(None)
+        self.logger.debug("clear_config_fields(): EXIT")
 
 
     def __close(self, event):
@@ -155,15 +187,20 @@ class SdkGui(MainFrame):
         @param plugins_home_dir: Absolute path to the plugins home
         @return:
         '''
+        self.logger.debug("set_plugins_home(): ENTRY")
+        self.logger.debug("set_plugins_home(): Setting plugins home to '%s'" % plugins_home_dir)
         self.__plugins_home_dir = plugins_home_dir
 
         # Init SDK and load plugins
-        self.__sdk = Sdk(plugins_home_dir)
+        self.__sdk = Sdk(plugins_home_dir, self.log_level, self.log_path)
         self.__loaded_plugins = self.__sdk.get_plugins()
+        self.logger.info("set_plugins_home(): Loaded '%s' core plugins" % len(self.__loaded_plugins["core"]))
+        self.logger.info("set_plugins_home(): Loaded '%s' addon plugins" % len(self.__loaded_plugins["addon"]))
         self.plugins_tree = PluginTree(self.PluginsTreeCtrl, self.__loaded_plugins)
 
         # Set status bar
         self.__set_status_bar_message("Plugins Home - %s" % plugins_home_dir)
+        self.logger.debug("set_plugins_home(): EXIT")
 
 
     def __set_status_bar_message(self, message):
@@ -171,12 +208,15 @@ class SdkGui(MainFrame):
         Sets the status bar text to message
         @param message: The message to set
         '''
+        self.logger.debug("__set_status_bar_message(): ENTRY")
+        self.logger.debug("__set_status_bar_message(): Setting message as '%s'" % message)
 
         # Check len
         if len(message) > 40:
             message = message[:37] + "..."
 
         self.StatusBar.SetStatusText(message)
+        self.logger.debug("__set_status_bar_message(): EXIT")
 
 
     def __set_selected_plugin(self, event):
@@ -184,9 +224,11 @@ class SdkGui(MainFrame):
         Sets the selected plugin and updates the GUI
         @return:
         '''
+        self.logger.debug("__set_selected_plugin(): ENTRY")
 
         # Get plugin name and cat and set obj
         selected_plugin_name = self.plugins_tree.get_current_selection_text()
+        self.logger.debug("__set_selected_plugin(): Setting selected plugin to '%s'" % selected_plugin_name)
         # If plugin selected and not category
         if selected_plugin_name.lower() != "core" and selected_plugin_name.lower() != "addon":
             self.__selected_plugin = self.__loaded_plugins
@@ -200,7 +242,13 @@ class SdkGui(MainFrame):
 
         else:
 
+            self.logger.debug(
+                "__set_selected_plugin(): Category '%s' selected. Clearing config fields" %
+                selected_plugin_name
+            )
             self.clear_config_fields()
+
+        self.logger.debug("__set_selected_plugin(): EXIT")
 
 
 
@@ -275,7 +323,10 @@ class _PluginsHomeDirDialog(PluginsHomeDirDialog):
         # Get plugin home directory
         self.__plugins_home_dir = self.PluginsHomeDirPicker.GetPath()
 
-        # Load plugins
+        # Process logger options and init logger
+        log_level = "debug"
+        log_path = r"C:\log.log"
+        self.__parent.init_logger(log_level, log_path)
 
         # Hide dialog
         self.Hide()
@@ -292,6 +343,7 @@ class _PluginsHomeDirDialog(PluginsHomeDirDialog):
 class _NewPluginDialog(NewPluginDialog):
     ''''
     New Plugin Dialog box for creating a new plugin
+    @todo: Add debug
     '''
 
     PLUGIN_NAME_REGEX = re.compile(r"^[A-Za-z][A-Za-z_]{2,20}$")
@@ -305,6 +357,11 @@ class _NewPluginDialog(NewPluginDialog):
         @param parent: Parent object
         @param sdk: SDK object
         '''
+        #self.logger = Logger(
+        #    "%s.sdk.gui.%s" % (Config.FULL_NAME, self.__class__.__name__),
+        #    parent.log_level, parent.log_path
+        #)
+        #self.logger.debug("__init__(): ENTRY")
         self.__parent = parent
         self.__sdk = sdk
         self.__plugins_home_dir = plugins_home_dir
@@ -315,6 +372,7 @@ class _NewPluginDialog(NewPluginDialog):
 
         # Disable parent
         self.__parent.Disable()
+        #self.logger.debug("__init__(): EXIT")
 
 
     def __create_new_plugin(self, event):
@@ -382,6 +440,7 @@ class PluginTree():
     '''
     Represents the wx TreeCtrl for the SDK Plugins. Provides convenience methods
     for getting tree items, adding items to the tree, checking for item presence etc.
+    @todo: Add debug
     '''
 
 

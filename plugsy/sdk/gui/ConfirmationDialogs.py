@@ -101,7 +101,6 @@ class DeletePluginConfirmation(_ConfirmationDialogAbs):
         self.__sdk.delete_plugin(selected_plugin)
         self.parent.plugins_tree.remove_plugin()
 
-        #self.parent.clear_config_fields()
         self.parent.sync_config_fields()
         self.parent.Enable()
         self.Destroy()

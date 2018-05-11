@@ -11,7 +11,7 @@ from threading import Event
 from . import Config
 from .Logger import Logger
 
-class AbstractPlugin(Thread):
+class AbstractPlugin(Thread, Logger):
 
     def __init__(self, plugsy, name=None):
         '''
@@ -31,8 +31,6 @@ class AbstractPlugin(Thread):
             self.__set_name(self.__class__.__name__)
         else:
             self.__set_name(name)
-
-        self.logger = Logger("%s.plugin.%s" % (Config.FULL_NAME, self.__name))
 
         # Super
         Thread.__init__(self)
@@ -56,10 +54,10 @@ class AbstractPlugin(Thread):
         '''
         Plugin stop method. Stops plugin execution by setting stop event to iterrupt actions
         '''
-        self.logger.debug("stop(): ENTRY")
+        self.logger.debug("ENTRY")
 
         self.stop_event.set()
-        self.logger.debug("stop(): EXIT")
+        self.logger.debug("EXIT")
 
 
     def load_configuration(self, configuration):
@@ -67,39 +65,53 @@ class AbstractPlugin(Thread):
         Loads the plugin configuration into the plugin object
         @param configuration: Plugin configuration module
         '''
-        self.logger.debug("load_configuratio(): ENTRY")
+        self.logger.debug("ENTRY")
 
         # Load plugin dependencies
         self.set_dependencies(configuration.DEPENDENCIES)
-        self.logger.debug("load_configuratio(): EXIT")
+        self.logger.debug("EXIT")
 
 
     def activate(self):
         '''
         Activates the plugin and starts the thread
         '''
-        self.logger.debug("activate(): ENTRY")
+        self.logger.debug("ENTRY")
         self.__activated = True
 
         # Start main thread
         self.start()
 
         self.logger.info("Plugin activated!")
-        self.logger.debug("activate(): EXIT")
+        self.logger.debug("EXIT")
 
 
     def deactivate(self):
         '''
         Deactivates the thread and calls the plugin stop method
         '''
-        self.logger.debug("deactivate(): ENTRY")
+        self.logger.debug("ENTRY")
 
         self.stop()
 
         # TODO Wait until we're no longer running before setting this and returning. Might need to close handles etc.
         self.__activated = True
         self.logger.info("Plugin deactivated!")
-        self.logger.debug("deactivate(): EXIT")
+        self.logger.debug("EXIT")
+
+
+    def init_logging(self):
+        '''
+        Initialises plugin logging
+        @return:
+        '''
+        plugin_package = "core" if self.__is_core_plugin else "addon"
+
+        # init logging
+        Logger.__init__(
+            self,
+            name="%s.plugins.%s.%s" % (Config.FULL_NAME, plugin_package, self.__name)
+        )
 
 
     # =======================
@@ -110,9 +122,9 @@ class AbstractPlugin(Thread):
         Checks whether the plugin has been activated
         @return: True if activated, otherwise False
         '''
-        self.logger.debug("is_activated(): ENTRY")
+        self.logger.debug("ENTRY")
 
-        self.logger.debug("is_activated(): EXIT")
+        self.logger.debug("EXIT")
         return self.__activated
 
     def get_name(self):
@@ -120,9 +132,7 @@ class AbstractPlugin(Thread):
         Gets the plugins name
         @return: Plugin name
         '''
-        self.logger.debug("get_name(): ENTRY")
 
-        self.logger.debug("get_name(): EXIT")
         return self.__name
 
 
@@ -131,9 +141,9 @@ class AbstractPlugin(Thread):
         Checks whether the plugin is a core plugin (within the core subpackage)
         @return: True if plugin is a core plugin, otherwise False
         '''
-        self.logger.debug("is_core_plugin(): ENTRY")
+        self.logger.debug("ENTRY")
 
-        self.logger.debug("is_core_plugin(): EXIT")
+        self.logger.debug("EXIT")
         return self.__is_core_plugin
 
 
@@ -142,14 +152,11 @@ class AbstractPlugin(Thread):
         Checks if the plugin has been initialised
         @return: True if initialised, otherwise False
         '''
-        self.logger.debug("is_initialised(): ENTRY")
 
         try:
             self.__is_initialised
-            self.logger.debug("is_initialised(): EXIT with True")
             return True
         except AttributeError:
-            self.logger.debug("is_initialised(): EXIT with False")
             return False
 
 
@@ -158,9 +165,9 @@ class AbstractPlugin(Thread):
         Fetches the plugin's dependencies
         @return: Plugin dependencies as a list of strings (plugin names)
         '''
-        self.logger.debug("get_dependencies(): ENTRY")
+        self.logger.debug("ENTRY")
 
-        self.logger.debug("get_dependencies(): EXIT")
+        self.logger.debug("EXIT")
         return self.__dependencies
 
 
@@ -181,26 +188,23 @@ class AbstractPlugin(Thread):
         Sets the plugin's dependencies
         @param dependencies: A list of plugins that the plugin depends on
         '''
-        self.logger.debug("set_dependencies(): ENTRY")
+        self.logger.debug("ENTRY")
         dependency_set = set()
 
         for dependency in dependencies:
             dependency_set.add(dependency.lower())
 
         self.__dependencies = dependency_set
-        self.logger.debug("set_dependencies(): Plugin dependencies set to '%s'" % dependencies)
-        self.logger.debug("set_dependencies(): EXIT")
+        self.logger.debug("Plugin dependencies set to '%s'" % dependencies)
+        self.logger.debug("EXIT")
 
 
     def set_core_plugin(self):
         '''
         sets the plugin as a core plugin when called
         '''
-        self.logger.debug("set_core_plugin(): ENTRY")
-
 
         self.__is_core_plugin = True
-        self.logger.debug("set_core_plugin(): ENTRY")
 
 
 
