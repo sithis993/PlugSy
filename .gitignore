@@ -1,2 +1,9 @@
 *.pyc
 *.pyo
+venv/*
+PlugSy.egg-info/*
+dist/*
+.idea/*
+__pycache__/*
+build/*
+plugins/*

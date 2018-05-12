@@ -26,9 +26,11 @@ class PluginTemplate(AbstractPlugin):
         @summary: Main run method.
         @return:
         '''
-        print("PluginTemplate running!")
+        self.logger.debug("run(): ENTRY!")
+        self.logger.info("PluginTemplate running!")
 
         while not self.stop_event.is_set():
             pass
 
-        print("PluginTemplate: Stopping!")
+        self.logger.info("PluginTemplate stopping!")
+        self.logger.debug("run(): EXIT!")
