@@ -11,3 +11,6 @@ def Go():
     gui.Show()
     app.MainLoop()
 
+if __name__ == "__main__":
+    Go()
+
