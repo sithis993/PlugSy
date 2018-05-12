@@ -1,2 +1,6 @@
 from .Sdk import Sdk
-from .gui import SdkGui
+
+# Import GUI if Win
+import sys
+if sys.platform.lower().startswith("win"):
+    from .gui import SdkGui
