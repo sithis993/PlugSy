@@ -118,15 +118,6 @@ class Sdk(Logger):
         self.logger.debug("EXIT")
 
 
-    def test_plugsy(self):
-        '''
-        Test
-        '''
-
-        self.__plugsy.activate_plugins()
-        self.__plugsy.deactivate_plugins()
-
-
     def __add_plugin_to_init(self, new_plugin):
         '''
         Adds the new plugin import to the relevant subpackage
