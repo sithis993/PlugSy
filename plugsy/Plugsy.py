@@ -68,7 +68,7 @@ class Plugsy(Logger):
         try:
             import plugins
             self.logger.debug("plugins directory imported successfully")
-        except ModuleNotFoundError:
+        except ImportError:
             self.logger.critical("Plugins directory not found. There are no plugins to activate")
             return
 
