@@ -171,18 +171,45 @@ class PluginsHomeDirDialog ( wx.Dialog ):
 		self.PluginsHomeDirPicker = wx.DirPickerCtrl( self.m_panel10, wx.ID_ANY, wx.EmptyString, u"test", wx.DefaultPosition, wx.DefaultSize, wx.DIRP_USE_TEXTCTRL )
 		self.PluginsHomeDirPicker.SetToolTip( u"Select the plugins' home directory. This is the location in which plugins are created, loaded and stored" )
 		
-		bSizer15.Add( self.PluginsHomeDirPicker, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 10 )
+		bSizer15.Add( self.PluginsHomeDirPicker, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5 )
 		
 		
 		bSizer12.Add( bSizer15, 1, wx.EXPAND, 5 )
+		
+		bSizer18 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer18.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.LogLevelLabel = wx.StaticText( self.m_panel10, wx.ID_ANY, u"Log Level", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.LogLevelLabel.Wrap( -1 )
+		bSizer18.Add( self.LogLevelLabel, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		
+		LogLevelChoiceChoices = [ wx.EmptyString, u"Debug", u"Info", u"Warning", u"Error", u"Critical" ]
+		self.LogLevelChoice = wx.Choice( self.m_panel10, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, LogLevelChoiceChoices, 0 )
+		self.LogLevelChoice.SetSelection( 0 )
+		bSizer18.Add( self.LogLevelChoice, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		
+		self.LogFilePathLabel = wx.StaticText( self.m_panel10, wx.ID_ANY, u"Log File Path", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.LogFilePathLabel.Wrap( -1 )
+		bSizer18.Add( self.LogFilePathLabel, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		
+		self.LogFilePathTextCtrl = wx.TextCtrl( self.m_panel10, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer18.Add( self.LogFilePathTextCtrl, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		
+		
+		bSizer18.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
+		bSizer12.Add( bSizer18, 1, wx.EXPAND, 5 )
 		
 		
 		self.m_panel10.SetSizer( bSizer12 )
 		self.m_panel10.Layout()
 		bSizer12.Fit( self.m_panel10 )
-		sbSizer1.Add( self.m_panel10, 1, wx.EXPAND |wx.ALL, 7 )
+		sbSizer1.Add( self.m_panel10, 3, wx.EXPAND |wx.ALL, 10 )
 		
-		bSizer11 = wx.BoxSizer( wx.HORIZONTAL )
+		bSizer11 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.StatusLabel = wx.StaticText( sbSizer1.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.StatusLabel.Wrap( -1 )
@@ -200,7 +227,7 @@ class PluginsHomeDirDialog ( wx.Dialog ):
 		bSizer11.Add( OkCancelSizer, 1, wx.EXPAND, 5 )
 		
 		
-		sbSizer1.Add( bSizer11, 1, wx.EXPAND, 5 )
+		sbSizer1.Add( bSizer11, 2, wx.EXPAND, 5 )
 		
 		
 		self.SetSizer( sbSizer1 )

@@ -66,6 +66,59 @@ class _ConfirmationDialogAbs(ConfirmationDialog):
         self.Bind(wx.EVT_BUTTON, self.__cancel, self.OkCancelSizerCancel)
 
 
+# ======================================
+# = GenericConfirmationDialog Class
+# ======================================
+class GenericConfirmationDialog(_ConfirmationDialogAbs):
+    '''
+    Provides a generic confirmation dialog
+    '''
+
+    def __init__(self, parent, message):
+        '''
+        Constructor
+        @param parent: Handle to parent wx object
+        @param message: The message to display
+        '''
+        self.__accepted = False
+        self.__message = message
+        _ConfirmationDialogAbs.__init__(self, parent, self.__message)
+
+        # Set events
+        self.Bind(wx.EVT_BUTTON, self.__set_accepted, self.OkCancelSizerOK)
+
+
+    def close(self):
+        '''
+        For closing and ending the dialog
+        @return:
+        '''
+
+        self.EndModal()
+
+    #############
+    ## GETTERS ##
+    #############
+    def was_accepted(self):
+        '''
+        Checks whether the confirmation box was accepted or not
+        @return: True if confirmation was accepted, otherwise False
+        '''
+
+        return self.__accepted
+
+
+    #############
+    ## SETTERS ##
+    #############
+    def __set_accepted(self, event):
+        '''
+        Sets the confirmation boxes accepted flag to True
+        @return:
+        '''
+
+        self.__accepted = True
+        self.Close()
 
 
 # ======================================
@@ -116,5 +169,10 @@ class DeletePluginConfirmation(_ConfirmationDialogAbs):
         '''
 
         self.Bind(wx.EVT_BUTTON, self.__delete_plugin, self.OkCancelSizerOK)
+
+
+
+
+
 
 

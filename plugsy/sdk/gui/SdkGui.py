@@ -37,6 +37,8 @@ class SdkGui(MainFrame):
         self.plugins_tree = None
         self.__loaded_plugins = {}
         self.__selected_plugin = None
+        self.__log_level = ""
+        self.__log_path = ""
         MainFrame.__init__(self, parent=None)
 
         # Update visuals
@@ -48,24 +50,6 @@ class SdkGui(MainFrame):
         # Open Plugin home dir dialog
         self.__plugins_home_dir_dialog = _PluginsHomeDirDialog(parent=self)
         self.__plugins_home_dir_dialog.Show()
-
-
-    def init_logger(self, level=None, log_path=None):
-        '''
-        Initialises debug logger
-        @param level: Debug level string
-        @param log_path: Debug log file path
-        @return:
-        '''
-        debug_name = "%s.sdk.gui.%s" % (Config.FULL_NAME, self.__class__.__name__)
-
-        self.log_level = level
-        self.log_path = log_path
-        # TODO This is the only way to use existing Debug right now. Create base logger
-        #global_logger = Logger(Config.FULL_NAME, self.log_level, self.log_path)
-        self.logger = Logger(debug_name)
-
-        self.logger.debug("init_logger(): EXIT")
 
 
     def __update_visuals(self):
@@ -187,19 +171,26 @@ class SdkGui(MainFrame):
         @param plugins_home_dir: Absolute path to the plugins home
         @return:
         '''
-        self.logger.debug("set_plugins_home(): ENTRY")
-        self.logger.debug("set_plugins_home(): Setting plugins home to '%s'" % plugins_home_dir)
         self.__plugins_home_dir = plugins_home_dir
 
         # Init SDK and load plugins
-        self.__sdk = Sdk(plugins_home_dir, self.log_level, self.log_path)
+        self.__sdk = Sdk(plugins_home_dir, self.__log_level, self.__log_path)
         self.__loaded_plugins = self.__sdk.get_plugins()
+
+        # Init logger
+        Logger.__init__(
+            self,
+            name="%s.sdk.SdkGui" % Config.FULL_NAME
+        )
+        self.logger.debug("set_plugins_home(): Setting plugins home to '%s'" % plugins_home_dir)
         self.logger.info("set_plugins_home(): Loaded '%s' core plugins" % len(self.__loaded_plugins["core"]))
         self.logger.info("set_plugins_home(): Loaded '%s' addon plugins" % len(self.__loaded_plugins["addon"]))
         self.plugins_tree = PluginTree(self.PluginsTreeCtrl, self.__loaded_plugins)
 
+
         # Set status bar
         self.__set_status_bar_message("Plugins Home - %s" % plugins_home_dir)
+        self.__sdk.test_plugsy()
         self.logger.debug("set_plugins_home(): EXIT")
 
 
@@ -251,6 +242,26 @@ class SdkGui(MainFrame):
         self.logger.debug("__set_selected_plugin(): EXIT")
 
 
+    def set_log_level(self, log_level):
+        '''
+        Sets log level
+        @param log_level:
+        @return:
+        '''
+
+        self.__log_level = log_level
+
+
+    def set_log_path(self, log_path):
+        '''
+        Sets the log path
+        @param log_path:
+        @return:
+        '''
+
+        self.__log_path = log_path
+
+
 
 # ======================================
 # = _PluginsHomeDirDialog Class
@@ -272,6 +283,9 @@ class _PluginsHomeDirDialog(PluginsHomeDirDialog):
         # Set events
         self.__set_events()
 
+        # Disable log file path
+        self.LogFilePathTextCtrl.Disable()
+
 
     def Show(self):
         '''
@@ -282,6 +296,27 @@ class _PluginsHomeDirDialog(PluginsHomeDirDialog):
         # Disable Parent Window
         self.__parent.Disable()
         super(_PluginsHomeDirDialog, self).Show()
+
+
+    def __update_choice(self, event):
+        '''
+        Triggered when the Log level choice box is altered. For controlling GUI based upon selection
+        @param event:
+        @return:
+        '''
+        log_level = self.LogLevelChoice.GetString(self.LogLevelChoice.GetSelection())
+
+        # Enable Log file path text ctrl if log level not none
+        if log_level:
+            self.LogFilePathTextCtrl.Enable()
+        else:
+            self.LogFilePathTextCtrl.Disable()
+
+        # If debug selected, display warning, otherwise clear it
+        if log_level.lower() == "debug":
+            self.__set_status_message("Setting Log Level to Debug may severely impact performance", "warning")
+        else:
+            self.__clear_status_message()
 
 
     def __cancel(self, event):
@@ -306,6 +341,7 @@ class _PluginsHomeDirDialog(PluginsHomeDirDialog):
 
         self.Bind(wx.EVT_BUTTON, self.__set_plugins_home, self.OkCancelSizerOK)
         self.Bind(wx.EVT_BUTTON, self.__cancel, self.OkCancelSizerCancel)
+        self.Bind(wx.EVT_CHOICE, self.__update_choice, self.LogLevelChoice)
 
 
     def __set_plugins_home(self, event):
@@ -317,24 +353,64 @@ class _PluginsHomeDirDialog(PluginsHomeDirDialog):
         # Validate path
         plugins_path = self.PluginsHomeDirPicker.GetPath()
         if not plugins_path or not os.path.isdir(plugins_path):
-            self.StatusLabel.SetLabel("Valid path must be specified")
+            self.__set_status_message("Valid path must be specified", "error")
             return
+
+        # Validate Debug settings
+        log_level = self.LogLevelChoice.GetString(self.LogLevelChoice.GetSelection())
+        log_path = self.LogFilePathTextCtrl.GetValue()
+        if log_level:
+            # If log file exists, show Confirmation
+            if os.path.isfile(log_path):
+                confirmation_box = GenericConfirmationDialog(
+                    self, "The log file at '%s' already exists. Do you want to overwrite it?"
+                )
+                confirmation_box.ShowModal()
+                if not confirmation_box.was_accepted():
+                    return
 
         # Get plugin home directory
         self.__plugins_home_dir = self.PluginsHomeDirPicker.GetPath()
-
-        # Process logger options and init logger
-        log_level = "debug"
-        log_path = r"C:\log.log"
-        self.__parent.init_logger(log_level, log_path)
 
         # Hide dialog
         self.Hide()
         self.__parent.Enable()
         self.__parent.Raise()
 
+        # Set logger config
+        self.__parent.set_log_level(log_level)
+        self.__parent.set_log_path(log_path)
+
         # Load plugins
         self.__parent.set_plugins_home(self.__plugins_home_dir)
+
+
+    def __set_status_message(self, message, _type):
+        '''
+        Sets the status message
+        @param message: The message string to set
+        @param _type: The type of message. should be error or warning
+        @return:
+        '''
+        message_prefix = ""
+
+        if _type.lower() == "error":
+            self.StatusLabel.SetForegroundColour(wx.Colour(255, 0, 0))
+            message_prefix = "Error: "
+        elif _type.lower() == "warning":
+            self.StatusLabel.SetForegroundColour(wx.Colour(255, 128, 0))
+            message_prefix = "Warning: "
+
+        self.StatusLabel.SetLabel(message_prefix + message)
+
+
+    def __clear_status_message(self):
+        '''
+        Clears the status message area
+        @return:
+        '''
+
+        self.StatusLabel.SetLabel("")
 
 
 # ======================================

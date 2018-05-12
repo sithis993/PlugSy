@@ -50,6 +50,10 @@ class Logger():
             self.info("Level - '%s'" % logging.getLevelName(self.__level))
             self.info("%s - %s" % (Config.FULL_NAME, Config.VERSION))
 
+            # Debug warning
+            if logging.getLevelName(self.__level).lower() == "debug":
+                self.warning("Debug level set to '%s'. This may hinder performance" % logging.getLevelName(self.__level))
+
 
 
 
