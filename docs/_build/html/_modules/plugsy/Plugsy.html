@@ -1,0 +1,600 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>plugsy.Plugsy &#8212; PlugSy  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for plugsy.Plugsy</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Plugsy - Plugin System</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="c1"># Import standard libs</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">pkgutil</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">from</span> <span class="nn">toposort</span> <span class="k">import</span> <span class="n">toposort</span><span class="p">,</span> <span class="n">CircularDependencyError</span>
+
+<span class="c1"># Import project libs</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">Config</span>
+<span class="kn">from</span> <span class="nn">.Logger</span> <span class="k">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">.Exceptions</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1">####################################</span>
+<span class="c1"># PlugSy Plugin Manager</span>
+<span class="c1">####################################</span>
+<div class="viewcode-block" id="Plugsy"><a class="viewcode-back" href="../../plugsy.html#plugsy.Plugsy.Plugsy">[docs]</a><span class="k">class</span> <span class="nc">Plugsy</span><span class="p">(</span><span class="n">Logger</span><span class="p">):</span>
+
+    <span class="n">ROOT_PLUGIN_PACKAGE</span> <span class="o">=</span> <span class="s2">&quot;plugins&quot;</span>
+    <span class="n">ADDON_DIR</span> <span class="o">=</span> <span class="s2">&quot;addon&quot;</span>
+    <span class="n">CORE_DIR</span> <span class="o">=</span> <span class="s2">&quot;core&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">safe_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">debug_level</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">debug_log_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param safe_mode: Boolean specifying whether Plugsy should be run in safe mode. In safe mode, only the</span>
+<span class="sd">            core plugins will be loaded</span>
+<span class="sd">        :param debug_level: Level of debug. Should be one or INFO, DEBUG, WARNING or ERROR</span>
+<span class="sd">        :param debug_log_path: Optional peth to a debug log file. WIll be created and used for logging if specified</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">Config</span><span class="o">.</span><span class="n">FULL_NAME</span><span class="p">,</span>
+            <span class="n">level</span><span class="o">=</span><span class="n">debug_level</span><span class="p">,</span> <span class="n">log_path</span><span class="o">=</span><span class="n">debug_log_path</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__plugins</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__safe_mode</span> <span class="o">=</span> <span class="n">safe_mode</span>
+
+
+<div class="viewcode-block" id="Plugsy.activate_plugins"><a class="viewcode-back" href="../../plugsy.html#plugsy.Plugsy.Plugsy.activate_plugins">[docs]</a>    <span class="k">def</span> <span class="nf">activate_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_names</span><span class="o">=</span><span class="p">[],</span> <span class="n">ignore_addon_dep_failures</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Activates Plugsy plugins</span>
+
+<span class="sd">        :param plugin_names: Optional list of specific plugins to activate</span>
+<span class="sd">        :param ignore_addon_dep_failures: Boolean specifying whether dependency failures should be ignored or raised</span>
+<span class="sd">            when loading Addon plugins</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+        <span class="n">loaded_plugins</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Ignoring Addon dependency failures: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">ignore_addon_dep_failures</span><span class="p">)</span>
+
+        <span class="c1"># Check plugin_names is correct type</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">plugin_names</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Expected plugin_names arg to be list, but got </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
+                <span class="nb">type</span><span class="p">(</span><span class="n">plugin_names</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;plugin_names argument must be list&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">plugin_names</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;plugin names specified. Trying to load &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;plugin names not specified. Activating all plugins&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check for plugins package</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">plugins</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;plugins directory imported successfully&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Plugins directory not found. There are no plugins to activate&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># CORE - Start</span>
+        <span class="c1"># --------------------------------------</span>
+        <span class="c1"># Load core plugins</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot; Loading core plugins&quot;</span><span class="p">)</span>
+        <span class="n">core_plugins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sort_by_dependencies</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__load_plugins</span><span class="p">(</span>
+                <span class="n">subpackage</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">ROOT_PLUGIN_PACKAGE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CORE_DIR</span><span class="p">]),</span>
+                <span class="n">plugin_names</span><span class="o">=</span><span class="p">[</span><span class="n">plugin_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">plugin_name</span> <span class="ow">in</span> <span class="n">plugin_names</span><span class="p">]</span>
+            <span class="p">),</span>
+            <span class="kc">False</span><span class="p">,</span>
+            <span class="n">loaded_plugins</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">core_plugins</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> Core plugins imported successfully&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">core_plugins</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;No core plugins were found&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Activate core plugins</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Activating core plugins&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">core_plugins</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot; Activating &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">())</span>
+            <span class="n">plugin</span><span class="o">.</span><span class="n">activate</span><span class="p">()</span>
+        <span class="n">loaded_plugins</span> <span class="o">+=</span> <span class="n">core_plugins</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Finished loading core plugins&quot;</span><span class="p">)</span>
+        <span class="c1"># CORE - End</span>
+        <span class="c1"># --------------------------------------</span>
+
+        <span class="c1"># ADDON - Start</span>
+        <span class="c1"># --------------------------------------</span>
+        <span class="c1"># Load and activate addon plugins</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Activating addon plugins&quot;</span><span class="p">)</span>
+        <span class="n">addon_plugins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sort_by_dependencies</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__load_plugins</span><span class="p">(</span>
+                <span class="n">subpackage</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">ROOT_PLUGIN_PACKAGE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ADDON_DIR</span><span class="p">]),</span>
+                <span class="n">plugin_names</span><span class="o">=</span><span class="p">[</span><span class="n">plugin_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">plugin_name</span> <span class="ow">in</span> <span class="n">plugin_names</span><span class="p">]</span>
+            <span class="p">),</span>
+            <span class="n">ignore_addon_dep_failures</span><span class="p">,</span>
+            <span class="n">loaded_plugins</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">addon_plugins</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> Addon plugins imported successfully&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">addon_plugins</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;No Addon plugins were found&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Activate addon plugins</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Activating addon plugins&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">addon_plugins</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Activating &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">())</span>
+            <span class="n">plugin</span><span class="o">.</span><span class="n">activate</span><span class="p">()</span>
+        <span class="n">loaded_plugins</span> <span class="o">+=</span> <span class="n">addon_plugins</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Finished activating core plugins&quot;</span><span class="p">)</span>
+        <span class="c1"># ADDON - End</span>
+        <span class="c1"># --------------------------------------</span>
+
+        <span class="c1"># Set Plugsy plugins</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_plugins</span><span class="p">(</span><span class="n">loaded_plugins</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Plugsy.deactivate_plugins"><a class="viewcode-back" href="../../plugsy.html#plugsy.Plugsy.Plugsy.deactivate_plugins">[docs]</a>    <span class="k">def</span> <span class="nf">deactivate_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_names</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Deactivates all plugins, or a specific plugin</span>
+
+<span class="sd">        :param plugin_names: Optional list of plugin names to deactivate</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check plugin_names is correct type</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">plugin_names</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Expected plugin_names arg to be list, but got </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
+                <span class="nb">type</span><span class="p">(</span><span class="n">plugin_names</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;plugin_names argument must be list&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Deactivate specified plugin</span>
+        <span class="k">if</span> <span class="n">plugin_names</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;plugin names specified. Deactivating &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">plugin_names</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">plugin_name</span> <span class="ow">in</span> <span class="n">plugin_names</span><span class="p">:</span>
+
+                <span class="c1"># Get object of Plugin</span>
+                <span class="n">plugin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_plugin</span><span class="p">(</span><span class="n">plugin_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">plugin</span> <span class="ow">and</span> <span class="n">plugin</span><span class="o">.</span><span class="n">is_activated</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;plugin &#39;</span><span class="si">%s</span><span class="s2">&#39; exists and is active&quot;</span> <span class="o">%</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">())</span>
+
+                    <span class="c1"># Make sure there isn&#39;t a dependent running</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Checking for dependencies&quot;</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">active_plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_plugins</span><span class="p">():</span>
+
+                        <span class="c1"># Check if there&#39;s a plugin running that depends on the plugin being deactivated</span>
+                        <span class="k">if</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span> <span class="ow">in</span> <span class="n">active_plugin</span><span class="o">.</span><span class="n">get_dependencies</span><span class="p">():</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                                <span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39; is depended upon by running plugin &#39;</span><span class="si">%s</span><span class="s2">&#39;,&quot;</span>
+                                 <span class="s2">&quot;and cannot be deactivated&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">plugin_name</span><span class="p">,</span> <span class="n">active_plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">())</span>
+                            <span class="p">)</span>
+                            <span class="k">raise</span> <span class="n">DependentRunning</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="n">active_plugin</span><span class="p">)</span>
+
+                        <span class="c1"># If the plugin is a core plugin, make sure there are no addon plugins still running</span>
+                        <span class="k">elif</span> <span class="n">plugin</span><span class="o">.</span><span class="n">is_core_plugin</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">active_plugin</span><span class="o">.</span><span class="n">is_core_plugin</span><span class="p">():</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                                <span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39; is a core plugin and there are still addon&quot;</span>
+                                <span class="s2">&quot; plugins currently running&quot;</span> <span class="o">%</span> <span class="n">plugin_name</span>
+                            <span class="p">)</span>
+                            <span class="k">raise</span> <span class="n">AddonPluginsStillRunning</span><span class="p">(</span><span class="n">plugin</span><span class="p">)</span>
+
+
+                    <span class="c1"># Deactive and remove plugin</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;shutting down plugin &#39;</span><span class="si">%s</span><span class="s2">&#39; and removing from plugins array&quot;</span> <span class="o">%</span> <span class="n">plugin_name</span><span class="p">)</span>
+                    <span class="n">plugin</span><span class="o">.</span><span class="n">deactivate</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__plugins</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">plugin</span><span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;No plugin object found for &#39;</span><span class="si">%s</span><span class="s2">&#39;, or plugin not active&quot;</span> <span class="o">%</span>
+                                      <span class="n">plugin_name</span>
+                                      <span class="p">)</span>
+
+        <span class="c1"># Deactivate all plugins</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;plugin names not specified. Deactivating all plugins&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_plugins</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">plugin</span><span class="o">.</span><span class="n">is_activated</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;shutting down plugin &#39;</span><span class="si">%s</span><span class="s2">&#39; and removing from plugins array&quot;</span> <span class="o">%</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">())</span>
+                    <span class="n">plugin</span><span class="o">.</span><span class="n">deactivate</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__plugins</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">plugin</span><span class="p">)</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;plugins array: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__plugins</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__load_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subpackage</span><span class="p">,</span> <span class="n">plugin_names</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Loads Plugsy plugins</span>
+
+<span class="sd">        :param subpackage: The subpackage to be loaded, such as &#39;core&#39; or &#39;addons&#39;</span>
+<span class="sd">        :param plugin_names: An optional list of specific plugins to load</span>
+<span class="sd">        :return: List of plugin objects</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+        <span class="n">plugins</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Iterate packages and contained plugins</span>
+        <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__import_available_plugins</span><span class="p">(</span><span class="n">subpackage</span><span class="p">):</span>
+
+            <span class="c1"># Skip plugin load if name specified and not matching plugin, or plugin already loaded</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">plugin_names</span> <span class="ow">or</span> <span class="n">plugin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">plugin_names</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_plugin</span><span class="p">(</span><span class="n">plugin</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Attempting to load &#39;</span><span class="si">%s</span><span class="s2">&#39; plugin&quot;</span> <span class="o">%</span> <span class="n">plugin</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">name</span><span class="p">,</span> <span class="n">_class</span><span class="p">,</span> <span class="n">plugin</span><span class="p">,</span> <span class="n">configuration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__instantiate_plugin</span><span class="p">(</span><span class="n">plugin</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39; loaded successfully&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+                    <span class="c1"># Try to load the plugins</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">subpackage</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;core&quot;</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting plugin as core plugin&quot;</span><span class="p">)</span>
+                            <span class="n">plugin</span><span class="o">.</span><span class="n">set_core_plugin</span><span class="p">()</span>
+                        <span class="n">plugin</span><span class="o">.</span><span class="n">init_logging</span><span class="p">()</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading plugin config&quot;</span><span class="p">)</span>
+                        <span class="n">plugin</span><span class="o">.</span><span class="n">load_configuration</span><span class="p">(</span><span class="n">configuration</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">nx</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">InvalidPlugin</span><span class="p">(</span>
+                            <span class="n">plugin_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                            <span class="n">message</span><span class="o">=</span><span class="n">nx</span>
+                        <span class="p">)</span>
+                    <span class="n">plugins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plugin</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">InvalidPlugin</span> <span class="k">as</span> <span class="n">ix</span><span class="p">:</span>
+                    <span class="c1"># raise exception as &quot;not a plugin or something&quot;</span>
+                    <span class="k">if</span> <span class="n">subpackage</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;core&quot;</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Could not import core plugin&quot;</span><span class="p">)</span>
+                        <span class="k">raise</span><span class="p">(</span><span class="n">ix</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                            <span class="s2">&quot;Skipping plugin &#39;</span><span class="si">%s</span><span class="s2">&#39; due to load error: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                                <span class="n">ix</span><span class="o">.</span><span class="n">plugin_name</span><span class="p">,</span>
+                                <span class="n">ix</span><span class="o">.</span><span class="n">message</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">plugins</span>
+
+
+    <span class="k">def</span> <span class="nf">__import_available_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">package_name</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        imports available plugins for the specified package</span>
+
+<span class="sd">        :param package_name: The name of the package to load plugins from, such as &quot;core&quot;</span>
+<span class="sd">        :return: List of tuples containing (&lt;plugin_name&gt;, &lt;plugin_module_reference&gt;)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+        <span class="n">available_plugins</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Importing plugins from package </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">package_name</span><span class="p">)</span>
+
+        <span class="c1"># Try to import parent_package</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">package_import</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">package_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Subpackage &#39;</span><span class="si">%s</span><span class="s2">&#39; successfully imported&quot;</span> <span class="o">%</span> <span class="n">package_name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ix</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Could not import subpackage &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">package_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;core&quot;</span> <span class="ow">in</span> <span class="n">package_name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="n">SubpackageImportError</span><span class="p">(</span><span class="n">package_name</span><span class="p">,</span> <span class="n">ix</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">available_plugins</span>
+
+        <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="n">package_import</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">ismodule</span><span class="p">(</span><span class="n">member</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;member &#39;</span><span class="si">%s</span><span class="s2">&#39; is a module. Adding import to available plugins&quot;</span> <span class="o">%</span> <span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">plugin_location</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">package_name</span><span class="p">,</span> <span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+                <span class="n">available_plugins</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                    <span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">plugin_location</span><span class="p">)</span>
+                <span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">available_plugins</span>
+
+
+    <span class="k">def</span> <span class="nf">__instantiate_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_package</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Initiates an individual plugin and returns its class name and an instance</span>
+
+<span class="sd">        :param plugin_package: Namespace location of the plugin package to initiate, such as plugin.core.api</span>
+<span class="sd">        :return: The name of the plugins&#39;s class, a class reference, an instance of the object and it&#39;s config</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="n">plugin_name</span> <span class="o">=</span> <span class="n">plugin_package</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">module_reference</span> <span class="o">=</span> <span class="n">plugin_package</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Attempting instantiation of &#39;</span><span class="si">%s</span><span class="s2">&#39; plugin&quot;</span> <span class="o">%</span> <span class="n">plugin_name</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">plugin_class</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module_reference</span><span class="p">,</span> <span class="n">plugin_name</span><span class="p">)</span>
+            <span class="n">plugin_configuration</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module_reference</span><span class="p">,</span> <span class="s2">&quot;Config&quot;</span><span class="p">)</span>
+            <span class="n">plugin_object</span> <span class="o">=</span> <span class="n">plugin_class</span><span class="p">(</span>
+                <span class="n">plugsy</span><span class="o">=</span><span class="bp">self</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Check plugin is valid</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">plugin_object</span><span class="o">.</span><span class="n">is_initialised</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Plugin not initialised&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">InvalidPlugin</span><span class="p">(</span><span class="n">plugin_name</span><span class="p">,</span> <span class="s2">&quot;Plugin Not correctly initialised. super() must first be called&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Plugin has been initialised&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Plugin is invalid (not an instance of AbstractPlugin)&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">InvalidPlugin</span><span class="p">(</span><span class="n">plugin_name</span><span class="p">,</span> <span class="s2">&quot;Not an instance of AbstractPlugin&quot;</span><span class="p">)</span>
+
+            <span class="n">plugin_name</span> <span class="o">=</span> <span class="n">plugin_object</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Plugin is invalid (Bad type or initiation)&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">InvalidPlugin</span><span class="p">(</span><span class="n">plugin_name</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">plugin_name</span><span class="p">,</span> <span class="n">plugin_class</span><span class="p">,</span> <span class="n">plugin_object</span><span class="p">,</span> <span class="n">plugin_configuration</span>
+
+
+    <span class="k">def</span> <span class="nf">__sort_by_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugins</span><span class="p">,</span> <span class="n">ignore_dependency_failures</span><span class="p">,</span> <span class="n">loaded_plugins</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sorts plugins by dependencies</span>
+
+<span class="sd">        :param plugins: The plugin objects to sort</span>
+<span class="sd">        :param ignore_dependency_failures: Boolean specifying with dependency failures should be suppressed</span>
+<span class="sd">        :param loaded_plugins: List of plugins that have been loaded so far</span>
+<span class="sd">        :return: Plugin objects in a sorted list</span>
+<span class="sd">        :raise: PluginCircularDependency</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+        <span class="n">sorted_plugins</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">dependency_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">plugin_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">plugins</span><span class="p">]</span>
+        <span class="n">loaded_plugin_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">loaded_plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">loaded_plugin</span> <span class="ow">in</span> <span class="n">loaded_plugins</span><span class="p">]</span>
+
+        <span class="c1"># If no plugins to sort, return empty list</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">plugins</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No plugin objects to sort&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="c1"># Determine sort type</span>
+        <span class="k">if</span> <span class="n">plugins</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_core_plugin</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sorting core plugins&quot;</span><span class="p">)</span>
+            <span class="n">core_sort</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sorting addon plugins&quot;</span><span class="p">)</span>
+            <span class="n">core_sort</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Check for unresolveable/missing dependencies</span>
+        <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">plugins</span><span class="p">:</span>
+            <span class="n">dependency_failure</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="c1"># If no dependencies, add to list and skip</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_dependencies</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;plugin &#39;</span><span class="si">%s</span><span class="s2">&#39; has no dependencies. Skipping&quot;</span> <span class="o">%</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">())</span>
+                <span class="n">sorted_plugins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plugin</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Check each dep is in the list of plugins to be loaded, or is already loaded or activated</span>
+            <span class="k">for</span> <span class="n">dependency</span> <span class="ow">in</span> <span class="p">[</span><span class="n">dependency</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">dependency</span> <span class="ow">in</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_dependencies</span><span class="p">()]:</span>
+                <span class="k">if</span> <span class="n">dependency</span> <span class="ow">and</span> <span class="n">dependency</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">plugin_names</span> <span class="ow">and</span> <span class="n">dependency</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">loaded_plugin_names</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_plugin</span><span class="p">(</span><span class="n">dependency</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">core_sort</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">core_sort</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ignore_dependency_failures</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
+                            <span class="s2">&quot;core plugin &#39;</span><span class="si">%s</span><span class="s2">&#39; has missing dependency &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                                <span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">(),</span> <span class="n">dependency</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="k">raise</span> <span class="n">MissingDependencyError</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="n">dependency</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="ow">not</span> <span class="n">core_sort</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                            <span class="s2">&quot;Skipping addon plugin &#39;</span><span class="si">%s</span><span class="s2">&#39; due to missing dependency&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                                <span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">(),</span> <span class="n">dependency</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="n">dependency_failure</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="c1"># If dependency resolve failed and not fatal, skip plugin</span>
+            <span class="k">if</span> <span class="n">dependency_failure</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Otherwise add plugins dependencies to dependency dict</span>
+                <span class="n">dependency_dict</span><span class="p">[</span><span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_dependencies</span><span class="p">()</span>
+
+        <span class="c1"># Perform Topological Sort</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Performing topological sort: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">dependency_dict</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">dependency_set</span> <span class="ow">in</span> <span class="n">toposort</span><span class="p">(</span><span class="n">dependency_dict</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">dependency</span> <span class="ow">in</span> <span class="n">dependency_set</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">plugins</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">dependency</span> <span class="ow">and</span> <span class="n">plugin</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sorted_plugins</span><span class="p">:</span>
+                            <span class="n">sorted_plugins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plugin</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">CircularDependencyError</span> <span class="k">as</span> <span class="n">cx</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">core_sort</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">core_sort</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ignore_dependency_failures</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
+                    <span class="s2">&quot;encountered fatal circular dependency error while loading plugins&quot;</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="n">PluginCircularDependency</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Skipping addon plugins due to circular dependency error&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT with </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">sorted_plugins</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sorted_plugins</span>
+
+
+    <span class="c1"># =======================</span>
+    <span class="c1"># = GETTERS</span>
+    <span class="c1"># =======================</span>
+<div class="viewcode-block" id="Plugsy.is_safe_mode_enabled"><a class="viewcode-back" href="../../plugsy.html#plugsy.Plugsy.Plugsy.is_safe_mode_enabled">[docs]</a>    <span class="k">def</span> <span class="nf">is_safe_mode_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return the boolean value of __safe_mode</span>
+
+<span class="sd">        :return: True or False</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__safe_mode</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__safe_mode</span></div>
+
+
+<div class="viewcode-block" id="Plugsy.get_plugin"><a class="viewcode-back" href="../../plugsy.html#plugsy.Plugsy.Plugsy.get_plugin">[docs]</a>    <span class="k">def</span> <span class="nf">get_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_name</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fetch the plugin object of a specific plugin</span>
+
+<span class="sd">        :param plugin_name: The name of the plugin to fetch</span>
+<span class="sd">        :return: The relevant plugin object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="n">plugin_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_plugins</span><span class="p">(</span><span class="n">plugin_name</span><span class="o">=</span><span class="n">plugin_name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">plugin_object</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Plugin object does not exist&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Plugin object does exist&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">plugin_object</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Plugsy.get_plugins"><a class="viewcode-back" href="../../plugsy.html#plugsy.Plugsy.Plugsy.get_plugins">[docs]</a>    <span class="k">def</span> <span class="nf">get_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fetches PlugSy plugins</span>
+
+<span class="sd">        :param plugin_name: The name of a specific plugin to get (optional)</span>
+<span class="sd">        :return: A list of PlugSy plugin objects</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+        <span class="n">plugins_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__plugins</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">plugin_name</span> <span class="ow">or</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">plugin_name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Got plugin &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">())</span>
+                <span class="n">plugins_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plugin</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">plugins_list</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__get_plugin_subpackages</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :summary: imports the plugins repository and returns the available subpackages</span>
+
+<span class="sd">        :return: List of subpackages</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+        <span class="n">subpackages</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">root_package_import</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ROOT_PLUGIN_PACKAGE</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">loader</span><span class="p">,</span> <span class="n">modname</span><span class="p">,</span> <span class="n">ispkg</span> <span class="ow">in</span> <span class="n">pkgutil</span><span class="o">.</span><span class="n">iter_modules</span><span class="p">(</span><span class="n">root_package_import</span><span class="o">.</span><span class="n">__path__</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">ispkg</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+                <span class="n">subpackages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">modname</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">subpackages</span>
+
+
+    <span class="k">def</span> <span class="nf">__is_frozen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Checks if plugsy is running in a frozen context</span>
+
+<span class="sd">        :return: True if frozen, otherwise False</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s1">&#39;frozen&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT with </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT with </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+
+    <span class="c1"># =======================</span>
+    <span class="c1"># = SETTERS</span>
+    <span class="c1"># =======================</span>
+    <span class="k">def</span> <span class="nf">__set_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugins</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sets PlugSy&#39;s plugins</span>
+
+<span class="sd">        :param plugins: A list of plugin objects</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__plugins</span> <span class="o">+=</span> <span class="n">plugins</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Sithis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

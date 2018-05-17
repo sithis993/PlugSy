@@ -1,0 +1,805 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>plugsy.sdk.gui.SdkGui &#8212; PlugSy  documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for plugsy.sdk.gui.SdkGui</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">PlugSy - SDK Gui</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="c1"># Import libs</span>
+<span class="kn">import</span> <span class="nn">wx</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">from</span> <span class="nn">.SdkGuiAbs</span> <span class="k">import</span> <span class="n">PluginsHomeDirDialog</span>
+<span class="kn">from</span> <span class="nn">.SdkGuiAbs</span> <span class="k">import</span> <span class="n">MainFrame</span>
+<span class="kn">from</span> <span class="nn">.SdkGuiAbs</span> <span class="k">import</span> <span class="n">NewPluginDialog</span>
+<span class="kn">from</span> <span class="nn">.ConfirmationDialogs</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">..Sdk</span> <span class="k">import</span> <span class="n">Sdk</span>
+<span class="kn">from</span> <span class="nn">..Exceptions</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">...Plugsy</span> <span class="k">import</span> <span class="n">Plugsy</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">Config</span>
+<span class="kn">from</span> <span class="nn">...Logger</span> <span class="k">import</span> <span class="n">Logger</span>
+
+
+<span class="c1"># ======================================</span>
+<span class="c1"># = SdkGui Class</span>
+<span class="c1"># ======================================</span>
+<div class="viewcode-block" id="SdkGui"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.SdkGui.SdkGui">[docs]</a><span class="k">class</span> <span class="nc">SdkGui</span><span class="p">(</span><span class="n">MainFrame</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    SDK Gui - Main</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__sdk</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__plugins_home_dir</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plugins_tree</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__loaded_plugins</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__selected_plugin</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_level</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_path</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">MainFrame</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># Update visuals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__update_visuals</span><span class="p">()</span>
+
+        <span class="c1"># Bind plugin events</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_events</span><span class="p">()</span>
+
+        <span class="c1"># Open Plugin home dir dialog</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__plugins_home_dir_dialog</span> <span class="o">=</span> <span class="n">_PluginsHomeDirDialog</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__plugins_home_dir_dialog</span><span class="o">.</span><span class="n">Show</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">__update_visuals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Apply any post init visual changes</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Update title</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SetTitle</span><span class="p">(</span><span class="s2">&quot;PlugSy - </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">Config</span><span class="o">.</span><span class="n">VERSION</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__set_events</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set GUI event handlers</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Keyboard shortcut IDs</span>
+        <span class="n">new_plugin_id</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">NewId</span><span class="p">()</span>
+
+        <span class="c1"># Bind events</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_TREE_SEL_CHANGED</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__set_selected_plugin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">PluginsTreeCtrl</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_BUTTON</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__delete_plugin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DeletePluginButton</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_MENU</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__create_new_plugin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">NewPluginMenuItem</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_MENU</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__create_new_plugin</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">new_plugin_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_MENU</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__close</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ExitMenuItem</span><span class="p">)</span>
+
+        <span class="c1"># Set shortcuts (accelerators)</span>
+        <span class="n">accelerator_tbl</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">AcceleratorTable</span><span class="p">([</span>
+            <span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">ACCEL_CTRL</span><span class="p">,</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;N&quot;</span><span class="p">),</span> <span class="n">new_plugin_id</span><span class="p">)</span>
+        <span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SetAcceleratorTable</span><span class="p">(</span><span class="n">accelerator_tbl</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SdkGui.reload_plugins"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.SdkGui.SdkGui.reload_plugins">[docs]</a>    <span class="k">def</span> <span class="nf">reload_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Reloads plugins from specified plugins home directory</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__loaded_plugins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sdk</span><span class="o">.</span><span class="n">get_plugins</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loaded &#39;</span><span class="si">%s</span><span class="s2">&#39; core plugins&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__loaded_plugins</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loaded &#39;</span><span class="si">%s</span><span class="s2">&#39; addon plugins&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__loaded_plugins</span><span class="p">[</span><span class="s2">&quot;addon&quot;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plugins_tree</span><span class="o">.</span><span class="n">populate_tree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__loaded_plugins</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__create_new_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Open Plugin Creation Dialog</span>
+
+<span class="sd">        :param event: wx event object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="n">new_plugin_dialog</span> <span class="o">=</span> <span class="n">_NewPluginDialog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__plugins_home_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sdk</span><span class="p">)</span>
+        <span class="n">new_plugin_dialog</span><span class="o">.</span><span class="n">Show</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__delete_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Open Plugin Creation Deletion</span>
+
+<span class="sd">        :param event: wx event object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+        <span class="n">plugin_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugins_tree</span><span class="o">.</span><span class="n">get_current_selection_text</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Attempting to delete &#39;</span><span class="si">%s</span><span class="s2">&#39; plugin&quot;</span> <span class="o">%</span> <span class="n">plugin_name</span><span class="p">)</span>
+
+        <span class="n">delete_plugin_dialog</span> <span class="o">=</span> <span class="n">DeletePluginConfirmation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sdk</span><span class="p">)</span>
+        <span class="n">delete_plugin_dialog</span><span class="o">.</span><span class="n">Show</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SdkGui.sync_config_fields"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.SdkGui.SdkGui.sync_config_fields">[docs]</a>    <span class="k">def</span> <span class="nf">sync_config_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Syncs config fields so they are that of the currently selected tree item</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_selected_plugin</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SdkGui.clear_config_fields"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.SdkGui.SdkGui.clear_config_fields">[docs]</a>    <span class="k">def</span> <span class="nf">clear_config_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Convenience method to clear all configuration boxes and items and reset to default</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot; ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">PluginNameTextCtrl</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PluginTypeComboBox</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="s2">&quot;core&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DeletePluginButton</span><span class="o">.</span><span class="n">Disable</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Event handler method for closing the application</span>
+
+<span class="sd">        :param event: wx event object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+
+    <span class="c1">#############</span>
+    <span class="c1">## SETTERS ##</span>
+    <span class="c1">#############</span>
+
+<div class="viewcode-block" id="SdkGui.set_plugins_home"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.SdkGui.SdkGui.set_plugins_home">[docs]</a>    <span class="k">def</span> <span class="nf">set_plugins_home</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugins_home_dir</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sets the plugins home dir to the specified directory and loads contained plugins</span>
+
+<span class="sd">        :param plugins_home_dir: Absolute path to the plugins home</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__plugins_home_dir</span> <span class="o">=</span> <span class="n">plugins_home_dir</span>
+
+        <span class="c1"># Init SDK and load plugins</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__sdk</span> <span class="o">=</span> <span class="n">Sdk</span><span class="p">(</span><span class="n">plugins_home_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__log_level</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__log_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__loaded_plugins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sdk</span><span class="o">.</span><span class="n">get_plugins</span><span class="p">()</span>
+
+        <span class="c1"># Init logger</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.sdk.SdkGui&quot;</span> <span class="o">%</span> <span class="n">Config</span><span class="o">.</span><span class="n">FULL_NAME</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Plugins home set to &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">plugins_home_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loaded &#39;</span><span class="si">%s</span><span class="s2">&#39; core plugins&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__loaded_plugins</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loaded &#39;</span><span class="si">%s</span><span class="s2">&#39; addon plugins&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__loaded_plugins</span><span class="p">[</span><span class="s2">&quot;addon&quot;</span><span class="p">]))</span>
+
+        <span class="c1"># Add plugins to tree</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plugins_tree</span> <span class="o">=</span> <span class="n">PluginTree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PluginsTreeCtrl</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__loaded_plugins</span><span class="p">)</span>
+
+        <span class="c1"># Set status bar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_status_bar_message</span><span class="p">(</span><span class="s2">&quot;Plugins Home - </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">plugins_home_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__set_status_bar_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sets the status bar text to message. Truncates if necessary</span>
+
+<span class="sd">        :param message: The message to set in the wx status bar</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting message as &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">message</span><span class="p">)</span>
+
+        <span class="c1"># Check len</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">message</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">40</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">message</span><span class="p">[:</span><span class="mi">37</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">StatusBar</span><span class="o">.</span><span class="n">SetStatusText</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__set_selected_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sets the selected plugin and updates the GUI</span>
+
+<span class="sd">        :param event: wx event object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Get plugin name and cat and set obj</span>
+        <span class="n">selected_plugin_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugins_tree</span><span class="o">.</span><span class="n">get_current_selection_text</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting selected plugin to &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">selected_plugin_name</span><span class="p">)</span>
+        <span class="c1"># If plugin selected and not category</span>
+        <span class="k">if</span> <span class="n">selected_plugin_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;core&quot;</span> <span class="ow">and</span> <span class="n">selected_plugin_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;addon&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__selected_plugin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__loaded_plugins</span>
+            <span class="n">selected_plugin_cat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PluginsTreeCtrl</span><span class="o">.</span><span class="n">GetItemText</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">PluginsTreeCtrl</span><span class="o">.</span><span class="n">GetItemParent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugins_tree</span><span class="o">.</span><span class="n">get_current_selection_id</span><span class="p">())</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">PluginNameTextCtrl</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="n">selected_plugin_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PluginTypeComboBox</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="n">selected_plugin_cat</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">DeletePluginButton</span><span class="o">.</span><span class="n">Enable</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;Category &#39;</span><span class="si">%s</span><span class="s2">&#39; selected. Clearing config fields&quot;</span> <span class="o">%</span>
+                <span class="n">selected_plugin_name</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clear_config_fields</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SdkGui.set_log_level"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.SdkGui.SdkGui.set_log_level">[docs]</a>    <span class="k">def</span> <span class="nf">set_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_level</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sets log level</span>
+
+<span class="sd">        :param log_level: The log level</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_level</span> <span class="o">=</span> <span class="n">log_level</span></div>
+
+
+<div class="viewcode-block" id="SdkGui.set_log_path"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.SdkGui.SdkGui.set_log_path">[docs]</a>    <span class="k">def</span> <span class="nf">set_log_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_path</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sets the log path</span>
+
+<span class="sd">        :param log_path: The log file path</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_path</span> <span class="o">=</span> <span class="n">log_path</span></div></div>
+
+
+
+<span class="c1"># ======================================</span>
+<span class="c1"># = _PluginsHomeDirDialog Class</span>
+<span class="c1"># ======================================</span>
+<span class="k">class</span> <span class="nc">_PluginsHomeDirDialog</span><span class="p">(</span><span class="n">PluginsHomeDirDialog</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Child Plugins Directory Dialog</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param parent: Parent Window. SDK MainFrame in this case</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__plugins_home_dir</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">PluginsHomeDirDialog</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__parent</span><span class="p">)</span>
+
+        <span class="c1"># Set events</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_events</span><span class="p">()</span>
+
+        <span class="c1"># Disable log file path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LogFilePathTextCtrl</span><span class="o">.</span><span class="n">Disable</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">Show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Shows the dialog</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Disable Parent Window</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span><span class="o">.</span><span class="n">Disable</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">_PluginsHomeDirDialog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">Show</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">__update_choice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Triggered when the Log level choice box is altered. For controlling GUI based upon selection</span>
+
+<span class="sd">        :param event: wx event object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">log_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">LogLevelChoice</span><span class="o">.</span><span class="n">GetString</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">LogLevelChoice</span><span class="o">.</span><span class="n">GetSelection</span><span class="p">())</span>
+
+        <span class="c1"># Enable Log file path text ctrl if log level not none</span>
+        <span class="k">if</span> <span class="n">log_level</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">LogFilePathTextCtrl</span><span class="o">.</span><span class="n">Enable</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">LogFilePathTextCtrl</span><span class="o">.</span><span class="n">Disable</span><span class="p">()</span>
+
+        <span class="c1"># If debug selected, display warning, otherwise clear it</span>
+        <span class="k">if</span> <span class="n">log_level</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;debug&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__set_status_message</span><span class="p">(</span><span class="s2">&quot;Setting Log Level to Debug may severely impact performance&quot;</span><span class="p">,</span> <span class="s2">&quot;warning&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__clear_status_message</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">__cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Bound to cancel Button. Closes entire app</span>
+
+<span class="sd">        :param event: wx event object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+
+    <span class="c1">#############</span>
+    <span class="c1">## SETTERS ##</span>
+    <span class="c1">#############</span>
+
+    <span class="k">def</span> <span class="nf">__set_events</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set events</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_BUTTON</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__set_plugins_home</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OkCancelSizerOK</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_BUTTON</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cancel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OkCancelSizerCancel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_CHOICE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__update_choice</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">LogLevelChoice</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__set_plugins_home</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sets the plugins home, loads plugins and closes dialog</span>
+
+<span class="sd">        :param event: wx event object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Validate path</span>
+        <span class="n">plugins_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PluginsHomeDirPicker</span><span class="o">.</span><span class="n">GetPath</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">plugins_path</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">plugins_path</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__set_status_message</span><span class="p">(</span><span class="s2">&quot;Valid path must be specified&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Validate Debug settings</span>
+        <span class="n">log_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">LogLevelChoice</span><span class="o">.</span><span class="n">GetString</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">LogLevelChoice</span><span class="o">.</span><span class="n">GetSelection</span><span class="p">())</span>
+        <span class="n">log_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">LogFilePathTextCtrl</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">log_level</span><span class="p">:</span>
+            <span class="c1"># If log file exists, show Confirmation</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">log_path</span><span class="p">):</span>
+                <span class="n">confirmation_box</span> <span class="o">=</span> <span class="n">GenericConfirmationDialog</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;The log file at &#39;</span><span class="si">%s</span><span class="s2">&#39; already exists. Do you want to overwrite it?&quot;</span> <span class="o">%</span> <span class="n">log_path</span>
+                <span class="p">)</span>
+                <span class="n">confirmation_box</span><span class="o">.</span><span class="n">ShowModal</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">confirmation_box</span><span class="o">.</span><span class="n">was_accepted</span><span class="p">():</span>
+                    <span class="k">return</span>
+
+        <span class="c1"># Get plugin home directory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__plugins_home_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PluginsHomeDirPicker</span><span class="o">.</span><span class="n">GetPath</span><span class="p">()</span>
+
+        <span class="c1"># Hide dialog</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Hide</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span><span class="o">.</span><span class="n">Enable</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span><span class="o">.</span><span class="n">Raise</span><span class="p">()</span>
+
+        <span class="c1"># Set logger config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span><span class="o">.</span><span class="n">set_log_level</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span><span class="o">.</span><span class="n">set_log_path</span><span class="p">(</span><span class="n">log_path</span><span class="p">)</span>
+
+        <span class="c1"># Load plugins</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span><span class="o">.</span><span class="n">set_plugins_home</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__plugins_home_dir</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__set_status_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">_type</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sets the status message</span>
+
+<span class="sd">        :param message: The message string to set</span>
+<span class="sd">        :param _type: The type of message. should be error or warning</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">message_prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">StatusLabel</span><span class="o">.</span><span class="n">SetForegroundColour</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">Colour</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="n">message_prefix</span> <span class="o">=</span> <span class="s2">&quot;Error: &quot;</span>
+        <span class="k">elif</span> <span class="n">_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;warning&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">StatusLabel</span><span class="o">.</span><span class="n">SetForegroundColour</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">Colour</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="n">message_prefix</span> <span class="o">=</span> <span class="s2">&quot;Warning: &quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">StatusLabel</span><span class="o">.</span><span class="n">SetLabel</span><span class="p">(</span><span class="n">message_prefix</span> <span class="o">+</span> <span class="n">message</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__clear_status_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Clears the status message area</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">StatusLabel</span><span class="o">.</span><span class="n">SetLabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># ======================================</span>
+<span class="c1"># = NewPluginDialog Class</span>
+<span class="c1"># ======================================</span>
+<span class="k">class</span> <span class="nc">_NewPluginDialog</span><span class="p">(</span><span class="n">NewPluginDialog</span><span class="p">,</span> <span class="n">Logger</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;&#39;</span>
+<span class="sd">    New Plugin Dialog box for creating a new plugin</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">PLUGIN_NAME_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[A-Za-z][A-Za-z_]{2,20}$&quot;</span><span class="p">)</span>
+    <span class="n">RESERVED_PLUGIN_NAMES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">,</span> <span class="s2">&quot;addon&quot;</span><span class="p">]</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">plugins_home_dir</span><span class="p">,</span> <span class="n">sdk</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param parent: Parent object</span>
+<span class="sd">        :param plugins_home_dir: Plugins home dir</span>
+<span class="sd">        :param sdk: SDK object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.sdk.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">Config</span><span class="o">.</span><span class="n">FULL_NAME</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__sdk</span> <span class="o">=</span> <span class="n">sdk</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__plugins_home_dir</span> <span class="o">=</span> <span class="n">plugins_home_dir</span>
+        <span class="n">NewPluginDialog</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__parent</span><span class="p">)</span>
+
+        <span class="c1"># Bind events</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_events</span><span class="p">()</span>
+
+        <span class="c1"># Disable parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span><span class="o">.</span><span class="n">Disable</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__create_new_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates the plugin</span>
+
+<span class="sd">        :param event: wx event object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Handle inputs</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PluginNameTextCtrl</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+        <span class="n">_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PluginTypeChoice</span><span class="o">.</span><span class="n">GetString</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PluginTypeChoice</span><span class="o">.</span><span class="n">GetSelection</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Attempting creation of &#39;</span><span class="si">%s</span><span class="s2">&#39; plugin of type &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_type</span><span class="p">))</span>
+
+        <span class="c1"># Check plugin name</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLUGIN_NAME_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">StatusLabel</span><span class="o">.</span><span class="n">SetLabelText</span><span class="p">(</span><span class="s2">&quot;Error: Invalid plugin name. Must be alphanumeric and 4-20 characters long&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;The specified plugin name &#39;</span><span class="si">%s</span><span class="s2">&#39; is invalid and does not match the regex &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLUGIN_NAME_REGEX</span><span class="o">.</span><span class="n">pattern</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Check plugin doesn&#39;t already exist</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sdk</span><span class="o">.</span><span class="n">does_plugin_exist</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">StatusLabel</span><span class="o">.</span><span class="n">SetLabelText</span><span class="p">(</span><span class="s2">&quot;Error: A plugin with the specified name already exists&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;A plugin already exists with the name &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Check plugin name isn&#39;t reserved</span>
+        <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">RESERVED_PLUGIN_NAMES</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">StatusLabel</span><span class="o">.</span><span class="n">SetLabelText</span><span class="p">(</span><span class="s2">&quot;Error: Plugin name is reserved. Please choose another name&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The keyword &#39;</span><span class="si">%s</span><span class="s2">&#39; is reserved and cannot be used as a plugin name&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Create plugin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__sdk</span><span class="o">.</span><span class="n">create_plugin</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span><span class="o">.</span><span class="n">reload_plugins</span><span class="p">()</span>
+
+        <span class="c1"># Close</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span><span class="o">.</span><span class="n">Enable</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Cancels plugin creation and re-enables Main GUI</span>
+
+<span class="sd">        :return: wx event object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span><span class="o">.</span><span class="n">Enable</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+
+    <span class="c1">#############</span>
+    <span class="c1">## SETTERS ##</span>
+    <span class="c1">#############</span>
+
+    <span class="k">def</span> <span class="nf">__set_events</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Bind events</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_BUTTON</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__create_new_plugin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OkCanelSizerOK</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_BUTTON</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cancel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OkCanelSizerCancel</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># ======================================</span>
+<span class="c1"># = PluginTree Class</span>
+<span class="c1"># ======================================</span>
+<div class="viewcode-block" id="PluginTree"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.SdkGui.PluginTree">[docs]</a><span class="k">class</span> <span class="nc">PluginTree</span><span class="p">(</span><span class="n">Logger</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Represents the wx TreeCtrl for the SDK Plugins. Provides convenience methods</span>
+<span class="sd">    for getting tree items, adding items to the tree, checking for item presence etc.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">loaded_plugins</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param tree: Handle to the wx TreeCtrl object</span>
+<span class="sd">        :param loaded_plugins: List of currently loaded plugin objects</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.sdk.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">Config</span><span class="o">.</span><span class="n">FULL_NAME</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__tree</span> <span class="o">=</span> <span class="n">tree</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__categories</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__loaded_plugins</span> <span class="o">=</span> <span class="n">loaded_plugins</span>
+
+        <span class="c1"># setup tree</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding root item to tree&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tree</span><span class="o">.</span><span class="n">AddRoot</span><span class="p">(</span><span class="s2">&quot;Plugins&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Populate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding plugins to the tree&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">populate_tree</span><span class="p">(</span><span class="n">loaded_plugins</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="PluginTree.populate_tree"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.SdkGui.PluginTree.populate_tree">[docs]</a>    <span class="k">def</span> <span class="nf">populate_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loaded_plugins</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Populates the tree ctrl with loaded pluginss</span>
+
+<span class="sd">        :param loaded_plugins: List of currently loaded plugin objects</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">loaded_plugins</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding &#39;</span><span class="si">%s</span><span class="s2">&#39; plugins to tree&quot;</span> <span class="o">%</span> <span class="n">cat</span><span class="p">)</span>
+            <span class="c1"># if cat in get_list_of_category_names() (children under the root node)</span>
+            <span class="k">if</span> <span class="n">cat</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_category_names</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39; category not yet in tree, adding it&quot;</span> <span class="o">%</span> <span class="n">cat</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__tree</span><span class="o">.</span><span class="n">AppendItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__root</span><span class="p">,</span> <span class="n">cat</span><span class="p">)</span>
+
+            <span class="c1"># Add each plugin under cat</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding &#39;</span><span class="si">%s</span><span class="s2">&#39; plugins to category&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">loaded_plugins</span><span class="p">[</span><span class="n">cat</span><span class="p">]))</span>
+            <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">loaded_plugins</span><span class="p">[</span><span class="n">cat</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_category_plugin_names</span><span class="p">(</span><span class="n">cat</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding &#39;</span><span class="si">%s</span><span class="s2">&#39; plugin to tree&quot;</span> <span class="o">%</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">())</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__tree</span><span class="o">.</span><span class="n">AppendItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__get_category_id</span><span class="p">(</span><span class="n">cat</span><span class="p">),</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PluginTree.remove_plugin"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.SdkGui.PluginTree.remove_plugin">[docs]</a>    <span class="k">def</span> <span class="nf">remove_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Removes the currently selected plugin item from the tree</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="n">plugin_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_selection_id</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Removing &#39;</span><span class="si">%s</span><span class="s2">&#39; plugin from tree&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_selection_text</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__tree</span><span class="o">.</span><span class="n">Delete</span><span class="p">(</span><span class="n">plugin_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1">#############</span>
+    <span class="c1">## GETTERS ##</span>
+    <span class="c1">#############</span>
+
+<div class="viewcode-block" id="PluginTree.get_category_names"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.SdkGui.PluginTree.get_category_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_category_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fetches a list of the names of categories in the Plugin tree ctrl</span>
+
+<span class="sd">        :return: List of strings</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+        <span class="n">category_names</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Get first child</span>
+        <span class="n">category</span><span class="p">,</span> <span class="n">cookie</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tree</span><span class="o">.</span><span class="n">GetFirstChild</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__root</span><span class="p">)</span>
+
+        <span class="c1"># Iterate remaining children</span>
+        <span class="k">while</span> <span class="n">category</span><span class="o">.</span><span class="n">IsOk</span><span class="p">():</span>
+            <span class="n">category_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__tree</span><span class="o">.</span><span class="n">GetItemText</span><span class="p">(</span><span class="n">category</span><span class="p">))</span>
+            <span class="n">category</span><span class="p">,</span> <span class="n">cookie</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tree</span><span class="o">.</span><span class="n">GetNextChild</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__root</span><span class="p">,</span> <span class="n">cookie</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT with &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">category_names</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">category_names</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__get_category_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category_name</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fetches and returns the category ID object of a specifid category</span>
+
+<span class="sd">        :param category_name: category name for which to return the ID object. If the category doesn&#39;t exist, then</span>
+<span class="sd">            this will be None</span>
+<span class="sd">        :return: id object or None</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+        <span class="n">category_id</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">category</span><span class="p">,</span> <span class="n">cookie</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tree</span><span class="o">.</span><span class="n">GetFirstChild</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__root</span><span class="p">)</span>
+
+        <span class="c1"># Iterate categories</span>
+        <span class="k">while</span> <span class="n">category</span><span class="o">.</span><span class="n">IsOk</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tree</span><span class="o">.</span><span class="n">GetItemText</span><span class="p">(</span><span class="n">category</span><span class="p">)</span> <span class="o">!=</span> <span class="n">category_name</span><span class="p">:</span>
+            <span class="n">category</span><span class="p">,</span> <span class="n">cookie</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tree</span><span class="o">.</span><span class="n">GetNextChild</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__root</span><span class="p">,</span> <span class="n">cookie</span><span class="p">)</span>
+
+        <span class="c1"># Check category name</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tree</span><span class="o">.</span><span class="n">GetItemText</span><span class="p">(</span><span class="n">category</span><span class="p">)</span> <span class="o">==</span> <span class="n">category_name</span><span class="p">:</span>
+            <span class="n">category_id</span> <span class="o">=</span> <span class="n">category</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT with &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">category_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">category_id</span>
+
+<div class="viewcode-block" id="PluginTree.get_category_plugin_names"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.SdkGui.PluginTree.get_category_plugin_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_category_plugin_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category_name</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fetches a list of the plugin names under a specific category (root child)</span>
+
+<span class="sd">        :param category_name: The category name of which to get plugin names</span>
+<span class="sd">        :return: A list of the plugin names under the cat</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+        <span class="n">plugin_names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cat_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_category_id</span><span class="p">(</span><span class="n">category_name</span><span class="p">)</span>
+
+        <span class="n">plugin_id</span><span class="p">,</span> <span class="n">cookie</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tree</span><span class="o">.</span><span class="n">GetFirstChild</span><span class="p">(</span><span class="n">cat_id</span><span class="p">)</span>
+
+        <span class="c1"># Iterate plugins</span>
+        <span class="k">while</span> <span class="n">plugin_id</span><span class="o">.</span><span class="n">IsOk</span><span class="p">():</span>
+            <span class="n">plugin_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__tree</span><span class="o">.</span><span class="n">GetItemText</span><span class="p">(</span><span class="n">plugin_id</span><span class="p">))</span>
+            <span class="n">plugin_id</span><span class="p">,</span> <span class="n">cookie</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tree</span><span class="o">.</span><span class="n">GetNextChild</span><span class="p">(</span><span class="n">cat_id</span><span class="p">,</span> <span class="n">cookie</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT with &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">plugin_names</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">plugin_names</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__get_category_plugin_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fetches a list of the plugin ids under a specific category (root child)</span>
+
+<span class="sd">        :param category: The category of which to get plugin ids</span>
+<span class="sd">        :return: A list of the plugin ids under the cat</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="PluginTree.get_current_selection_text"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.SdkGui.PluginTree.get_current_selection_text">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_selection_text</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Gets the text of the currently selected tree item</span>
+
+<span class="sd">        :return: the name string of the currently selected plugin</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="n">selected_plugin_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tree</span><span class="o">.</span><span class="n">GetItemText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__tree</span><span class="o">.</span><span class="n">GetSelection</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT with &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">selected_plugin_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">selected_plugin_name</span></div>
+
+
+<div class="viewcode-block" id="PluginTree.get_current_selection_id"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.SdkGui.PluginTree.get_current_selection_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_selection_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Gets the id of the currently selected tree item</span>
+
+<span class="sd">        :return: treectrl id object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="n">selected_plugin_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tree</span><span class="o">.</span><span class="n">GetSelection</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT with &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">selected_plugin_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">selected_plugin_id</span></div>
+
+
+    <span class="c1">#############</span>
+    <span class="c1">## SETTERS ##</span>
+    <span class="c1">#############</span>
+
+<div class="viewcode-block" id="PluginTree.set_focus_by_id"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.SdkGui.PluginTree.set_focus_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">set_focus_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_id</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sets the tree&#39;s current focus to item specified by ID</span>
+
+<span class="sd">        :param item_id: The ID of the item to focus on</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__tree</span><span class="o">.</span><span class="n">SetFocusedItem</span><span class="p">(</span><span class="n">item_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Sithis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
