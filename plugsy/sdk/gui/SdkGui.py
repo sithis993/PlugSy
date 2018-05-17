@@ -1,5 +1,5 @@
 '''
-PlugSy - SDK Gui - Helper GUI for creating, editing and deleting plugins
+PlugSy - SDK Gui
 '''
 
 # Import libs
@@ -25,7 +25,6 @@ class SdkGui(MainFrame):
     '''
     SDK Gui - Main
     '''
-
 
     def __init__(self):
         '''
@@ -54,7 +53,6 @@ class SdkGui(MainFrame):
     def __update_visuals(self):
         '''
         Apply any post init visual changes
-        @return:
         '''
 
         # Update title
@@ -64,7 +62,6 @@ class SdkGui(MainFrame):
     def __set_events(self):
         '''
         Set GUI event handlers
-        @return:
         '''
 
         # Keyboard shortcut IDs
@@ -87,7 +84,6 @@ class SdkGui(MainFrame):
     def reload_plugins(self):
         '''
         Reloads plugins from specified plugins home directory
-        @return:
         '''
         self.logger.debug("ENTRY")
 
@@ -102,8 +98,8 @@ class SdkGui(MainFrame):
     def __create_new_plugin(self, event):
         '''
         Open Plugin Creation Dialog
-        @param event:
-        @return:
+
+        :param event: wx event object
         '''
         self.logger.debug("ENTRY")
 
@@ -116,7 +112,8 @@ class SdkGui(MainFrame):
     def __delete_plugin(self, event):
         '''
         Open Plugin Creation Deletion
-        @return:
+
+        :param event: wx event object
         '''
         self.logger.debug("ENTRY")
         plugin_name = self.plugins_tree.get_current_selection_text()
@@ -131,7 +128,6 @@ class SdkGui(MainFrame):
     def sync_config_fields(self):
         '''
         Syncs config fields so they are that of the currently selected tree item
-        @return:
         '''
         self.logger.debug("ENTRY")
 
@@ -142,7 +138,6 @@ class SdkGui(MainFrame):
     def clear_config_fields(self):
         '''
         Convenience method to clear all configuration boxes and items and reset to default
-        @return:
         '''
         self.logger.debug(" ENTRY")
 
@@ -156,8 +151,8 @@ class SdkGui(MainFrame):
     def __close(self, event):
         '''
         Event handler method for closing the application
-        @param event:
-        @return:
+
+        :param event: wx event object
         '''
 
         self.Destroy()
@@ -169,8 +164,8 @@ class SdkGui(MainFrame):
     def set_plugins_home(self, plugins_home_dir):
         '''
         Sets the plugins home dir to the specified directory and loads contained plugins
-        @param plugins_home_dir: Absolute path to the plugins home
-        @return:
+
+        :param plugins_home_dir: Absolute path to the plugins home
         '''
         self.__plugins_home_dir = plugins_home_dir
 
@@ -197,8 +192,9 @@ class SdkGui(MainFrame):
 
     def __set_status_bar_message(self, message):
         '''
-        Sets the status bar text to message
-        @param message: The message to set
+        Sets the status bar text to message. Truncates if necessary
+
+        :param message: The message to set in the wx status bar
         '''
         self.logger.debug("ENTRY")
         self.logger.debug("Setting message as '%s'" % message)
@@ -214,7 +210,8 @@ class SdkGui(MainFrame):
     def __set_selected_plugin(self, event):
         '''
         Sets the selected plugin and updates the GUI
-        @return:
+
+        :param event: wx event object
         '''
         self.logger.debug("ENTRY")
 
@@ -246,8 +243,8 @@ class SdkGui(MainFrame):
     def set_log_level(self, log_level):
         '''
         Sets log level
-        @param log_level:
-        @return:
+
+        :param log_level: The log level
         '''
 
         self.__log_level = log_level
@@ -256,8 +253,8 @@ class SdkGui(MainFrame):
     def set_log_path(self, log_path):
         '''
         Sets the log path
-        @param log_path:
-        @return:
+
+        :param log_path: The log file path
         '''
 
         self.__log_path = log_path
@@ -275,7 +272,8 @@ class _PluginsHomeDirDialog(PluginsHomeDirDialog):
     def __init__(self, parent):
         '''
         Constructor
-        @param parent: Parent Window. SDK MainFrame in this case
+
+        :param parent: Parent Window. SDK MainFrame in this case
         '''
         self.__parent = parent
         self.__plugins_home_dir = None
@@ -290,8 +288,7 @@ class _PluginsHomeDirDialog(PluginsHomeDirDialog):
 
     def Show(self):
         '''
-        Shows
-        @return:
+        Shows the dialog
         '''
 
         # Disable Parent Window
@@ -302,8 +299,8 @@ class _PluginsHomeDirDialog(PluginsHomeDirDialog):
     def __update_choice(self, event):
         '''
         Triggered when the Log level choice box is altered. For controlling GUI based upon selection
-        @param event:
-        @return:
+
+        :param event: wx event object
         '''
         log_level = self.LogLevelChoice.GetString(self.LogLevelChoice.GetSelection())
 
@@ -323,8 +320,8 @@ class _PluginsHomeDirDialog(PluginsHomeDirDialog):
     def __cancel(self, event):
         '''
         Bound to cancel Button. Closes entire app
-        @param event:
-        @return:
+
+        :param event: wx event object
         '''
 
         self.__parent.Destroy()
@@ -337,7 +334,6 @@ class _PluginsHomeDirDialog(PluginsHomeDirDialog):
     def __set_events(self):
         '''
         Set events
-        @return:
         '''
 
         self.Bind(wx.EVT_BUTTON, self.__set_plugins_home, self.OkCancelSizerOK)
@@ -348,7 +344,8 @@ class _PluginsHomeDirDialog(PluginsHomeDirDialog):
     def __set_plugins_home(self, event):
         '''
         Sets the plugins home, loads plugins and closes dialog
-        @return:
+
+        :param event: wx event object
         '''
 
         # Validate path
@@ -389,9 +386,9 @@ class _PluginsHomeDirDialog(PluginsHomeDirDialog):
     def __set_status_message(self, message, _type):
         '''
         Sets the status message
-        @param message: The message string to set
-        @param _type: The type of message. should be error or warning
-        @return:
+
+        :param message: The message string to set
+        :param _type: The type of message. should be error or warning
         '''
         message_prefix = ""
 
@@ -408,7 +405,6 @@ class _PluginsHomeDirDialog(PluginsHomeDirDialog):
     def __clear_status_message(self):
         '''
         Clears the status message area
-        @return:
         '''
 
         self.StatusLabel.SetLabel("")
@@ -420,7 +416,6 @@ class _PluginsHomeDirDialog(PluginsHomeDirDialog):
 class _NewPluginDialog(NewPluginDialog, Logger):
     ''''
     New Plugin Dialog box for creating a new plugin
-    @todo: Add debug
     '''
 
     PLUGIN_NAME_REGEX = re.compile(r"^[A-Za-z][A-Za-z_]{2,20}$")
@@ -430,9 +425,10 @@ class _NewPluginDialog(NewPluginDialog, Logger):
     def __init__(self, parent, plugins_home_dir, sdk):
         '''
         Constructor
-        @param plugins_home_dir: Plugins home dir
-        @param parent: Parent object
-        @param sdk: SDK object
+
+        :param parent: Parent object
+        :param plugins_home_dir: Plugins home dir
+        :param sdk: SDK object
         '''
         Logger.__init__(
             self,
@@ -454,9 +450,9 @@ class _NewPluginDialog(NewPluginDialog, Logger):
 
     def __create_new_plugin(self, event):
         '''
-        Save the plugin
-        @param event:
-        @return:
+        Creates the plugin
+
+        :param event: wx event object
         '''
         self.logger.debug("ENTRY")
 
@@ -503,7 +499,8 @@ class _NewPluginDialog(NewPluginDialog, Logger):
     def __cancel(self, event):
         '''
         Cancels plugin creation and re-enables Main GUI
-        @return: 
+
+        :return: wx event object
         '''
         self.logger.debug("ENTRY")
 
@@ -519,7 +516,6 @@ class _NewPluginDialog(NewPluginDialog, Logger):
     def __set_events(self):
         '''
         Bind events
-        @return:
         '''
         self.logger.debug("ENTRY")
 
@@ -536,14 +532,15 @@ class PluginTree(Logger):
     '''
     Represents the wx TreeCtrl for the SDK Plugins. Provides convenience methods
     for getting tree items, adding items to the tree, checking for item presence etc.
-    @todo: Add debug
     '''
 
 
     def __init__(self, tree, loaded_plugins):
         '''
         Constructor
-        @param tree: Handle to the wx TreeCtrl object
+
+        :param tree: Handle to the wx TreeCtrl object
+        :param loaded_plugins: List of currently loaded plugin objects
         '''
         Logger.__init__(
             self,
@@ -567,8 +564,8 @@ class PluginTree(Logger):
     def populate_tree(self, loaded_plugins):
         '''
         Populates the tree ctrl with loaded pluginss
-        @param loaded_plugins: List of loaded plugin objects
-        @return:
+
+        :param loaded_plugins: List of currently loaded plugin objects
         '''
         self.logger.debug("ENTRY")
 
@@ -592,7 +589,6 @@ class PluginTree(Logger):
     def remove_plugin(self):
         '''
         Removes the currently selected plugin item from the tree
-        @return:
         '''
         self.logger.debug("ENTRY")
 
@@ -602,14 +598,16 @@ class PluginTree(Logger):
 
         self.logger.debug("EXIT")
 
+
     #############
     ## GETTERS ##
     #############
 
     def get_category_names(self):
         '''
-        Fetches a list of the neames of categories in the Plugin tree ctrl
-        @return: List of strings
+        Fetches a list of the names of categories in the Plugin tree ctrl
+
+        :return: List of strings
         '''
         self.logger.debug("ENTRY")
         category_names = []
@@ -629,9 +627,10 @@ class PluginTree(Logger):
     def __get_category_id(self, category_name):
         '''
         Fetches and returns the category ID object of a specifid category
-        @param category: category name for which to return the ID object. If the category doesn't exist, then this will
-        be None
-        @return: id object or None
+
+        :param category_name: category name for which to return the ID object. If the category doesn't exist, then
+            this will be None
+        :return: id object or None
         '''
         self.logger.debug("ENTRY")
         category_id = None
@@ -652,8 +651,9 @@ class PluginTree(Logger):
     def get_category_plugin_names(self, category_name):
         '''
         Fetches a list of the plugin names under a specific category (root child)
-        @param category_name: The category name of which to get plugin names
-        @return: A list of the plugin names under the cat
+
+        :param category_name: The category name of which to get plugin names
+        :return: A list of the plugin names under the cat
         '''
         self.logger.debug("ENTRY")
         plugin_names = []
@@ -673,18 +673,21 @@ class PluginTree(Logger):
     def __get_category_plugin_ids(self, category):
         '''
         Fetches a list of the plugin ids under a specific category (root child)
-        @param category: The category of which to get plugin ids
-        @return: A list of the plugin ids under the cat
+
+        :param category: The category of which to get plugin ids
+        :return: A list of the plugin ids under the cat
         '''
         self.logger.debug("ENTRY")
 
         pass
         self.logger.debug("EXIT")
 
+
     def get_current_selection_text(self):
         '''
         Gets the text of the currently selected tree item
-        @return: string
+
+        :return: the name string of the currently selected plugin
         '''
         self.logger.debug("ENTRY")
 
@@ -697,7 +700,8 @@ class PluginTree(Logger):
     def get_current_selection_id(self):
         '''
         Gets the id of the currently selected tree item
-        @return: id object
+
+        :return: treectrl id object
         '''
         self.logger.debug("ENTRY")
 
@@ -706,16 +710,16 @@ class PluginTree(Logger):
         self.logger.debug("EXIT with '%s'" % selected_plugin_id)
         return selected_plugin_id
 
+
     #############
     ## SETTERS ##
     #############
 
-
     def set_focus_by_id(self, item_id):
         '''
         Sets the tree's current focus to item specified by ID
-        @param item_id: The ID of the item to focus on
-        @return:
+
+        :param item_id: The ID of the item to focus on
         '''
         self.logger.debug("ENTRY")
 
