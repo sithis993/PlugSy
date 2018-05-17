@@ -207,3 +207,23 @@ class PluginDoesNotExist(Exception):
         Exception.__init__(self, message)
 
 
+#################################################
+# SubpackageImportError
+#################################################
+class SubpackageImportError(Exception):
+    '''
+    To be raised in the event of a fatal subpackage import (core, addon)
+    '''
+
+    def __init__(self, subpackage, import_exception):
+        '''
+        Constructor
+        @param subpackage: The name of the failed subpackage
+        @param import_exception: The actual import exception
+        '''
+        message = "A fatal error occured whilst attempting to import the subpackage '%s': %s" % (
+            subpackage, import_exception
+        )
+        Exception.__init__(self, message)
+
+

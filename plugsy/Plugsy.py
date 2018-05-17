@@ -267,8 +267,10 @@ class Plugsy(Logger):
         try:
             package_import = importlib.import_module(package_name)
             self.logger.debug("Subpackage '%s' successfully imported" % package_name)
-        except Exception:
+        except Exception as ix:
             self.logger.error("Could not import subpackage '%s'" % package_name)
+            if "core" in package_name.lower():
+                raise SubpackageImportError(package_name, ix)
             return available_plugins
 
         for member in inspect.getmembers(package_import):
