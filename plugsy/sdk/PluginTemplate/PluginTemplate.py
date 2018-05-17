@@ -4,10 +4,10 @@ Plugsy - PluginTemplate
 '''
 
 #Import libs
-from plugsy.AbstractPlugin import AbstractPlugin
 import time
 
-# Import any package content
+# Import Package and PlugSy Modules
+from plugsy.AbstractPlugin import AbstractPlugin
 
 class PluginTemplate(AbstractPlugin):
     '''
@@ -26,11 +26,11 @@ class PluginTemplate(AbstractPlugin):
         @summary: Main run method.
         @return:
         '''
-        self.logger.debug("run(): ENTRY!")
+        self.logger.debug("ENTRY!")
         self.logger.info("PluginTemplate running!")
 
         while not self.stop_event.is_set():
             pass
 
         self.logger.info("PluginTemplate stopping!")
-        self.logger.debug("run(): EXIT!")
+        self.logger.debug("EXIT!")
