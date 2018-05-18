@@ -1,0 +1,314 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>plugsy.Exceptions &#8212; PlugSy  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for plugsy.Exceptions</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Plugsy Package Exceptions</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<span class="c1">#################################################</span>
+<span class="c1"># InvalidPlugin</span>
+<span class="c1">#################################################</span>
+<div class="viewcode-block" id="InvalidPlugin"><a class="viewcode-back" href="../../plugsy.html#plugsy.Exceptions.InvalidPlugin">[docs]</a><span class="k">class</span> <span class="nc">InvalidPlugin</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    To be raised when trying to import a broken/invalid Plugsy plugin</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_name</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param plugin_name: The name of the plugin at fault</span>
+<span class="sd">        :param message: Exception message</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Could not load plugin: </span><span class="si">{}</span><span class="s2">. Check that the plugin is a valid instance of AbstractPlugin&quot;</span>\
+            <span class="s2">&quot; and that super() is called&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plugin_name</span> <span class="o">=</span> <span class="n">plugin_name</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">InvalidPlugin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span></div>
+
+<span class="c1">#################################################</span>
+<span class="c1"># InvalidDependency</span>
+<span class="c1">#################################################</span>
+<div class="viewcode-block" id="InvalidDependency"><a class="viewcode-back" href="../../plugsy.html#plugsy.Exceptions.InvalidDependency">[docs]</a><span class="k">class</span> <span class="nc">InvalidDependency</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    To be raised in the event of an invalid plugin dependency, such as a core plugin depending on an addon plugin</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param message: Exception message</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">InvalidDependency</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span></div>
+
+
+<span class="c1">#################################################</span>
+<span class="c1"># CorePluginCircularDependency</span>
+<span class="c1">#################################################</span>
+<div class="viewcode-block" id="CorePluginCircularDependency"><a class="viewcode-back" href="../../plugsy.html#plugsy.Exceptions.CorePluginCircularDependency">[docs]</a><span class="k">class</span> <span class="nc">CorePluginCircularDependency</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    To be raised in the event of a Core plugin Circular Dependency</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param message: Exception message</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CorePluginCircularDependency</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span></div>
+
+<span class="c1">#################################################</span>
+<span class="c1"># AddonPluginCircularDependency</span>
+<span class="c1">#################################################</span>
+<div class="viewcode-block" id="AddonPluginCircularDependency"><a class="viewcode-back" href="../../plugsy.html#plugsy.Exceptions.AddonPluginCircularDependency">[docs]</a><span class="k">class</span> <span class="nc">AddonPluginCircularDependency</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    To be raised in the event of an Addon plugin Circular Dependency</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param message: Exception message</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AddonPluginCircularDependency</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span></div>
+
+
+<span class="c1">#################################################</span>
+<span class="c1"># Plugin Circular Dependency</span>
+<span class="c1">#################################################</span>
+<div class="viewcode-block" id="PluginCircularDependency"><a class="viewcode-back" href="../../plugsy.html#plugsy.Exceptions.PluginCircularDependency">[docs]</a><span class="k">class</span> <span class="nc">PluginCircularDependency</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    To be raised in the event of plugin Circular Dependency</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param message: Exception message</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Circular Dependency error encountered whilst loading plugins&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PluginCircularDependency</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span></div>
+
+
+<span class="c1">#################################################</span>
+<span class="c1"># MissingDependencyError</span>
+<span class="c1">#################################################</span>
+<div class="viewcode-block" id="MissingDependencyError"><a class="viewcode-back" href="../../plugsy.html#plugsy.Exceptions.MissingDependencyError">[docs]</a><span class="k">class</span> <span class="nc">MissingDependencyError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    To be raised in the event of a missing plugin dependency</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin</span><span class="p">,</span> <span class="n">dependency</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param plugin: Plugin object</span>
+<span class="sd">        :param dependency: Plugin object&#39;s failed dependency</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">plugin</span><span class="o">.</span><span class="n">is_core_plugin</span><span class="p">():</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Core plugin &#39;</span><span class="si">%s</span><span class="s2">&#39; has missing or unresolvable dependency &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">(),</span>
+                <span class="n">dependency</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Addon plugin &#39;</span><span class="si">%s</span><span class="s2">&#39; has missing or unresolvable dependency &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">(),</span>
+                <span class="n">dependency</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MissingDependencyError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span></div>
+
+<span class="c1">#################################################</span>
+<span class="c1"># DependentRunning</span>
+<span class="c1">#################################################</span>
+<div class="viewcode-block" id="DependentRunning"><a class="viewcode-back" href="../../plugsy.html#plugsy.Exceptions.DependentRunning">[docs]</a><span class="k">class</span> <span class="nc">DependentRunning</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    To be raised if a plugin is being deactivated, but there are other plugins running</span>
+<span class="sd">    which depend upon this plugin</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin</span><span class="p">,</span> <span class="n">dependent</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param plugin: The Plugin object being deactivated</span>
+<span class="sd">        :param dependent: The dependent plugin object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;plugin &#39;</span><span class="si">%s</span><span class="s2">&#39; is depended upon by plugin &#39;</span><span class="si">%s</span><span class="s2">&#39; and could not be deactivated&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">(),</span>
+            <span class="n">dependent</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DependentRunning</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span></div>
+
+
+<span class="c1">#################################################</span>
+<span class="c1"># AddonPluginsStillRunning</span>
+<span class="c1">#################################################</span>
+<div class="viewcode-block" id="AddonPluginsStillRunning"><a class="viewcode-back" href="../../plugsy.html#plugsy.Exceptions.AddonPluginsStillRunning">[docs]</a><span class="k">class</span> <span class="nc">AddonPluginsStillRunning</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    To be raised if trying to deactive a core plugin but there are still add on plugins running</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param plugin: The Plugin object being deactivated</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Cannot deactivate core plugin &#39;</span><span class="si">%s</span><span class="s2">&#39; whilst addon plugins are still running&quot;</span> <span class="o">%</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AddonPluginsStillRunning</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span></div>
+
+
+<span class="c1">#################################################</span>
+<span class="c1"># PluginDoesNotExist</span>
+<span class="c1">#################################################</span>
+<div class="viewcode-block" id="PluginDoesNotExist"><a class="viewcode-back" href="../../plugsy.html#plugsy.Exceptions.PluginDoesNotExist">[docs]</a><span class="k">class</span> <span class="nc">PluginDoesNotExist</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    To be raised if a plugin does not exist</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param name: The name of the plugin</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;The plugin &#39;</span><span class="si">%s</span><span class="s2">&#39; does not exist&quot;</span> <span class="o">%</span> <span class="n">name</span>
+        <span class="ne">Exception</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></div>
+
+
+<span class="c1">#################################################</span>
+<span class="c1"># SubpackageImportError</span>
+<span class="c1">#################################################</span>
+<div class="viewcode-block" id="SubpackageImportError"><a class="viewcode-back" href="../../plugsy.html#plugsy.Exceptions.SubpackageImportError">[docs]</a><span class="k">class</span> <span class="nc">SubpackageImportError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    To be raised in the event of a fatal subpackage import (core, addon)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subpackage</span><span class="p">,</span> <span class="n">import_exception</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param subpackage: The name of the failed subpackage</span>
+<span class="sd">        :param import_exception: The actual import exception</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;A fatal error occured whilst attempting to import the subpackage &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">subpackage</span><span class="p">,</span> <span class="n">import_exception</span>
+        <span class="p">)</span>
+        <span class="ne">Exception</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></div>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Sithis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

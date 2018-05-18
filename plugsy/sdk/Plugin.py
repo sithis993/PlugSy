@@ -1,5 +1,5 @@
 '''
-Plugsy SDK - Plugin Class - Holds methods for creating, deleting and editing a plugiin
+Plugin Class - Holds methods for creating, deleting and editing a plugiin
 '''
 
 # Import libs
@@ -23,8 +23,10 @@ class Plugin(Logger):
     def __init__(self, plugins_dir_path, name, plugin_type=None):
         '''
         Constructor
-        @param plugins_dir_path: Path of the target plugins folder
-        @param name: The name of the plugin object
+
+        :param plugins_dir_path: Path of the target plugins folder
+        :param name: The name of the plugin object
+        :param plugin_type: Optional plugin type. Used only when a pluign is being created
         '''
         Logger.__init__(
             self,
@@ -56,7 +58,6 @@ class Plugin(Logger):
     def create(self):
         '''
         Creates the plugin
-        @return:
         '''
         self.logger.debug("ENTRY")
 
@@ -96,7 +97,8 @@ class Plugin(Logger):
     def does_plugin_exist(self):
         '''
         Checks if the plugin exists
-        @return: True if the plugin exists, otherwise False
+
+        :return: True if the plugin exists, otherwise False
         '''
         self.logger.debug("ENTRY")
 
@@ -119,7 +121,6 @@ class Plugin(Logger):
     def delete(self):
         '''
         Deletes the plugin
-        @return:
         '''
         self.logger.debug("ENTRY")
 
@@ -151,7 +152,6 @@ class Plugin(Logger):
     def __create_init(self):
         '''
         Creates the Plugin __init__.py
-        @return:
         '''
         self.logger.debug("ENTRY")
         template_path = os.path.join(os.path.dirname(__file__), self.TEMPLATE_PLUGIN_NAME, "__init__.py")
@@ -170,7 +170,6 @@ class Plugin(Logger):
     def __create_config(self):
         '''
         Create the plugins Config.py
-        @return:
         '''
         self.logger.debug("ENTRY")
         template_path = os.path.join(os.path.dirname(__file__), self.TEMPLATE_PLUGIN_NAME, "Config.py")
@@ -189,7 +188,6 @@ class Plugin(Logger):
     def __create_class_file(self):
         '''
         Creates the main class file of the Plugin
-        @return:
         '''
         self.logger.debug("ENTRY")
         template_path = os.path.join(os.path.dirname(__file__), self.TEMPLATE_PLUGIN_NAME, "%s.py" % self.TEMPLATE_PLUGIN_NAME)
@@ -207,7 +205,6 @@ class Plugin(Logger):
     def __load_plugin_config(self):
         '''
         Loads the plugin config contents
-        @return:
         '''
         self.logger.debug("ENTRY")
 
@@ -234,7 +231,8 @@ class Plugin(Logger):
     def get_name(self):
         '''
         Get's plugin name
-        @return: Plugin name
+
+        :return: Plugin name
         '''
         self.logger.debug("ENTRY")
         self.logger.debug("EXIT")
@@ -243,7 +241,8 @@ class Plugin(Logger):
     def get_description(self):
         '''
         Get's plugin description
-        @return: Plugin description
+
+        :return: Plugin description
         '''
         self.logger.debug("ENTRY")
         self.logger.debug("EXIT")
@@ -252,7 +251,8 @@ class Plugin(Logger):
     def get_version(self):
         '''
         Get's plugin version
-        @return: Plugin version
+
+        :return: Plugin version
         '''
         self.logger.debug("ENTRY")
         self.logger.debug("EXIT")
@@ -261,7 +261,8 @@ class Plugin(Logger):
     def get_author(self):
         '''
         Get's plugin author
-        @return: Plugin author
+
+        :return: Plugin author
         '''
         self.logger.debug("ENTRY")
         self.logger.debug("EXIT")
@@ -270,7 +271,8 @@ class Plugin(Logger):
     def get_dependencies(self):
         '''
         Get's plugin dependencies
-        @return: Plugin dependencies
+
+        :return: Plugin dependencies
         '''
         self.logger.debug("ENTRY")
         self.logger.debug("EXIT")
@@ -280,7 +282,8 @@ class Plugin(Logger):
     def get_home(self):
         '''
         Gets the plugin's home dir path
-        @return: Home dir
+
+        :return: Home dir
         '''
         self.logger.debug("ENTRY")
         self.logger.debug("EXIT")
@@ -289,7 +292,8 @@ class Plugin(Logger):
     def is_core_plugin(self):
         '''
         Get's plugin core status
-        @return: True or False
+
+        :return: True or False
         '''
         self.logger.debug("ENTRY")
         self.logger.debug("EXIT")
@@ -302,8 +306,8 @@ class Plugin(Logger):
     def set_core_plugin(self, core):
         '''
         For setting the plugin as core or not core
-        @param core: True of False
-        @return:
+
+        :param core: True of False
         '''
         self.logger.debug("ENTRY")
         self.logger.debug("Setting plugin as core: %s" % core)
@@ -322,4 +326,3 @@ class Plugin(Logger):
         self.logger.debug("Plugin home set to '%s'" % self.__home)
 
         self.logger.debug("EXIT")
-

@@ -1,5 +1,5 @@
 '''
-Plugsy SDK - Exceptions
+SDK - Exceptions
 '''
 
 class PluginsHomeNotFound(Exception):
@@ -8,6 +8,11 @@ class PluginsHomeNotFound(Exception):
     '''
 
     def __init__(self, plugins_home_path):
+        '''
+        Constructor
+
+        :param plugins_home_path: The path to the plugins home dir
+        '''
         message = "The plugins home path at '%s' could not be found, or is not a valid directory" % plugins_home_path
         Exception.__init__(self, message)
 
@@ -18,6 +23,11 @@ class PluginAlreadyExists(Exception):
     '''
 
     def __init__(self, plugin_name):
+        '''
+        Constructor
+
+        :param plugin_name: The name of the pluign
+        '''
         message = "The plugin '%s' already exists" % plugin_name
         Exception.__init__(self, message)
 
@@ -29,6 +39,12 @@ class PluginCreationFailure(Exception):
     '''
 
     def __init__(self, name, message):
+        '''
+        Constructor
+
+        :param name: The name of the pluigin being created
+        :param message: The causation
+        '''
         message = "The plugin '%s' could not be created: %s" % (name, message)
         Exception.__init__(self, message)
 
@@ -36,10 +52,12 @@ class PluginCreationFailure(Exception):
 class PluginTypeNotSet(Exception):
     '''
     To be raised if the user is trying to create a plugin without setting it as core or addon
-    @todo Test
     '''
 
     def __init__(self):
+        '''
+        Constructor
+        '''
         message = "The plugin type must be set before calling create()"
         Exception.__init__(self, message)
 
@@ -50,6 +68,12 @@ class BadPluginName(Exception):
     '''
 
     def __init__(self, plugin_name):
+        '''
+
+        Constructor
+
+        :param plugin_name: Plugin name
+        '''
         message = "The specified plugin name is invalid: %s" % plugin_name
         Exception.__init__(self, message)
 
@@ -60,6 +84,11 @@ class BadPluginType(Exception):
     '''
 
     def __init__(self, plugin_type):
+        '''
+        Constructor
+
+        :param plugin_type: The plugin type
+        '''
         message = "The specified plugin type is invalid: %s" % plugin_type
         Exception.__init__(self, message)
 

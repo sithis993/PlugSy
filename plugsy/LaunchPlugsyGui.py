@@ -16,6 +16,9 @@ except ImportError as ix:
 from plugsy.sdk.gui import SdkGui
 
 def Go():
+    '''
+    Initiates and launches the PlugSy GUI
+    '''
     app = wx.App()
     gui = SdkGui()
     gui.Show()
