@@ -1,4 +1,4 @@
-PlugSy is a cross-platform hreaded plugin framework and SDK for Python. With PlugSy, each plugin runs in a separate
+PlugSy is a cross-platform threaded plugin framework and SDK for Python. With PlugSy, each plugin runs in a separate
 thread and has a handle to the global PlugSy plugin management object, allowing plugins to communicate and interact with
 each other. Whilst there are numerous existing Python Plugin frameworks, it's this built-in support for threading that
 makes PlugSy slightly different.
