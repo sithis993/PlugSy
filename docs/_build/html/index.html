@@ -31,17 +31,74 @@
             
   <div class="section" id="plugsy">
 <h1>PlugSy<a class="headerlink" href="#plugsy" title="Permalink to this headline">¶</a></h1>
-<p>PlugSy is a thread plugin framework for Python</p>
+<div class="section" id="about">
+<h2>About<a class="headerlink" href="#about" title="Permalink to this headline">¶</a></h2>
+<p>PlugSy is a cross-platform hreaded plugin framework and SDK for Python. With PlugSy, each plugin runs in a separate
+thread and has a handle to the global PlugSy plugin management object, allowing plugins to communicate and interact with
+each other. Whilst there are numerous existing Python Plugin frameworks, it’s this built-in support for threading that
+makes PlugSy slightly different.</p>
+</div>
+<div class="section" id="links">
+<h2>Links<a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li>home: <a class="reference external" href="https://github.com/sithis993/PlugSy">https://github.com/sithis993/PlugSy</a></li>
+<li>docs: <a class="reference external" href="http://plugsy.readthedocs.io">http://plugsy.readthedocs.io</a></li>
+<li>PyPI: <a class="reference external" href="https://pypi.org/project/PlugSy/">https://pypi.org/project/PlugSy/</a></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="project-goal">
+<h2>Project Goal<a class="headerlink" href="#project-goal" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><blockquote>
+<div>The goal of this project is to aid with the rapid development of Python applications of varying size and complexity.
+PlugSy tries to make it easy for developers to create small modular components (plugins) that interact and
+combine to form the basis of a complete software piece. By keeping extensibility and modularity in mind, PlugSy
+allows you to move from a basic single-plugin application, to a large application with a multitude of complex
+plugins, at your own pace.</div></blockquote>
+<p><a class="reference external" href="http://plugsy.readthedocs.io/en/latest/?badge=latest"><img alt="Documentation Status" src="https://readthedocs.org/projects/plugsy/badge/?version=latest" /></a></p>
+</div></blockquote>
+</div>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li>Separation of plugins into core and addon packages</li>
+<li>Cross-platform support</li>
+<li>Built-in logging support for the PlugSy manager and each individual plugin</li>
+<li>SDK GUI for quickly creating and deleting plugins</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="roadmap">
+<h2>Roadmap<a class="headerlink" href="#roadmap" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="first docutils">
+<dt>PyInstaller integration and executable production</dt>
+<dd><ul class="first last">
+<li>Combining PlugSy and any developed plugins into a PyInstaller executable via SDK and SDK GUI</li>
+<li>Option to add a Windows service wrapper</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>Further support for additional Python versions</li>
+<li>Build Topological Sorting functionality and Remove toposort dependency</li>
+</ul>
+</div></blockquote>
 <div class="toctree-wrapper compound">
 </div>
 </div>
 <div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
 <li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
 <li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
 </ul>
+</div>
 </div>
 
 
@@ -52,8 +109,15 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">PlugSy</a></li>
+<li><a class="reference internal" href="#">PlugSy</a><ul>
+<li><a class="reference internal" href="#about">About</a></li>
+<li><a class="reference internal" href="#links">Links</a></li>
+<li><a class="reference internal" href="#project-goal">Project Goal</a></li>
+<li><a class="reference internal" href="#features">Features</a></li>
+<li><a class="reference internal" href="#roadmap">Roadmap</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
