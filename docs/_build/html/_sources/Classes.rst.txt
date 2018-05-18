@@ -1,0 +1,4 @@
+Classes
+================
+
+.. automodule:: plugsy.Plugsy

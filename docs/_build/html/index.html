@@ -85,7 +85,14 @@
 <li><a class="reference internal" href="#project-goal">Project Goal</a></li>
 <li><a class="reference internal" href="#features">Features</a></li>
 <li><a class="reference internal" href="#roadmap">Roadmap</a></li>
-<li><a class="reference internal" href="#example-usage">Example Usage</a></li>
+<li><a class="reference internal" href="#similar-projects">Similar Projects</a></li>
+<li><a class="reference internal" href="#example-usage">Example Usage</a><ul>
+<li><a class="reference internal" href="#id1">PlugSy</a></li>
+<li><a class="reference internal" href="#sdk">SDK</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#dependencies">Dependencies</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 </li>
@@ -212,8 +219,19 @@ plugins, at your own pace.</div></blockquote>
 </ul>
 </div></blockquote>
 </div>
+<div class="section" id="similar-projects">
+<h2>Similar Projects<a class="headerlink" href="#similar-projects" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li>PluginBase: <a class="reference external" href="http://pluginbase.pocoo.org/">http://pluginbase.pocoo.org/</a></li>
+<li>Yapsy: <a class="reference external" href="http://yapsy.sourceforge.net/">http://yapsy.sourceforge.net/</a></li>
+</ul>
+</div></blockquote>
+</div>
 <div class="section" id="example-usage">
 <h2>Example Usage<a class="headerlink" href="#example-usage" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>PlugSy<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>Initiating PlugSy</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">plugsy</span> <span class="k">import</span> <span class="n">Plugsy</span>
 
@@ -246,6 +264,43 @@ plugins, at your own pace.</div></blockquote>
 <span class="n">some_data</span> <span class="o">=</span> <span class="n">first_plugin</span><span class="o">.</span><span class="n">get_some_data</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="sdk">
+<h3>SDK<a class="headerlink" href="#sdk" title="Permalink to this headline">¶</a></h3>
+<p>Initiating the SDK</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">plugsy.sdk.Sdk</span> <span class="k">import</span> <span class="n">Sdk</span>
+
+<span class="c1"># Pass in path to directory containing plugins (or path to an empty dir)</span>
+<span class="n">sdk</span> <span class="o">=</span> <span class="n">Sdk</span><span class="p">(</span><span class="n">plugins_home_path</span><span class="o">=</span><span class="s2">&quot;.</span><span class="se">\\</span><span class="s2">plugins&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Creating a new plugin</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pass in the plugin type (core or addon) and plugin name</span>
+<span class="n">sdk</span><span class="o">.</span><span class="n">create_plugin</span><span class="p">(</span><span class="n">plugin_type</span><span class="o">=</span><span class="s2">&quot;core&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyNewPlugin&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Deleting a plugin</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sdk</span><span class="o">.</span><span class="n">delete_plugin</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyNewPlugin&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Installation of PlugSy is simple using Pip:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">plugsy</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li>toposort: (1.5) <a class="reference external" href="https://pypi.org/project/toposort/">https://pypi.org/project/toposort/</a></li>
+<li>*wxPython (4.0.1): <a class="reference external" href="https://pypi.org/project/wxPython/#description">https://pypi.org/project/wxPython/#description</a></li>
+</ul>
+</div></blockquote>
+<p>*wxPython is only required if you’re running Windows and want to use the SDK GUI</p>
 <div class="toctree-wrapper compound">
 </div>
 </div>
