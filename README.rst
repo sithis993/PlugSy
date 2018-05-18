@@ -3,6 +3,10 @@ thread and has a handle to the global PlugSy plugin management object, allowing 
 each other. Whilst there are numerous existing Python Plugin frameworks, it's this built-in support for threading that
 makes PlugSy slightly different.
 
+
+ |Documentation|
+
+
 Links
 ==============
  * home: https://github.com/sithis993/PlugSy
@@ -17,8 +21,6 @@ Project Goal
     combine to form the basis of a complete software piece. By keeping extensibility and modularity in mind, PlugSy
     allows you to move from a basic single-plugin application, to a large application with a multitude of complex
     plugins, at your own pace.
-
- |Documentation|
 
 Features
 ==============
