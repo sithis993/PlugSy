@@ -38,6 +38,48 @@ Roadmap
     * Build Topological Sorting functionality and Remove toposort dependency
 
 
+Example Usage
+================
+
+Initiating PlugSy
+::
+
+    from plugsy import Plugsy
+
+    plugsy = Plugsy()
+
+Activating all existing plugins
+::
+
+    plugsy.activate_plugins()
+
+Activating specific plugins
+::
+
+    plugsy.activate_plugins(["MainPlugin", "FirstPlugin", "FifthPlugin"])
+
+Deactivating all plugins
+::
+
+    plugsy.deactivate_plugins()
+
+Deactivating specific plugins
+::
+
+    plugsy.deactivate_plugins(["MainPlugin", "FirstPlugin", "FifthPlugin"])
+
+Interacting with plugin objects
+::
+
+    main_plugin = plugsy.get_plugin("MainPlugin")
+    main_plugin.do_something()
+    main_plugin.do_something_else()
+
+    first_plugin = plugsy.get_plugin("FirstPlugin")
+    first_plugin.take_an_action("some_action")
+    some_data = first_plugin.get_some_data()
+
+
 .. |Documentation| image:: https://readthedocs.org/projects/plugsy/badge/?version=latest
     :target: http://plugsy.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status

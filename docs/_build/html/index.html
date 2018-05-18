@@ -85,6 +85,7 @@
 <li><a class="reference internal" href="#project-goal">Project Goal</a></li>
 <li><a class="reference internal" href="#features">Features</a></li>
 <li><a class="reference internal" href="#roadmap">Roadmap</a></li>
+<li><a class="reference internal" href="#example-usage">Example Usage</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 </li>
@@ -210,6 +211,41 @@ plugins, at your own pace.</div></blockquote>
 <li>Build Topological Sorting functionality and Remove toposort dependency</li>
 </ul>
 </div></blockquote>
+</div>
+<div class="section" id="example-usage">
+<h2>Example Usage<a class="headerlink" href="#example-usage" title="Permalink to this headline">¶</a></h2>
+<p>Initiating PlugSy</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">plugsy</span> <span class="k">import</span> <span class="n">Plugsy</span>
+
+<span class="n">plugsy</span> <span class="o">=</span> <span class="n">Plugsy</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Activating all existing plugins</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plugsy</span><span class="o">.</span><span class="n">activate_plugins</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Activating specific plugins</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plugsy</span><span class="o">.</span><span class="n">activate_plugins</span><span class="p">([</span><span class="s2">&quot;MainPlugin&quot;</span><span class="p">,</span> <span class="s2">&quot;FirstPlugin&quot;</span><span class="p">,</span> <span class="s2">&quot;FifthPlugin&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Deactivating all plugins</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plugsy</span><span class="o">.</span><span class="n">deactivate_plugins</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Deactivating specific plugins</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plugsy</span><span class="o">.</span><span class="n">deactivate_plugins</span><span class="p">([</span><span class="s2">&quot;MainPlugin&quot;</span><span class="p">,</span> <span class="s2">&quot;FirstPlugin&quot;</span><span class="p">,</span> <span class="s2">&quot;FifthPlugin&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Interacting with plugin objects</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">main_plugin</span> <span class="o">=</span> <span class="n">plugsy</span><span class="o">.</span><span class="n">get_plugin</span><span class="p">(</span><span class="s2">&quot;MainPlugin&quot;</span><span class="p">)</span>
+<span class="n">main_plugin</span><span class="o">.</span><span class="n">do_something</span><span class="p">()</span>
+<span class="n">main_plugin</span><span class="o">.</span><span class="n">do_something_else</span><span class="p">()</span>
+
+<span class="n">first_plugin</span> <span class="o">=</span> <span class="n">plugsy</span><span class="o">.</span><span class="n">get_plugin</span><span class="p">(</span><span class="s2">&quot;FirstPlugin&quot;</span><span class="p">)</span>
+<span class="n">first_plugin</span><span class="o">.</span><span class="n">take_an_action</span><span class="p">(</span><span class="s2">&quot;some_action&quot;</span><span class="p">)</span>
+<span class="n">some_data</span> <span class="o">=</span> <span class="n">first_plugin</span><span class="o">.</span><span class="n">get_some_data</span><span class="p">()</span>
+</pre></div>
+</div>
 <div class="toctree-wrapper compound">
 </div>
 </div>
