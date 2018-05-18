@@ -1,6 +1,5 @@
 '''
-@summary: Plugsy - Exceptions
-:@author: MLS
+Plugsy Package Exceptions
 '''
 
 
@@ -9,14 +8,15 @@
 #################################################
 class InvalidPlugin(Exception):
     '''
-    @summary: To be raised when trying to import a broken/invalid Plugsy plugin
+    To be raised when trying to import a broken/invalid Plugsy plugin
     '''
 
     def __init__(self, plugin_name, message):
         '''
         Constructor
-        @param plugin_name: The name of the plugin at fault
-        @param message: Exception message
+
+        :param plugin_name: The name of the plugin at fault
+        :param message: Exception message
         '''
         self.message = "Could not load plugin: {}. Check that the plugin is a valid instance of AbstractPlugin"\
             " and that super() is called".format(message)
@@ -33,14 +33,14 @@ class InvalidPlugin(Exception):
 #################################################
 class InvalidDependency(Exception):
     '''
-    @summary: To be raised in the event of an invalid plugin dependency, such as
-    a core plugin depending on an addon plugin
+    To be raised in the event of an invalid plugin dependency, such as a core plugin depending on an addon plugin
     '''
 
     def __init__(self, message):
         '''
         Constructor
-        @param message: Exception message
+
+        :param message: Exception message
         '''
         self.message = message
         super(InvalidDependency, self).__init__(message)
@@ -55,13 +55,14 @@ class InvalidDependency(Exception):
 #################################################
 class CorePluginCircularDependency(Exception):
     '''
-    @summary: To be raised in the event of a Core plugin Circular Dependency
+    To be raised in the event of a Core plugin Circular Dependency
     '''
 
     def __init__(self, message):
         '''
         Constructor
-        @param message: Exception message
+
+        :param message: Exception message
         '''
         self.message = message
         super(CorePluginCircularDependency, self).__init__(message)
@@ -75,13 +76,14 @@ class CorePluginCircularDependency(Exception):
 #################################################
 class AddonPluginCircularDependency(Exception):
     '''
-    @summary: To be raised in the event of an Addon plugin Circular Dependency
+    To be raised in the event of an Addon plugin Circular Dependency
     '''
 
     def __init__(self, message):
         '''
         Constructor
-        @param message: Exception message
+
+        :param message: Exception message
         '''
         self.message = message
         super(AddonPluginCircularDependency, self).__init__(message)
@@ -96,13 +98,14 @@ class AddonPluginCircularDependency(Exception):
 #################################################
 class PluginCircularDependency(Exception):
     '''
-    @summary: To be raised in the event of plugin Circular Dependency
+    To be raised in the event of plugin Circular Dependency
     '''
 
     def __init__(self):
         '''
         Constructor
-        @param message: Exception message
+
+        :param message: Exception message
         '''
         self.message = "Circular Dependency error encountered whilst loading plugins"
         super(PluginCircularDependency, self).__init__(self.message)
@@ -117,14 +120,15 @@ class PluginCircularDependency(Exception):
 #################################################
 class MissingDependencyError(Exception):
     '''
-    @summary: To be raised in the event of a missing plugin dependency
+    To be raised in the event of a missing plugin dependency
     '''
 
     def __init__(self, plugin, dependency):
         '''
         Constructor
-        @param plugin: Plugin object
-        @param dependency: Plugin object's failed dependency
+
+        :param plugin: Plugin object
+        :param dependency: Plugin object's failed dependency
         '''
         if plugin.is_core_plugin():
             message = "Core plugin '%s' has missing or unresolvable dependency '%s'" % (
@@ -148,15 +152,16 @@ class MissingDependencyError(Exception):
 #################################################
 class DependentRunning(Exception):
     '''
-    @summary: To be raised if a plugin is being deactivated, but there are other plugins running
+    To be raised if a plugin is being deactivated, but there are other plugins running
     which depend upon this plugin
     '''
 
     def __init__(self, plugin, dependent):
         '''
         Constructor
-        @param plugin: The Plugin object being deactivated
-        @param dependent: The dependent plugin object
+
+        :param plugin: The Plugin object being deactivated
+        :param dependent: The dependent plugin object
         '''
         self.message = "plugin '%s' is depended upon by plugin '%s' and could not be deactivated" % (
             plugin.get_name(),
@@ -174,13 +179,14 @@ class DependentRunning(Exception):
 #################################################
 class AddonPluginsStillRunning(Exception):
     '''
-    @summary: To be raised if trying to deactive a core plugin but there are still add on plugins running
+    To be raised if trying to deactive a core plugin but there are still add on plugins running
     '''
 
     def __init__(self, plugin):
         '''
         Constructor
-        @param plugin: The Plugin object being deactivated
+
+        :param plugin: The Plugin object being deactivated
         '''
         self.message = "Cannot deactivate core plugin '%s' whilst addon plugins are still running" % plugin.get_name()
         super(AddonPluginsStillRunning, self).__init__(self.message)
@@ -201,7 +207,8 @@ class PluginDoesNotExist(Exception):
     def __init__(self, name):
         '''
         Constructor
-        @param name: The name of the plugin
+
+        :param name: The name of the plugin
         '''
         message = "The plugin '%s' does not exist" % name
         Exception.__init__(self, message)
@@ -218,8 +225,9 @@ class SubpackageImportError(Exception):
     def __init__(self, subpackage, import_exception):
         '''
         Constructor
-        @param subpackage: The name of the failed subpackage
-        @param import_exception: The actual import exception
+
+        :param subpackage: The name of the failed subpackage
+        :param import_exception: The actual import exception
         '''
         message = "A fatal error occured whilst attempting to import the subpackage '%s': %s" % (
             subpackage, import_exception

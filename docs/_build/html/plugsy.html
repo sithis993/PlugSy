@@ -1,0 +1,766 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>plugsy package &#8212; PlugSy  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="plugsy-package">
+<h1>plugsy package<a class="headerlink" href="#plugsy-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plugsy.sdk.html">plugsy.sdk package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugsy.sdk.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="plugsy.sdk.PluginTemplate.html">plugsy.sdk.PluginTemplate package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="plugsy.sdk.PluginTemplate.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plugsy.sdk.PluginTemplate.html#module-plugsy.sdk.PluginTemplate.Config">plugsy.sdk.PluginTemplate.Config module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plugsy.sdk.PluginTemplate.html#module-plugsy.sdk.PluginTemplate.PluginTemplate">plugsy.sdk.PluginTemplate.PluginTemplate module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plugsy.sdk.PluginTemplate.html#module-plugsy.sdk.PluginTemplate">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="plugsy.sdk.gui.html">plugsy.sdk.gui package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="plugsy.sdk.gui.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plugsy.sdk.gui.html#module-plugsy.sdk.gui.ConfirmationDialogs">plugsy.sdk.gui.ConfirmationDialogs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plugsy.sdk.gui.html#module-plugsy.sdk.gui.SdkGui">plugsy.sdk.gui.SdkGui module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plugsy.sdk.gui.html#module-plugsy.sdk.gui.SdkGuiAbs">plugsy.sdk.gui.SdkGuiAbs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plugsy.sdk.gui.html#module-plugsy.sdk.gui">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="plugsy.sdk.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugsy.sdk.html#module-plugsy.sdk.Exceptions">plugsy.sdk.Exceptions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugsy.sdk.html#module-plugsy.sdk.Plugin">plugsy.sdk.Plugin module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugsy.sdk.html#module-plugsy.sdk.Sdk">plugsy.sdk.Sdk module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugsy.sdk.html#module-plugsy.sdk">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-plugsy.AbstractPlugin">
+<span id="plugsy-abstractplugin-module"></span><h2>plugsy.AbstractPlugin module<a class="headerlink" href="#module-plugsy.AbstractPlugin" title="Permalink to this headline">¶</a></h2>
+<p>Defines Abstract Plugin and Interface that all plugins must derive from</p>
+<dl class="class">
+<dt id="plugsy.AbstractPlugin.AbstractPlugin">
+<em class="property">class </em><code class="descclassname">plugsy.AbstractPlugin.</code><code class="descname">AbstractPlugin</code><span class="sig-paren">(</span><em>plugsy</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/AbstractPlugin.html#AbstractPlugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.AbstractPlugin.AbstractPlugin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code>, <a class="reference internal" href="#plugsy.Logger.Logger" title="plugsy.Logger.Logger"><code class="xref py py-class docutils literal notranslate"><span class="pre">plugsy.Logger.Logger</span></code></a></p>
+<p>Constructor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>plugsy</strong> – Parent PlugSy object</li>
+<li><strong>name</strong> – The name of the plugin. Optional, overrides package name</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="plugsy.AbstractPlugin.AbstractPlugin.activate">
+<code class="descname">activate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/AbstractPlugin.html#AbstractPlugin.activate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.AbstractPlugin.AbstractPlugin.activate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Activates the plugin and starts the thread</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.AbstractPlugin.AbstractPlugin.deactivate">
+<code class="descname">deactivate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/AbstractPlugin.html#AbstractPlugin.deactivate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.AbstractPlugin.AbstractPlugin.deactivate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deactivates the plugin and calls the plugin stop method</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.AbstractPlugin.AbstractPlugin.get_dependencies">
+<code class="descname">get_dependencies</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/AbstractPlugin.html#AbstractPlugin.get_dependencies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.AbstractPlugin.AbstractPlugin.get_dependencies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetches the plugin’s dependencies</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Plugin dependencies as a list of strings (plugin names)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.AbstractPlugin.AbstractPlugin.get_name">
+<code class="descname">get_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/AbstractPlugin.html#AbstractPlugin.get_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.AbstractPlugin.AbstractPlugin.get_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the plugins name</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Plugin name</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.AbstractPlugin.AbstractPlugin.init_logging">
+<code class="descname">init_logging</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/AbstractPlugin.html#AbstractPlugin.init_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.AbstractPlugin.AbstractPlugin.init_logging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialises plugin logging</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.AbstractPlugin.AbstractPlugin.is_activated">
+<code class="descname">is_activated</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/AbstractPlugin.html#AbstractPlugin.is_activated"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.AbstractPlugin.AbstractPlugin.is_activated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether the plugin has been activated</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if activated, otherwise False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.AbstractPlugin.AbstractPlugin.is_core_plugin">
+<code class="descname">is_core_plugin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/AbstractPlugin.html#AbstractPlugin.is_core_plugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.AbstractPlugin.AbstractPlugin.is_core_plugin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether the plugin is a core plugin (within the core subpackage)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if plugin is a core plugin, otherwise False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.AbstractPlugin.AbstractPlugin.is_initialised">
+<code class="descname">is_initialised</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/AbstractPlugin.html#AbstractPlugin.is_initialised"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.AbstractPlugin.AbstractPlugin.is_initialised" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the plugin has been initialised</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if initialised, otherwise False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.AbstractPlugin.AbstractPlugin.load_configuration">
+<code class="descname">load_configuration</code><span class="sig-paren">(</span><em>configuration</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/AbstractPlugin.html#AbstractPlugin.load_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.AbstractPlugin.AbstractPlugin.load_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads the plugin configuration into the plugin object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>configuration</strong> – Plugin configuration module</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.AbstractPlugin.AbstractPlugin.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/AbstractPlugin.html#AbstractPlugin.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.AbstractPlugin.AbstractPlugin.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plugin Main run method holding the main plugin code. Called upon plugin activation
+Must be overriden by derived classes (plugins)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">NotImplementedError If plugin hasn’t overridden method</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.AbstractPlugin.AbstractPlugin.set_core_plugin">
+<code class="descname">set_core_plugin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/AbstractPlugin.html#AbstractPlugin.set_core_plugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.AbstractPlugin.AbstractPlugin.set_core_plugin" title="Permalink to this definition">¶</a></dt>
+<dd><p>sets the plugin as a core plugin when called</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.AbstractPlugin.AbstractPlugin.set_dependencies">
+<code class="descname">set_dependencies</code><span class="sig-paren">(</span><em>dependencies</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/AbstractPlugin.html#AbstractPlugin.set_dependencies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.AbstractPlugin.AbstractPlugin.set_dependencies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the plugin’s dependencies</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dependencies</strong> – A list of plugins that the plugin depends on</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.AbstractPlugin.AbstractPlugin.stop">
+<code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/AbstractPlugin.html#AbstractPlugin.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.AbstractPlugin.AbstractPlugin.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plugin stop method. Stops plugin execution by setting stop event to iterrupt actions</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-plugsy.Config">
+<span id="plugsy-config-module"></span><h2>plugsy.Config module<a class="headerlink" href="#module-plugsy.Config" title="Permalink to this headline">¶</a></h2>
+<p>Holds global PlugSy config</p>
+</div>
+<div class="section" id="module-plugsy.Exceptions">
+<span id="plugsy-exceptions-module"></span><h2>plugsy.Exceptions module<a class="headerlink" href="#module-plugsy.Exceptions" title="Permalink to this headline">¶</a></h2>
+<p>Plugsy Package Exceptions</p>
+<dl class="exception">
+<dt id="plugsy.Exceptions.AddonPluginCircularDependency">
+<em class="property">exception </em><code class="descclassname">plugsy.Exceptions.</code><code class="descname">AddonPluginCircularDependency</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Exceptions.html#AddonPluginCircularDependency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Exceptions.AddonPluginCircularDependency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>To be raised in the event of an Addon plugin Circular Dependency</p>
+<p>Constructor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> – Exception message</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="exception">
+<dt id="plugsy.Exceptions.AddonPluginsStillRunning">
+<em class="property">exception </em><code class="descclassname">plugsy.Exceptions.</code><code class="descname">AddonPluginsStillRunning</code><span class="sig-paren">(</span><em>plugin</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Exceptions.html#AddonPluginsStillRunning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Exceptions.AddonPluginsStillRunning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>To be raised if trying to deactive a core plugin but there are still add on plugins running</p>
+<p>Constructor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>plugin</strong> – The Plugin object being deactivated</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="exception">
+<dt id="plugsy.Exceptions.CorePluginCircularDependency">
+<em class="property">exception </em><code class="descclassname">plugsy.Exceptions.</code><code class="descname">CorePluginCircularDependency</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Exceptions.html#CorePluginCircularDependency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Exceptions.CorePluginCircularDependency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>To be raised in the event of a Core plugin Circular Dependency</p>
+<p>Constructor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> – Exception message</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="exception">
+<dt id="plugsy.Exceptions.DependentRunning">
+<em class="property">exception </em><code class="descclassname">plugsy.Exceptions.</code><code class="descname">DependentRunning</code><span class="sig-paren">(</span><em>plugin</em>, <em>dependent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Exceptions.html#DependentRunning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Exceptions.DependentRunning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>To be raised if a plugin is being deactivated, but there are other plugins running
+which depend upon this plugin</p>
+<p>Constructor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>plugin</strong> – The Plugin object being deactivated</li>
+<li><strong>dependent</strong> – The dependent plugin object</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="exception">
+<dt id="plugsy.Exceptions.InvalidDependency">
+<em class="property">exception </em><code class="descclassname">plugsy.Exceptions.</code><code class="descname">InvalidDependency</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Exceptions.html#InvalidDependency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Exceptions.InvalidDependency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>To be raised in the event of an invalid plugin dependency, such as a core plugin depending on an addon plugin</p>
+<p>Constructor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> – Exception message</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="exception">
+<dt id="plugsy.Exceptions.InvalidPlugin">
+<em class="property">exception </em><code class="descclassname">plugsy.Exceptions.</code><code class="descname">InvalidPlugin</code><span class="sig-paren">(</span><em>plugin_name</em>, <em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Exceptions.html#InvalidPlugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Exceptions.InvalidPlugin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>To be raised when trying to import a broken/invalid Plugsy plugin</p>
+<p>Constructor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>plugin_name</strong> – The name of the plugin at fault</li>
+<li><strong>message</strong> – Exception message</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="exception">
+<dt id="plugsy.Exceptions.MissingDependencyError">
+<em class="property">exception </em><code class="descclassname">plugsy.Exceptions.</code><code class="descname">MissingDependencyError</code><span class="sig-paren">(</span><em>plugin</em>, <em>dependency</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Exceptions.html#MissingDependencyError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Exceptions.MissingDependencyError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>To be raised in the event of a missing plugin dependency</p>
+<p>Constructor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>plugin</strong> – Plugin object</li>
+<li><strong>dependency</strong> – Plugin object’s failed dependency</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="exception">
+<dt id="plugsy.Exceptions.PluginCircularDependency">
+<em class="property">exception </em><code class="descclassname">plugsy.Exceptions.</code><code class="descname">PluginCircularDependency</code><a class="reference internal" href="_modules/plugsy/Exceptions.html#PluginCircularDependency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Exceptions.PluginCircularDependency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>To be raised in the event of plugin Circular Dependency</p>
+<p>Constructor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> – Exception message</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="exception">
+<dt id="plugsy.Exceptions.PluginDoesNotExist">
+<em class="property">exception </em><code class="descclassname">plugsy.Exceptions.</code><code class="descname">PluginDoesNotExist</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Exceptions.html#PluginDoesNotExist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Exceptions.PluginDoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>To be raised if a plugin does not exist</p>
+<p>Constructor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> – The name of the plugin</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="exception">
+<dt id="plugsy.Exceptions.SubpackageImportError">
+<em class="property">exception </em><code class="descclassname">plugsy.Exceptions.</code><code class="descname">SubpackageImportError</code><span class="sig-paren">(</span><em>subpackage</em>, <em>import_exception</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Exceptions.html#SubpackageImportError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Exceptions.SubpackageImportError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>To be raised in the event of a fatal subpackage import (core, addon)</p>
+<p>Constructor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>subpackage</strong> – The name of the failed subpackage</li>
+<li><strong>import_exception</strong> – The actual import exception</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-plugsy.LaunchPlugsyGui">
+<span id="plugsy-launchplugsygui-module"></span><h2>plugsy.LaunchPlugsyGui module<a class="headerlink" href="#module-plugsy.LaunchPlugsyGui" title="Permalink to this headline">¶</a></h2>
+<p>SDK GUI Launcher</p>
+<dl class="function">
+<dt id="plugsy.LaunchPlugsyGui.Go">
+<code class="descclassname">plugsy.LaunchPlugsyGui.</code><code class="descname">Go</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/LaunchPlugsyGui.html#Go"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.LaunchPlugsyGui.Go" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initiates and launches the PlugSy GUI</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-plugsy.Logger">
+<span id="plugsy-logger-module"></span><h2>plugsy.Logger module<a class="headerlink" href="#module-plugsy.Logger" title="Permalink to this headline">¶</a></h2>
+<p>Logger Class. Provides global logger access and handles initiation</p>
+<dl class="class">
+<dt id="plugsy.Logger.Filter">
+<em class="property">class </em><code class="descclassname">plugsy.Logger.</code><code class="descname">Filter</code><span class="sig-paren">(</span><em>filters</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Logger.html#Filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Logger.Filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Filter</span></code></p>
+<p>Custom filter for filtering to only specific sources, such as core plugins, addon plugins,
+or a simple specific plugin</p>
+<p>Constructor override</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filters</strong> – A list of filter names</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="plugsy.Logger.Filter.filter">
+<code class="descname">filter</code><span class="sig-paren">(</span><em>record</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Logger.html#Filter.filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Logger.Filter.filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Custom filter method</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>record</strong> – Debug record object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if event is going to be logged. Otherwise False. Defaults to True if no filters found</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="plugsy.Logger.Logger">
+<em class="property">class </em><code class="descclassname">plugsy.Logger.</code><code class="descname">Logger</code><span class="sig-paren">(</span><em>name</em>, <em>level=''</em>, <em>log_path=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Logger.html#Logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Logger.Logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Provides a Logger object</p>
+<p>Constructor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> – Debug name</li>
+<li><strong>level</strong> – Logging level,</li>
+<li><strong>log_path</strong> – Log file path</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="plugsy.Logger.Logger.DEFAULT_LEVEL">
+<code class="descname">DEFAULT_LEVEL</code><em class="property"> = 30</em><a class="headerlink" href="#plugsy.Logger.Logger.DEFAULT_LEVEL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="plugsy.Logger.Logger.FILTERS_FILENAME">
+<code class="descname">FILTERS_FILENAME</code><em class="property"> = 'debugfilters.conf'</em><a class="headerlink" href="#plugsy.Logger.Logger.FILTERS_FILENAME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="plugsy.Logger.Logger.LOG_FORMAT">
+<code class="descname">LOG_FORMAT</code><em class="property"> = '%(asctime)s - %(name)s - %(levelname)s - %(funcName)s(): %(message)s'</em><a class="headerlink" href="#plugsy.Logger.Logger.LOG_FORMAT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="plugsy.Logger.Logger.critical">
+<code class="descname">critical</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Logger.html#Logger.critical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Logger.Logger.critical" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs a CRITICAL level entry</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> – Message to log</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.Logger.Logger.debug">
+<code class="descname">debug</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Logger.html#Logger.debug"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Logger.Logger.debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs a DEBUG level entry</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> – Message to log</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.Logger.Logger.error">
+<code class="descname">error</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Logger.html#Logger.error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Logger.Logger.error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs an ERROR level entry</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> – Message to log</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.Logger.Logger.info">
+<code class="descname">info</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Logger.html#Logger.info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Logger.Logger.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs an INFO level entry</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> – Message to log</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.Logger.Logger.warning">
+<code class="descname">warning</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Logger.html#Logger.warning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Logger.Logger.warning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs a WARNING level entry</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> – Message to log</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-plugsy.Plugsy">
+<span id="plugsy-plugsy-module"></span><h2>plugsy.Plugsy module<a class="headerlink" href="#module-plugsy.Plugsy" title="Permalink to this headline">¶</a></h2>
+<p>Plugsy - Plugin System</p>
+<dl class="class">
+<dt id="plugsy.Plugsy.Plugsy">
+<em class="property">class </em><code class="descclassname">plugsy.Plugsy.</code><code class="descname">Plugsy</code><span class="sig-paren">(</span><em>safe_mode=False</em>, <em>debug_level=''</em>, <em>debug_log_path=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Plugsy.html#Plugsy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Plugsy.Plugsy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#plugsy.Logger.Logger" title="plugsy.Logger.Logger"><code class="xref py py-class docutils literal notranslate"><span class="pre">plugsy.Logger.Logger</span></code></a></p>
+<p>Constructor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>safe_mode</strong> – Boolean specifying whether Plugsy should be run in safe mode. In safe mode, only the
+core plugins will be loaded</li>
+<li><strong>debug_level</strong> – Level of debug. Should be one or INFO, DEBUG, WARNING or ERROR</li>
+<li><strong>debug_log_path</strong> – Optional peth to a debug log file. WIll be created and used for logging if specified</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="plugsy.Plugsy.Plugsy.ADDON_DIR">
+<code class="descname">ADDON_DIR</code><em class="property"> = 'addon'</em><a class="headerlink" href="#plugsy.Plugsy.Plugsy.ADDON_DIR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="plugsy.Plugsy.Plugsy.CORE_DIR">
+<code class="descname">CORE_DIR</code><em class="property"> = 'core'</em><a class="headerlink" href="#plugsy.Plugsy.Plugsy.CORE_DIR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="plugsy.Plugsy.Plugsy.ROOT_PLUGIN_PACKAGE">
+<code class="descname">ROOT_PLUGIN_PACKAGE</code><em class="property"> = 'plugins'</em><a class="headerlink" href="#plugsy.Plugsy.Plugsy.ROOT_PLUGIN_PACKAGE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="plugsy.Plugsy.Plugsy.activate_plugins">
+<code class="descname">activate_plugins</code><span class="sig-paren">(</span><em>plugin_names=[]</em>, <em>ignore_addon_dep_failures=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Plugsy.html#Plugsy.activate_plugins"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Plugsy.Plugsy.activate_plugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Activates Plugsy plugins</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>plugin_names</strong> – Optional list of specific plugins to activate</li>
+<li><strong>ignore_addon_dep_failures</strong> – Boolean specifying whether dependency failures should be ignored or raised
+when loading Addon plugins</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.Plugsy.Plugsy.deactivate_plugins">
+<code class="descname">deactivate_plugins</code><span class="sig-paren">(</span><em>plugin_names=[]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Plugsy.html#Plugsy.deactivate_plugins"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Plugsy.Plugsy.deactivate_plugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deactivates all plugins, or a specific plugin</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>plugin_names</strong> – Optional list of plugin names to deactivate</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.Plugsy.Plugsy.get_plugin">
+<code class="descname">get_plugin</code><span class="sig-paren">(</span><em>plugin_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Plugsy.html#Plugsy.get_plugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Plugsy.Plugsy.get_plugin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch the plugin object of a specific plugin</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>plugin_name</strong> – The name of the plugin to fetch</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The relevant plugin object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.Plugsy.Plugsy.get_plugins">
+<code class="descname">get_plugins</code><span class="sig-paren">(</span><em>plugin_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Plugsy.html#Plugsy.get_plugins"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Plugsy.Plugsy.get_plugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetches PlugSy plugins</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>plugin_name</strong> – The name of a specific plugin to get (optional)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of PlugSy plugin objects</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.Plugsy.Plugsy.is_safe_mode_enabled">
+<code class="descname">is_safe_mode_enabled</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/Plugsy.html#Plugsy.is_safe_mode_enabled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.Plugsy.Plugsy.is_safe_mode_enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the boolean value of __safe_mode</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-plugsy">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-plugsy" title="Permalink to this headline">¶</a></h2>
+<p>PlugSy Plugin framework</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">plugsy package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-plugsy.AbstractPlugin">plugsy.AbstractPlugin module</a></li>
+<li><a class="reference internal" href="#module-plugsy.Config">plugsy.Config module</a></li>
+<li><a class="reference internal" href="#module-plugsy.Exceptions">plugsy.Exceptions module</a></li>
+<li><a class="reference internal" href="#module-plugsy.LaunchPlugsyGui">plugsy.LaunchPlugsyGui module</a></li>
+<li><a class="reference internal" href="#module-plugsy.Logger">plugsy.Logger module</a></li>
+<li><a class="reference internal" href="#module-plugsy.Plugsy">plugsy.Plugsy module</a></li>
+<li><a class="reference internal" href="#module-plugsy">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/plugsy.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Sithis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/plugsy.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,5 +1,5 @@
 '''
-PlugSy - SDK Gui Confirmation Dialog - Holds all confirmation dialog classes
+SDK Gui Confirmation Dialog - Holds all confirmation dialog classes
 '''
 
 # Import libs
@@ -13,14 +13,15 @@ from .SdkGuiAbs import ConfirmationDialog
 # ======================================
 class _ConfirmationDialogAbs(ConfirmationDialog):
     '''
-    Provides ab abstract confirmation dialog with a customisable message
+    Provides an abstract confirmation dialog class
     '''
 
     def __init__(self, parent, message):
         '''
         Constructor
-        @param parent: Handle to parent object
-        @param message: The dialog confirmation message
+
+        :param parent: Handle to parent object
+        :param message: The dialog confirmation message to display
         '''
         self.parent = parent
         ConfirmationDialog.__init__(self, parent=parent)
@@ -36,7 +37,8 @@ class _ConfirmationDialogAbs(ConfirmationDialog):
     def update_message(self, message):
         '''
         Sets the Dialog box message
-        @return:
+
+        :param message: The message to set as the Dialog text
         '''
 
         self.ConfirmationLabel.SetLabelText(message)
@@ -46,7 +48,8 @@ class _ConfirmationDialogAbs(ConfirmationDialog):
     def __cancel(self, event):
         '''
         Cancels plugin creation and re-enables Main GUI
-        @return:
+
+        :param event: wx event object
         '''
 
         self.parent.Enable()
@@ -60,7 +63,6 @@ class _ConfirmationDialogAbs(ConfirmationDialog):
     def __set_events(self):
         '''
         Set dialog event handlers
-        @return:
         '''
 
         self.Bind(wx.EVT_BUTTON, self.__cancel, self.OkCancelSizerCancel)
@@ -77,8 +79,9 @@ class GenericConfirmationDialog(_ConfirmationDialogAbs):
     def __init__(self, parent, message):
         '''
         Constructor
-        @param parent: Handle to parent wx object
-        @param message: The message to display
+
+        :param parent: Handle to parent wx object
+        :param message: The message to display in the dialog window
         '''
         self.__accepted = False
         self.__message = message
@@ -91,7 +94,6 @@ class GenericConfirmationDialog(_ConfirmationDialogAbs):
     def close(self):
         '''
         For closing and ending the dialog
-        @return:
         '''
 
         self.EndModal()
@@ -102,7 +104,8 @@ class GenericConfirmationDialog(_ConfirmationDialogAbs):
     def was_accepted(self):
         '''
         Checks whether the confirmation box was accepted or not
-        @return: True if confirmation was accepted, otherwise False
+
+        :return: True if confirmation was accepted, otherwise False
         '''
 
         return self.__accepted
@@ -114,7 +117,8 @@ class GenericConfirmationDialog(_ConfirmationDialogAbs):
     def __set_accepted(self, event):
         '''
         Sets the confirmation boxes accepted flag to True
-        @return:
+
+        :param event: wx event object
         '''
 
         self.__accepted = True
@@ -132,9 +136,10 @@ class DeletePluginConfirmation(_ConfirmationDialogAbs):
     def __init__(self, parent, plugin_name, sdk):
         '''
         Constructor
-        @param parent: Handle to parent object
-        @param plugin_name: The name of the plugin being deleted
-        @param sdk: A handle to the SDK object
+
+        :param parent: Handle to parent object
+        :param plugin_name: The name of the plugin being deleted
+        :param sdk: A handle to the SDK object
         '''
         self.__message = "Are you sure you want to delete the '%s' plugin?" % plugin_name
         self.__sdk = sdk
@@ -147,7 +152,8 @@ class DeletePluginConfirmation(_ConfirmationDialogAbs):
     def __delete_plugin(self, event):
         '''
         Deletes the specified plugin
-        @return:
+
+        :param event: wx event object
         '''
         selected_plugin = self.parent.plugins_tree.get_current_selection_text()
 
@@ -169,10 +175,4 @@ class DeletePluginConfirmation(_ConfirmationDialogAbs):
         '''
 
         self.Bind(wx.EVT_BUTTON, self.__delete_plugin, self.OkCancelSizerOK)
-
-
-
-
-
-
 

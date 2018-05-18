@@ -27,9 +27,11 @@ class Plugsy(Logger):
     def __init__(self, safe_mode=False, debug_level="", debug_log_path=""):
         '''
         Constructor
-        @param: safe_mode: Boolean specifying whether Plugsy should be run in safe mode. In safe mode, only the
-        core plugins will be loaded
-        @param debug_level: Level of debug. Should be one or INFO, DEBUG, WARNING or ERROR
+
+        :param safe_mode: Boolean specifying whether Plugsy should be run in safe mode. In safe mode, only the
+            core plugins will be loaded
+        :param debug_level: Level of debug. Should be one or INFO, DEBUG, WARNING or ERROR
+        :param debug_log_path: Optional peth to a debug log file. WIll be created and used for logging if specified
         '''
         Logger.__init__(
             self,
@@ -42,10 +44,11 @@ class Plugsy(Logger):
 
     def activate_plugins(self, plugin_names=[], ignore_addon_dep_failures=False):
         '''
-        @summary: Activates Plugsy plugins
-        @param plugin_names: Optional list of specific plugins to activate
-        @param ignore_addon_dep_failures: Boolean specifying whether dependency failures should be ignored
-        or raised when loading Addon plugins
+        Activates Plugsy plugins
+
+        :param plugin_names: Optional list of specific plugins to activate
+        :param ignore_addon_dep_failures: Boolean specifying whether dependency failures should be ignored or raised
+            when loading Addon plugins
         '''
         self.logger.debug("ENTRY")
         loaded_plugins = []
@@ -136,7 +139,9 @@ class Plugsy(Logger):
 
     def deactivate_plugins(self, plugin_names=[]):
         '''
-        @summary: Deactivates all plugins, or a specific plugin
+        Deactivates all plugins, or a specific plugin
+
+        :param plugin_names: Optional list of plugin names to deactivate
         '''
         self.logger.debug("ENTRY")
 
@@ -205,10 +210,11 @@ class Plugsy(Logger):
 
     def __load_plugins(self, subpackage, plugin_names=[]):
         '''
-        @summary: Loads Plugsy plugins
-        @param subpackage: The subpackage to be loaded, such as 'core' or 'addons'
-        @param plugin_names: An optional list of specific plugins to load
-        @return: List of plugin objects
+        Loads Plugsy plugins
+
+        :param subpackage: The subpackage to be loaded, such as 'core' or 'addons'
+        :param plugin_names: An optional list of specific plugins to load
+        :return: List of plugin objects
         '''
         self.logger.debug("ENTRY")
         plugins = []
@@ -255,9 +261,10 @@ class Plugsy(Logger):
 
     def __import_available_plugins(self, package_name):
         '''
-        Returns a list of tuples representing available plugins for the specified package
-        @param: package_name: The name of the package to load plugins from, such as "core"
-        @return: List of tuples containing (<plugin_name>, <plugin_module_reference>)
+        imports available plugins for the specified package
+
+        :param package_name: The name of the package to load plugins from, such as "core"
+        :return: List of tuples containing (<plugin_name>, <plugin_module_reference>)
         '''
         self.logger.debug("ENTRY")
         available_plugins = []
@@ -288,8 +295,9 @@ class Plugsy(Logger):
     def __instantiate_plugin(self, plugin_package):
         '''
         Initiates an individual plugin and returns its class name and an instance
-        @param plugin_package: Namespace location of the plugin package to initiate, such as plugin.core.api
-        @return: The name of the plugins's class, a class reference, an instance of the object and it's config
+
+        :param plugin_package: Namespace location of the plugin package to initiate, such as plugin.core.api
+        :return: The name of the plugins's class, a class reference, an instance of the object and it's config
         '''
         self.logger.debug("ENTRY")
 
@@ -326,12 +334,13 @@ class Plugsy(Logger):
 
     def __sort_by_dependencies(self, plugins, ignore_dependency_failures, loaded_plugins):
         '''
-        @summary: Sorts plugins by dependencies
-        @param plugins: The plugin objects to sort
-        @param ignore_dependency_failures: Boolean specifying with dependency failures should be suppressed
-        @param loaded_plugins: List of plugins that have been loaded so far
-        @return: Plugin objects in a sorted list
-        @raise: PluginCircularDependency
+        Sorts plugins by dependencies
+
+        :param plugins: The plugin objects to sort
+        :param ignore_dependency_failures: Boolean specifying with dependency failures should be suppressed
+        :param loaded_plugins: List of plugins that have been loaded so far
+        :return: Plugin objects in a sorted list
+        :raise: PluginCircularDependency
         '''
         self.logger.debug("ENTRY")
         sorted_plugins = []
@@ -414,7 +423,8 @@ class Plugsy(Logger):
     def is_safe_mode_enabled(self):
         '''
         Return the boolean value of __safe_mode
-        @return:
+
+        :return: True or False
         '''
         self.logger.debug("ENTRY")
 
@@ -425,8 +435,9 @@ class Plugsy(Logger):
     def get_plugin(self, plugin_name):
         '''
         Fetch the plugin object of a specific plugin
-        @param plugin_name: The name of the plugin to fet
-        @return: The relevant plugin object
+
+        :param plugin_name: The name of the plugin to fetch
+        :return: The relevant plugin object
         '''
         self.logger.debug("ENTRY")
 
@@ -445,7 +456,8 @@ class Plugsy(Logger):
     def get_plugins(self, plugin_name=None):
         '''
         Fetches PlugSy plugins
-        @param plugin_name: The name of a specific plugin to get (optional)
+
+        :param plugin_name: The name of a specific plugin to get (optional)
         :return: A list of PlugSy plugin objects
         '''
         self.logger.debug("ENTRY")
@@ -462,8 +474,9 @@ class Plugsy(Logger):
 
     def __get_plugin_subpackages(self):
         '''
-        @summary: imports the plugins repository and returns the available subpackages
-        @return: List of subpackages
+        :summary: imports the plugins repository and returns the available subpackages
+
+        :return: List of subpackages
         '''
         self.logger.debug("ENTRY")
         subpackages = []
@@ -481,7 +494,8 @@ class Plugsy(Logger):
     def __is_frozen(self):
         '''
         Checks if plugsy is running in a frozen context
-        @return: True if frozen, otherwise False
+
+        :return: True if frozen, otherwise False
         '''
         self.logger.debug("ENTRY")
 
@@ -499,7 +513,8 @@ class Plugsy(Logger):
     def __set_plugins(self, plugins):
         '''
         Sets PlugSy's plugins
-        @param plugins: A list of plugin objects
+
+        :param plugins: A list of plugin objects
         '''
         self.logger.debug("ENTRY")
 

@@ -1,0 +1,255 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>plugsy.sdk.gui.ConfirmationDialogs &#8212; PlugSy  documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for plugsy.sdk.gui.ConfirmationDialogs</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">SDK Gui Confirmation Dialog - Holds all confirmation dialog classes</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="c1"># Import libs</span>
+<span class="kn">import</span> <span class="nn">wx</span>
+
+<span class="c1"># Import project libs</span>
+<span class="kn">from</span> <span class="nn">.SdkGuiAbs</span> <span class="k">import</span> <span class="n">ConfirmationDialog</span>
+
+<span class="c1"># ======================================</span>
+<span class="c1"># = _ConfirmationDialogAbs Class</span>
+<span class="c1"># ======================================</span>
+<span class="k">class</span> <span class="nc">_ConfirmationDialogAbs</span><span class="p">(</span><span class="n">ConfirmationDialog</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Provides an abstract confirmation dialog class</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param parent: Handle to parent object</span>
+<span class="sd">        :param message: The dialog confirmation message to display</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="n">ConfirmationDialog</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="c1"># Set events</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_events</span><span class="p">()</span>
+
+        <span class="c1"># Disable parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">Disable</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">update_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sets the Dialog box message</span>
+
+<span class="sd">        :param message: The message to set as the Dialog text</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ConfirmationLabel</span><span class="o">.</span><span class="n">SetLabelText</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ConfirmationLabel</span><span class="o">.</span><span class="n">Wrap</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ConfirmationLabel</span><span class="o">.</span><span class="n">Layout</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Cancels plugin creation and re-enables Main GUI</span>
+
+<span class="sd">        :param event: wx event object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">Enable</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+
+
+    <span class="c1">#############</span>
+    <span class="c1">## SETTERS ##</span>
+    <span class="c1">#############</span>
+
+    <span class="k">def</span> <span class="nf">__set_events</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set dialog event handlers</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_BUTTON</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cancel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OkCancelSizerCancel</span><span class="p">)</span>
+
+
+<span class="c1"># ======================================</span>
+<span class="c1"># = GenericConfirmationDialog Class</span>
+<span class="c1"># ======================================</span>
+<div class="viewcode-block" id="GenericConfirmationDialog"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.ConfirmationDialogs.GenericConfirmationDialog">[docs]</a><span class="k">class</span> <span class="nc">GenericConfirmationDialog</span><span class="p">(</span><span class="n">_ConfirmationDialogAbs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Provides a generic confirmation dialog</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param parent: Handle to parent wx object</span>
+<span class="sd">        :param message: The message to display in the dialog window</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__accepted</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="n">_ConfirmationDialogAbs</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__message</span><span class="p">)</span>
+
+        <span class="c1"># Set events</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_BUTTON</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__set_accepted</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OkCancelSizerOK</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="GenericConfirmationDialog.close"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.ConfirmationDialogs.GenericConfirmationDialog.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        For closing and ending the dialog</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">EndModal</span><span class="p">()</span></div>
+
+    <span class="c1">#############</span>
+    <span class="c1">## GETTERS ##</span>
+    <span class="c1">#############</span>
+<div class="viewcode-block" id="GenericConfirmationDialog.was_accepted"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.ConfirmationDialogs.GenericConfirmationDialog.was_accepted">[docs]</a>    <span class="k">def</span> <span class="nf">was_accepted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Checks whether the confirmation box was accepted or not</span>
+
+<span class="sd">        :return: True if confirmation was accepted, otherwise False</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__accepted</span></div>
+
+
+    <span class="c1">#############</span>
+    <span class="c1">## SETTERS ##</span>
+    <span class="c1">#############</span>
+    <span class="k">def</span> <span class="nf">__set_accepted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sets the confirmation boxes accepted flag to True</span>
+
+<span class="sd">        :param event: wx event object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__accepted</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span></div>
+
+
+<span class="c1"># ======================================</span>
+<span class="c1"># = DeletePluginConfirmation Class</span>
+<span class="c1"># ======================================</span>
+<div class="viewcode-block" id="DeletePluginConfirmation"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.ConfirmationDialogs.DeletePluginConfirmation">[docs]</a><span class="k">class</span> <span class="nc">DeletePluginConfirmation</span><span class="p">(</span><span class="n">_ConfirmationDialogAbs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Provides ab abstract confirmation dialog with a customisable message</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">plugin_name</span><span class="p">,</span> <span class="n">sdk</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param parent: Handle to parent object</span>
+<span class="sd">        :param plugin_name: The name of the plugin being deleted</span>
+<span class="sd">        :param sdk: A handle to the SDK object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__message</span> <span class="o">=</span> <span class="s2">&quot;Are you sure you want to delete the &#39;</span><span class="si">%s</span><span class="s2">&#39; plugin?&quot;</span> <span class="o">%</span> <span class="n">plugin_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__sdk</span> <span class="o">=</span> <span class="n">sdk</span>
+        <span class="n">_ConfirmationDialogAbs</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__message</span><span class="p">)</span>
+
+        <span class="c1"># Set events</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_events</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">__delete_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Deletes the specified plugin</span>
+
+<span class="sd">        :param event: wx event object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">selected_plugin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">plugins_tree</span><span class="o">.</span><span class="n">get_current_selection_text</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__sdk</span><span class="o">.</span><span class="n">delete_plugin</span><span class="p">(</span><span class="n">selected_plugin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">plugins_tree</span><span class="o">.</span><span class="n">remove_plugin</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">sync_config_fields</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">Enable</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+
+
+    <span class="c1">#############</span>
+    <span class="c1">## SETTERS ##</span>
+    <span class="c1">#############</span>
+
+    <span class="k">def</span> <span class="nf">__set_events</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Bind events</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_BUTTON</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__delete_plugin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OkCancelSizerOK</span><span class="p">)</span></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Sithis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

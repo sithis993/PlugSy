@@ -1,0 +1,398 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>plugsy.sdk.Sdk &#8212; PlugSy  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for plugsy.sdk.Sdk</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Plugsy - Software Development Kit</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="c1"># Import libs</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+
+<span class="c1"># Import package modules</span>
+<span class="kn">from</span> <span class="nn">.Plugin</span> <span class="k">import</span> <span class="n">Plugin</span>
+<span class="kn">from</span> <span class="nn">.Exceptions</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">..Exceptions</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">..Logger</span> <span class="k">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">Config</span>
+<span class="kn">from</span> <span class="nn">..Plugsy</span> <span class="k">import</span> <span class="n">Plugsy</span>
+
+<div class="viewcode-block" id="Sdk"><a class="viewcode-back" href="../../../plugsy.sdk.html#plugsy.sdk.Sdk.Sdk">[docs]</a><span class="k">class</span> <span class="nc">Sdk</span><span class="p">(</span><span class="n">Logger</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    SDK Class</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">PLUGIN_NAME_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;^[a-zA-Z]+[a-zA-Z0-9_]*$&quot;</span><span class="p">)</span>
+    <span class="n">PLUGIN_NAME_MIN_LEN</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">PLUGIN_NAME_MAX_LEN</span> <span class="o">=</span> <span class="mi">35</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugins_home_path</span><span class="p">,</span> <span class="n">debug_level</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">debug_log_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param plugins_home_path: The path of the plugins package directory</span>
+<span class="sd">        :param debug_level: Debug log level</span>
+<span class="sd">        :param debug_log_path: Optional log file for debug</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># Init Plugsy and logger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__plugsy</span> <span class="o">=</span> <span class="n">Plugsy</span><span class="p">(</span><span class="n">debug_level</span><span class="o">=</span><span class="n">debug_level</span><span class="p">,</span> <span class="n">debug_log_path</span><span class="o">=</span><span class="n">debug_log_path</span><span class="p">)</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.sdk&quot;</span> <span class="o">%</span> <span class="n">Config</span><span class="o">.</span><span class="n">FULL_NAME</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__plugins</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># Check plugins home exists</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">plugins_home_path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">PluginsHomeNotFound</span><span class="p">(</span><span class="n">plugins_home_path</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Setting plugins home to &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">plugins_home_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__plugins_dir_path</span> <span class="o">=</span> <span class="n">plugins_home_path</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__init_plugins_home</span><span class="p">()</span>
+
+        <span class="c1"># Add plugins home dir to path</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plugins_home_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__init_plugins_home</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Checks the plugin&#39;s home directory is initialised, or initialises if not. addon and core packages</span>
+<span class="sd">        are created if they don&#39;t exist</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+        <span class="n">plugins_init_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__plugins_dir_path</span><span class="p">,</span> <span class="s2">&quot;__init__.py&quot;</span><span class="p">)</span>
+        <span class="n">addon_package_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__plugins_dir_path</span><span class="p">,</span> <span class="s2">&quot;addon&quot;</span><span class="p">)</span>
+        <span class="n">core_package_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__plugins_dir_path</span><span class="p">,</span> <span class="s2">&quot;core&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Create plugins home init</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">plugins_init_path</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;__init__.py not found in plugins home dir. Creating it&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">plugins_init_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">plugins_init_file</span><span class="p">:</span>
+                <span class="n">plugins_init_file</span><span class="o">.</span><span class="n">writelines</span><span class="p">([</span>
+                    <span class="s2">&quot;from . import core</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;from . import addon</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+
+        <span class="c1"># Create core and addon packages</span>
+        <span class="k">for</span> <span class="n">package_path</span> <span class="ow">in</span> <span class="p">[</span><span class="n">core_package_path</span><span class="p">,</span> <span class="n">addon_package_path</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">package_path</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39; plugin package was not found in plugins home dir and will be created&quot;</span> <span class="o">%</span>
+                                  <span class="n">package_path</span>
+                                  <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__create_bare_package</span><span class="p">(</span><span class="n">package_path</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__create_bare_package</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">package_dir</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates an empty, bare Python package at the specified location</span>
+
+<span class="sd">        :param package_dir: The absolute path of the package to create</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+        <span class="n">init_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">package_dir</span><span class="p">,</span> <span class="s2">&quot;__init__.py&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Create package dir</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">package_dir</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating package dir at &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">package_dir</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">package_dir</span><span class="p">)</span>
+
+        <span class="c1"># Create empty __init__</span>
+        <span class="nb">open</span><span class="p">(</span><span class="n">init_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;__init__.py created at &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">init_path</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Sdk.create_plugin"><a class="viewcode-back" href="../../../plugsy.sdk.html#plugsy.sdk.Sdk.Sdk.create_plugin">[docs]</a>    <span class="k">def</span> <span class="nf">create_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_type</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates a new plugin</span>
+
+<span class="sd">        :param plugin_type: The type of plugin to create. Should be core or addon</span>
+<span class="sd">        :param nane: The name of the plugin to create</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check name</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__is_valid_plugin_name</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Could not create plugin due to bad plugin name &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">BadPluginName</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="c1"># Check type</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__is_valid_plugin_type</span><span class="p">(</span><span class="n">plugin_type</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Could not create plugin due to bad plugin type &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">plugin_type</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">BadPluginType</span><span class="p">(</span><span class="n">plugin_type</span><span class="p">)</span>
+
+        <span class="c1"># Initiate plugin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating new &#39;</span><span class="si">%s</span><span class="s2">&#39; plugin &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">plugin_type</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+        <span class="n">new_plugin</span> <span class="o">=</span> <span class="n">Plugin</span><span class="p">(</span>
+            <span class="n">plugins_dir_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__plugins_dir_path</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">plugin_type</span><span class="o">=</span><span class="n">plugin_type</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Create</span>
+        <span class="n">new_plugin</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Plugin creating successfully&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Add new plugin package to subpackage (core, addon) __init__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__add_plugin_to_init</span><span class="p">(</span><span class="n">new_plugin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Sdk.does_plugin_exist"><a class="viewcode-back" href="../../../plugsy.sdk.html#plugsy.sdk.Sdk.Sdk.does_plugin_exist">[docs]</a>    <span class="k">def</span> <span class="nf">does_plugin_exist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_name</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Checks if a plugin exists with the specified name</span>
+
+<span class="sd">        :param plugin_name: The name of the plugin to check for</span>
+<span class="sd">        :return: True if plugin exists, otherwise False</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__plugins</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_plugins</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__plugins</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__plugins</span><span class="p">[</span><span class="n">cat</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">plugin_name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT with True&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT with False&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Sdk.delete_plugin"><a class="viewcode-back" href="../../../plugsy.sdk.html#plugsy.sdk.Sdk.Sdk.delete_plugin">[docs]</a>    <span class="k">def</span> <span class="nf">delete_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Deletes an existing plugin</span>
+
+<span class="sd">        :param name: The name of the plugin to delete</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Initiate plugin and delete</span>
+        <span class="n">existing_plugin</span> <span class="o">=</span> <span class="n">Plugin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__plugins_dir_path</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">existing_plugin</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Plugin &#39;</span><span class="si">%s</span><span class="s2">&#39; successfully deleted&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+
+        <span class="c1"># Remove from init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__remove_plugin_from_init</span><span class="p">(</span><span class="n">existing_plugin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__add_plugin_to_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_plugin</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Adds the new plugin import to the relevant subpackage</span>
+
+<span class="sd">        :param new_plugin: The name of the new plugin to add to the __init__ file</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="n">init_contents</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">subpackage_init_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__plugins_dir_path</span><span class="p">,</span>
+            <span class="s2">&quot;core&quot;</span> <span class="k">if</span> <span class="n">new_plugin</span><span class="o">.</span><span class="n">is_core_plugin</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;addon&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;__init__.py&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding plugin to init at &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">subpackage_init_path</span><span class="p">)</span>
+
+        <span class="c1"># Read subpackage init</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">subpackage_init_path</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">subpackage_init_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">init_file</span><span class="p">:</span>
+                <span class="n">init_contents</span> <span class="o">=</span> <span class="n">init_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="c1"># Add new Plugin package import</span>
+        <span class="k">if</span> <span class="n">init_contents</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">init_contents</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">init_contents</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="n">init_contents</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">from . import </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">new_plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">init_contents</span> <span class="o">+=</span> <span class="s2">&quot;from . import </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">new_plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+
+        <span class="c1"># Write init</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">subpackage_init_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">init_file</span><span class="p">:</span>
+            <span class="n">init_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">init_contents</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__remove_plugin_from_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">existing_plugin</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Removes the Plugin package import from the subpackage __init__</span>
+
+<span class="sd">        :param name: The name of the plugin to remove</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="n">subpackage_init_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__plugins_dir_path</span><span class="p">,</span>
+            <span class="s2">&quot;core&quot;</span> <span class="k">if</span> <span class="n">existing_plugin</span><span class="o">.</span><span class="n">is_core_plugin</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;addon&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;__init__.py&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Removing plugin from init at &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">subpackage_init_path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">subpackage_init_path</span><span class="p">):</span>
+            <span class="c1"># Read subpackage init</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">subpackage_init_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">init_file</span><span class="p">:</span>
+                <span class="n">init_contents</span> <span class="o">=</span> <span class="n">init_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+            <span class="c1"># Remove import</span>
+            <span class="n">init_contents</span> <span class="o">=</span> <span class="n">init_contents</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;from . import </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">existing_plugin</span><span class="o">.</span><span class="n">get_name</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Write subpackage init</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">subpackage_init_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">init_file</span><span class="p">:</span>
+                <span class="n">init_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">init_contents</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+
+    <span class="c1">#############</span>
+    <span class="c1">## GETTERS ##</span>
+    <span class="c1">#############</span>
+
+<div class="viewcode-block" id="Sdk.get_plugins"><a class="viewcode-back" href="../../../plugsy.sdk.html#plugsy.sdk.Sdk.Sdk.get_plugins">[docs]</a>    <span class="k">def</span> <span class="nf">get_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fetches current plugins in plugin home</span>
+
+<span class="sd">        :return: Dict of core and addon plugin lists</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+
+        <span class="n">plugins</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;core&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;addon&quot;</span><span class="p">:</span> <span class="p">[]</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Check for core and addon folders</span>
+        <span class="n">plugin_subdirs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__plugins_dir_path</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">subpackage</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">,</span> <span class="s2">&quot;addon&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">subpackage</span> <span class="ow">in</span> <span class="n">plugin_subdirs</span><span class="p">:</span>
+                <span class="n">subpackage_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__plugins_dir_path</span><span class="p">,</span> <span class="n">subpackage</span><span class="p">)</span>
+                <span class="n">subpackage_import</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">subpackage</span><span class="p">))</span>
+
+                <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="n">subpackage_import</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">ismodule</span><span class="p">(</span><span class="n">member</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="n">member</span><span class="p">[</span><span class="mi">1</span><span class="p">])):</span>
+                        <span class="c1"># Create object for plugin and Set type</span>
+                        <span class="n">plugin</span> <span class="o">=</span> <span class="n">Plugin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__plugins_dir_path</span><span class="p">,</span> <span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">plugin_type</span><span class="o">=</span><span class="n">subpackage</span><span class="p">)</span>
+
+                        <span class="c1"># Add to package plugins</span>
+                        <span class="n">plugins</span><span class="p">[</span><span class="n">subpackage</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plugin</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Got the following &#39;</span><span class="si">%s</span><span class="s2">&#39; plugins: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">subpackage</span><span class="p">,</span> <span class="n">plugins</span><span class="p">[</span><span class="n">subpackage</span><span class="p">]))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__plugins</span> <span class="o">=</span> <span class="n">plugins</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">plugins</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__is_valid_plugin_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Validates the specified plugin name</span>
+
+<span class="sd">        :param name: The name to check</span>
+<span class="sd">        :return: True if name is valid, otherwise False</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Checking names &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+                <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLUGIN_NAME_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">name</span><span class="p">))</span> <span class="ow">or</span>
+                <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLUGIN_NAME_MIN_LEN</span><span class="p">)</span> <span class="ow">or</span>
+                <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLUGIN_NAME_MAX_LEN</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT with False&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT with True&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+
+    <span class="k">def</span> <span class="nf">__is_valid_plugin_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_type</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Validates the plugin type</span>
+
+<span class="sd">        :param plugin_type: plugin type</span>
+<span class="sd">        :return: True if valid, else False</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ENTRY&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Checking plugin type </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">plugin_type</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">plugin_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;core&quot;</span> <span class="ow">or</span> <span class="n">plugin_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;addon&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT with True&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EXIT with False&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Sithis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

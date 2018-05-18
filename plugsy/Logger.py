@@ -1,5 +1,5 @@
 '''
-Plugsy - Logger Class. Provides global logger access and handles initiation
+Logger Class. Provides global logger access and handles initiation
 '''
 
 # import libs
@@ -21,9 +21,10 @@ class Logger():
     def __init__(self, name, level="", log_path=""):
         '''
         Constructor
-        @param name: Debug name
-        @param level: Logging level,
-        @param log_path: Log file path
+
+        :param name: Debug name
+        :param level: Logging level,
+        :param log_path: Log file path
         '''
 
         # Init logger
@@ -63,8 +64,9 @@ class Logger():
 
     def __get_filter_strings(self):
         '''
-        Loads and returns a list of filter strings
-        @return:
+        Loads and returns a list of debug filter strings
+
+        :return: List of debug filter strings
         '''
 
         filters = Config.DEBUG_FILTERS
@@ -88,8 +90,8 @@ class Logger():
     def debug(self, msg):
         '''
         Logs a DEBUG level entry
-        @param msg: Message to log
-        @return:
+
+        :param msg: Message to log
         '''
         self.logger.debug(msg)
 
@@ -97,8 +99,8 @@ class Logger():
     def info(self, msg):
         '''
         Logs an INFO level entry
-        @param msg: Message to log
-        @return:
+
+        :param msg: Message to log
         '''
         self.logger.info(msg)
 
@@ -106,8 +108,8 @@ class Logger():
     def warning(self, msg):
         '''
         Logs a WARNING level entry
-        @param msg: Message to log
-        @return:
+
+        :param msg: Message to log
         '''
         self.logger.warning(msg)
 
@@ -115,8 +117,8 @@ class Logger():
     def error(self, msg):
         '''
         Logs an ERROR level entry
-        @param msg: Message to log
-        @return:
+
+        :param msg: Message to log
         '''
         self.logger.error(msg)
 
@@ -124,8 +126,8 @@ class Logger():
     def critical(self, msg):
         '''
         Logs a CRITICAL level entry
-        @param msg: Message to log
-        @return:
+
+        :param msg: Message to log
         '''
         self.logger.critical(msg)
 
@@ -137,8 +139,8 @@ class Logger():
     def __get_level(self, level):
         '''
         Parses the level string and returns the matching logging integer
-        @param level:
-        @return:
+
+        :param level:
         '''
         logging_lvl = str(level)
 
@@ -167,7 +169,8 @@ class Filter(logging.Filter):
     def __init__(self, filters):
         '''
         Constructor override
-        @param filters: A list of name filters
+
+        :param filters: A list of filter names
         '''
         self.__filters = filters
 
@@ -177,8 +180,9 @@ class Filter(logging.Filter):
     def filter(self, record):
         '''
         Custom filter method
-        @param record:
-        @return: True if event is going to be logged. Otherwise False. Defaults to False if no filters found
+
+        :param record: Debug record object
+        :return: True if event is going to be logged. Otherwise False. Defaults to True if no filters found
         '''
 
         # If no filters, return True

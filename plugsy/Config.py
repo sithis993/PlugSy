@@ -1,5 +1,5 @@
 '''
-PlugSy - Config - Holds global PlugSy config
+Holds global PlugSy config
 '''
 
 VERSION = "0.2.24"

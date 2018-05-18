@@ -29,7 +29,10 @@ class Sdk(Logger):
     def __init__(self, plugins_home_path, debug_level="", debug_log_path=""):
         '''
         Constructor
-        @param plugins_home_path: The path of the plugins package directory
+
+        :param plugins_home_path: The path of the plugins package directory
+        :param debug_level: Debug log level
+        :param debug_log_path: Optional log file for debug
         '''
         # Init Plugsy and logger
         self.__plugsy = Plugsy(debug_level=debug_level, debug_log_path=debug_log_path)
@@ -55,7 +58,6 @@ class Sdk(Logger):
         '''
         Checks the plugin's home directory is initialised, or initialises if not. addon and core packages
         are created if they don't exist
-        @return:
         '''
         self.logger.debug("ENTRY")
         plugins_init_path = os.path.join(self.__plugins_dir_path, "__init__.py")
@@ -86,8 +88,8 @@ class Sdk(Logger):
     def __create_bare_package(self, package_dir):
         '''
         Creates an empty, bare Python package at the specified location
-        @param package_dir: The absolute path of the package to create
-        @return:
+
+        :param package_dir: The absolute path of the package to create
         '''
         self.logger.debug("ENTRY")
         init_path = os.path.join(package_dir, "__init__.py")
@@ -107,7 +109,9 @@ class Sdk(Logger):
     def create_plugin(self, plugin_type, name):
         '''
         Creates a new plugin
-        :return:
+
+        :param plugin_type: The type of plugin to create. Should be core or addon
+        :param nane: The name of the plugin to create
         '''
         self.logger.debug("ENTRY")
 
@@ -138,8 +142,9 @@ class Sdk(Logger):
     def does_plugin_exist(self, plugin_name):
         '''
         Checks if a plugin exists with the specified name
-        @param plugin_name: The name of the plugin to check for
-        @return: True if plugin exists, otherwise False
+
+        :param plugin_name: The name of the plugin to check for
+        :return: True if plugin exists, otherwise False
         '''
         self.logger.debug("ENTRY")
 
@@ -159,7 +164,8 @@ class Sdk(Logger):
     def delete_plugin(self, name):
         '''
         Deletes an existing plugin
-        @param name: The name of the plugin to delete
+
+        :param name: The name of the plugin to delete
         '''
         self.logger.debug("ENTRY")
 
@@ -176,7 +182,8 @@ class Sdk(Logger):
     def __add_plugin_to_init(self, new_plugin):
         '''
         Adds the new plugin import to the relevant subpackage
-        @return:
+
+        :param new_plugin: The name of the new plugin to add to the __init__ file
         '''
         self.logger.debug("ENTRY")
 
@@ -209,8 +216,8 @@ class Sdk(Logger):
     def __remove_plugin_from_init(self, existing_plugin):
         '''
         Removes the Plugin package import from the subpackage __init__
-        @param name: The name of the plugin to remove
-        @return:
+
+        :param name: The name of the plugin to remove
         '''
         self.logger.debug("ENTRY")
 
@@ -242,7 +249,8 @@ class Sdk(Logger):
     def get_plugins(self):
         '''
         Fetches current plugins in plugin home
-        @return: Dict of core and addon plugin lists
+
+        :return: Dict of core and addon plugin lists
         '''
         self.logger.debug("ENTRY")
 
@@ -276,8 +284,9 @@ class Sdk(Logger):
     def __is_valid_plugin_name(self, name):
         '''
         Validates the specified plugin name
-        @param name: The name to check
-        @return: True if name is valid, otherwise False
+
+        :param name: The name to check
+        :return: True if name is valid, otherwise False
         '''
         self.logger.debug("ENTRY")
         self.logger.debug("Checking names '%s'" % name)
@@ -297,8 +306,9 @@ class Sdk(Logger):
     def __is_valid_plugin_type(self, plugin_type):
         '''
         Validates the plugin type
-        @param plugin_type: plugin type
-        @return: True if valid, else False
+
+        :param plugin_type: plugin type
+        :return: True if valid, else False
         '''
         self.logger.debug("ENTRY")
         self.logger.debug("Checking plugin type %s" % plugin_type)
@@ -309,5 +319,3 @@ class Sdk(Logger):
         else:
             self.logger.debug("EXIT with False")
             return False
-
-

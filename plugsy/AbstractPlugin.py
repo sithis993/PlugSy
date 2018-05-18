@@ -1,6 +1,5 @@
 '''
-@summary: Defines Abstract Plugin and Interface that all plugins must dervice from
-@author: MLS
+Defines Abstract Plugin and Interface that all plugins must derive from
 '''
 
 # Import libs
@@ -16,8 +15,9 @@ class AbstractPlugin(Thread, Logger):
     def __init__(self, plugsy, name=None):
         '''
         Constructor
-        @param plugsy: Parent PlugSy object
-        @param name: The name of the plugin. Optional, overrides package name
+
+        :param plugsy: Parent PlugSy object
+        :param name: The name of the plugin. Optional, overrides package name
         '''
         self.__activated = False
         self.__loaded = False
@@ -38,9 +38,10 @@ class AbstractPlugin(Thread, Logger):
 
     def run(self):
         '''
-        Plugin Main run method holding the core pugin code. Called upon plugin activation
-        @note: Must be overriden by derived classes (plugins)
-        @raise: NotImplementedError
+        Plugin Main run method holding the main plugin code. Called upon plugin activation
+        Must be overriden by derived classes (plugins)
+
+        :raises: NotImplementedError If plugin hasn't overridden method
         '''
 
         self.logger.error("Plugin does not have a run() method")
@@ -63,7 +64,8 @@ class AbstractPlugin(Thread, Logger):
     def load_configuration(self, configuration):
         '''
         Loads the plugin configuration into the plugin object
-        @param configuration: Plugin configuration module
+
+        :param configuration: Plugin configuration module
         '''
         self.logger.debug("ENTRY")
 
@@ -88,7 +90,7 @@ class AbstractPlugin(Thread, Logger):
 
     def deactivate(self):
         '''
-        Deactivates the thread and calls the plugin stop method
+        Deactivates the plugin and calls the plugin stop method
         '''
         self.logger.debug("ENTRY")
 
@@ -103,7 +105,6 @@ class AbstractPlugin(Thread, Logger):
     def init_logging(self):
         '''
         Initialises plugin logging
-        @return:
         '''
         plugin_package = "core" if self.__is_core_plugin else "addon"
 
@@ -120,7 +121,8 @@ class AbstractPlugin(Thread, Logger):
     def is_activated(self):
         '''
         Checks whether the plugin has been activated
-        @return: True if activated, otherwise False
+
+        :return: True if activated, otherwise False
         '''
         self.logger.debug("ENTRY")
 
@@ -130,7 +132,8 @@ class AbstractPlugin(Thread, Logger):
     def get_name(self):
         '''
         Gets the plugins name
-        @return: Plugin name
+
+        :return: Plugin name
         '''
 
         return self.__name
@@ -139,7 +142,8 @@ class AbstractPlugin(Thread, Logger):
     def is_core_plugin(self):
         '''
         Checks whether the plugin is a core plugin (within the core subpackage)
-        @return: True if plugin is a core plugin, otherwise False
+
+        :return: True if plugin is a core plugin, otherwise False
         '''
         self.logger.debug("ENTRY")
 
@@ -150,7 +154,8 @@ class AbstractPlugin(Thread, Logger):
     def is_initialised(self):
         '''
         Checks if the plugin has been initialised
-        @return: True if initialised, otherwise False
+
+        :return: True if initialised, otherwise False
         '''
 
         try:
@@ -163,7 +168,8 @@ class AbstractPlugin(Thread, Logger):
     def get_dependencies(self):
         '''
         Fetches the plugin's dependencies
-        @return: Plugin dependencies as a list of strings (plugin names)
+
+        :return: Plugin dependencies as a list of strings (plugin names)
         '''
         self.logger.debug("ENTRY")
 
@@ -177,7 +183,8 @@ class AbstractPlugin(Thread, Logger):
     def __set_name(self, name):
         '''
         Sets the plugins name
-        @param name: The name of the plugin
+
+        :param name: The name of the plugin
         '''
 
         self.__name = name
@@ -186,7 +193,8 @@ class AbstractPlugin(Thread, Logger):
     def set_dependencies(self, dependencies):
         '''
         Sets the plugin's dependencies
-        @param dependencies: A list of plugins that the plugin depends on
+
+        :param dependencies: A list of plugins that the plugin depends on
         '''
         self.logger.debug("ENTRY")
         dependency_set = set()
