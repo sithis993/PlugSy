@@ -1,0 +1,389 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>plugsy.utils package &mdash; PlugSy  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PlugSy
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">plugsy.utils package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-plugsy.utils.LaunchPlugsyGui">plugsy.utils.LaunchPlugsyGui module</a></li>
+<li><a class="reference internal" href="#module-plugsy.utils.Logger">plugsy.utils.Logger module</a></li>
+<li><a class="reference internal" href="#module-plugsy.utils.toposort">plugsy.utils.toposort module</a></li>
+<li><a class="reference internal" href="#module-plugsy.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PlugSy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>plugsy.utils package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/plugsy.utils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="plugsy-utils-package">
+<h1>plugsy.utils package<a class="headerlink" href="#plugsy-utils-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-plugsy.utils.LaunchPlugsyGui">
+<span id="plugsy-utils-launchplugsygui-module"></span><h2>plugsy.utils.LaunchPlugsyGui module<a class="headerlink" href="#module-plugsy.utils.LaunchPlugsyGui" title="Permalink to this headline">¶</a></h2>
+<p>SDK GUI Launcher</p>
+<dl class="function">
+<dt id="plugsy.utils.LaunchPlugsyGui.Go">
+<code class="descclassname">plugsy.utils.LaunchPlugsyGui.</code><code class="descname">Go</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/utils/LaunchPlugsyGui.html#Go"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.utils.LaunchPlugsyGui.Go" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initiates and launches the PlugSy GUI</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-plugsy.utils.Logger">
+<span id="plugsy-utils-logger-module"></span><h2>plugsy.utils.Logger module<a class="headerlink" href="#module-plugsy.utils.Logger" title="Permalink to this headline">¶</a></h2>
+<p>Logger Class. Provides global logger access and handles initiation</p>
+<dl class="class">
+<dt id="plugsy.utils.Logger.Filter">
+<em class="property">class </em><code class="descclassname">plugsy.utils.Logger.</code><code class="descname">Filter</code><span class="sig-paren">(</span><em>filters</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/utils/Logger.html#Filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.utils.Logger.Filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Filter</span></code></p>
+<p>Custom filter for filtering to only specific sources, such as core plugins, addon plugins,
+or a simple specific plugin</p>
+<p>Constructor override</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filters</strong> – A list of filter names</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="plugsy.utils.Logger.Filter.filter">
+<code class="descname">filter</code><span class="sig-paren">(</span><em>record</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/utils/Logger.html#Filter.filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.utils.Logger.Filter.filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Custom filter method</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>record</strong> – Debug record object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if event is going to be logged. Otherwise False. Defaults to True if no filters found</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="plugsy.utils.Logger.Logger">
+<em class="property">class </em><code class="descclassname">plugsy.utils.Logger.</code><code class="descname">Logger</code><span class="sig-paren">(</span><em>name</em>, <em>level=''</em>, <em>log_path=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/utils/Logger.html#Logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.utils.Logger.Logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Provides a Logger object</p>
+<p>Constructor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> – Debug name</li>
+<li><strong>level</strong> – Logging level,</li>
+<li><strong>log_path</strong> – Log file path</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="plugsy.utils.Logger.Logger.DEFAULT_LEVEL">
+<code class="descname">DEFAULT_LEVEL</code><em class="property"> = 30</em><a class="headerlink" href="#plugsy.utils.Logger.Logger.DEFAULT_LEVEL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="plugsy.utils.Logger.Logger.FILTERS_FILENAME">
+<code class="descname">FILTERS_FILENAME</code><em class="property"> = 'debugfilters.conf'</em><a class="headerlink" href="#plugsy.utils.Logger.Logger.FILTERS_FILENAME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="plugsy.utils.Logger.Logger.LOG_FORMAT">
+<code class="descname">LOG_FORMAT</code><em class="property"> = '%(asctime)s - %(name)s - %(levelname)s - %(funcName)s(): %(message)s'</em><a class="headerlink" href="#plugsy.utils.Logger.Logger.LOG_FORMAT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="plugsy.utils.Logger.Logger.critical">
+<code class="descname">critical</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/utils/Logger.html#Logger.critical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.utils.Logger.Logger.critical" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs a CRITICAL level entry</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> – Message to log</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.utils.Logger.Logger.debug">
+<code class="descname">debug</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/utils/Logger.html#Logger.debug"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.utils.Logger.Logger.debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs a DEBUG level entry</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> – Message to log</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.utils.Logger.Logger.error">
+<code class="descname">error</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/utils/Logger.html#Logger.error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.utils.Logger.Logger.error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs an ERROR level entry</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> – Message to log</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.utils.Logger.Logger.info">
+<code class="descname">info</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/utils/Logger.html#Logger.info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.utils.Logger.Logger.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs an INFO level entry</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> – Message to log</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="plugsy.utils.Logger.Logger.warning">
+<code class="descname">warning</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/utils/Logger.html#Logger.warning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.utils.Logger.Logger.warning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs a WARNING level entry</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> – Message to log</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-plugsy.utils.toposort">
+<span id="plugsy-utils-toposort-module"></span><h2>plugsy.utils.toposort module<a class="headerlink" href="#module-plugsy.utils.toposort" title="Permalink to this headline">¶</a></h2>
+<p>PlugSy Utils - Topological sort for sorting plugin dependencies</p>
+<dl class="function">
+<dt id="plugsy.utils.toposort.toposort">
+<code class="descclassname">plugsy.utils.toposort.</code><code class="descname">toposort</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plugsy/utils/toposort.html#toposort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plugsy.utils.toposort.toposort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Topological sorting function
+:param data: Dictionary of &lt;string&gt;:&lt;set&gt; where string is a an item name of forms, and &lt;set&gt; is a list of the
+item’s dependencies
+:return: Items are yielded in topologically sorted order</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-plugsy.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-plugsy.utils" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Sithis.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -11,7 +11,7 @@ import importlib
 from .Exceptions import *
 from ..Exceptions import *
 from .. import Config
-from ..Logger import Logger
+from ..utils import Logger
 
 class Plugin(Logger):
     '''

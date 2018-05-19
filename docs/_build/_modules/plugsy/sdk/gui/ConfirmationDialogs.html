@@ -1,0 +1,381 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>plugsy.sdk.gui.ConfirmationDialogs &mdash; PlugSy  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+
+  
+  <script src="../../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> PlugSy
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PlugSy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>plugsy.sdk.gui.ConfirmationDialogs</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for plugsy.sdk.gui.ConfirmationDialogs</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">SDK Gui Confirmation Dialog - Holds all confirmation dialog classes</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="c1"># Import libs</span>
+<span class="kn">import</span> <span class="nn">wx</span>
+
+<span class="c1"># Import project libs</span>
+<span class="kn">from</span> <span class="nn">.SdkGuiAbs</span> <span class="k">import</span> <span class="n">ConfirmationDialog</span>
+
+<span class="c1"># ======================================</span>
+<span class="c1"># = _ConfirmationDialogAbs Class</span>
+<span class="c1"># ======================================</span>
+<span class="k">class</span> <span class="nc">_ConfirmationDialogAbs</span><span class="p">(</span><span class="n">ConfirmationDialog</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Provides an abstract confirmation dialog class</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param parent: Handle to parent object</span>
+<span class="sd">        :param message: The dialog confirmation message to display</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="n">ConfirmationDialog</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="c1"># Set events</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_events</span><span class="p">()</span>
+
+        <span class="c1"># Disable parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">Disable</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">update_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sets the Dialog box message</span>
+
+<span class="sd">        :param message: The message to set as the Dialog text</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ConfirmationLabel</span><span class="o">.</span><span class="n">SetLabelText</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ConfirmationLabel</span><span class="o">.</span><span class="n">Wrap</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ConfirmationLabel</span><span class="o">.</span><span class="n">Layout</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Cancels plugin creation and re-enables Main GUI</span>
+
+<span class="sd">        :param event: wx event object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">Enable</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+
+
+    <span class="c1">#############</span>
+    <span class="c1">## SETTERS ##</span>
+    <span class="c1">#############</span>
+
+    <span class="k">def</span> <span class="nf">__set_events</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set dialog event handlers</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_BUTTON</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cancel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OkCancelSizerCancel</span><span class="p">)</span>
+
+
+<span class="c1"># ======================================</span>
+<span class="c1"># = GenericConfirmationDialog Class</span>
+<span class="c1"># ======================================</span>
+<div class="viewcode-block" id="GenericConfirmationDialog"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.ConfirmationDialogs.GenericConfirmationDialog">[docs]</a><span class="k">class</span> <span class="nc">GenericConfirmationDialog</span><span class="p">(</span><span class="n">_ConfirmationDialogAbs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Provides a generic confirmation dialog</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param parent: Handle to parent wx object</span>
+<span class="sd">        :param message: The message to display in the dialog window</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__accepted</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="n">_ConfirmationDialogAbs</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__message</span><span class="p">)</span>
+
+        <span class="c1"># Set events</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_BUTTON</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__set_accepted</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OkCancelSizerOK</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="GenericConfirmationDialog.close"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.ConfirmationDialogs.GenericConfirmationDialog.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        For closing and ending the dialog</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">EndModal</span><span class="p">()</span></div>
+
+    <span class="c1">#############</span>
+    <span class="c1">## GETTERS ##</span>
+    <span class="c1">#############</span>
+<div class="viewcode-block" id="GenericConfirmationDialog.was_accepted"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.ConfirmationDialogs.GenericConfirmationDialog.was_accepted">[docs]</a>    <span class="k">def</span> <span class="nf">was_accepted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Checks whether the confirmation box was accepted or not</span>
+
+<span class="sd">        :return: True if confirmation was accepted, otherwise False</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__accepted</span></div>
+
+
+    <span class="c1">#############</span>
+    <span class="c1">## SETTERS ##</span>
+    <span class="c1">#############</span>
+    <span class="k">def</span> <span class="nf">__set_accepted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sets the confirmation boxes accepted flag to True</span>
+
+<span class="sd">        :param event: wx event object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__accepted</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span></div>
+
+
+<span class="c1"># ======================================</span>
+<span class="c1"># = DeletePluginConfirmation Class</span>
+<span class="c1"># ======================================</span>
+<div class="viewcode-block" id="DeletePluginConfirmation"><a class="viewcode-back" href="../../../../plugsy.sdk.gui.html#plugsy.sdk.gui.ConfirmationDialogs.DeletePluginConfirmation">[docs]</a><span class="k">class</span> <span class="nc">DeletePluginConfirmation</span><span class="p">(</span><span class="n">_ConfirmationDialogAbs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Provides ab abstract confirmation dialog with a customisable message</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">plugin_name</span><span class="p">,</span> <span class="n">sdk</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param parent: Handle to parent object</span>
+<span class="sd">        :param plugin_name: The name of the plugin being deleted</span>
+<span class="sd">        :param sdk: A handle to the SDK object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__message</span> <span class="o">=</span> <span class="s2">&quot;Are you sure you want to delete the &#39;</span><span class="si">%s</span><span class="s2">&#39; plugin?&quot;</span> <span class="o">%</span> <span class="n">plugin_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__sdk</span> <span class="o">=</span> <span class="n">sdk</span>
+        <span class="n">_ConfirmationDialogAbs</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__message</span><span class="p">)</span>
+
+        <span class="c1"># Set events</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_events</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">__delete_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Deletes the specified plugin</span>
+
+<span class="sd">        :param event: wx event object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">selected_plugin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">plugins_tree</span><span class="o">.</span><span class="n">get_current_selection_text</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__sdk</span><span class="o">.</span><span class="n">delete_plugin</span><span class="p">(</span><span class="n">selected_plugin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">plugins_tree</span><span class="o">.</span><span class="n">remove_plugin</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">sync_config_fields</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">Enable</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+
+
+    <span class="c1">#############</span>
+    <span class="c1">## SETTERS ##</span>
+    <span class="c1">#############</span>
+
+    <span class="k">def</span> <span class="nf">__set_events</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Bind events</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_BUTTON</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__delete_plugin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OkCancelSizerOK</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Sithis.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

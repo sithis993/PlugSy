@@ -13,7 +13,7 @@ import inspect
 from .Plugin import Plugin
 from .Exceptions import *
 from ..Exceptions import *
-from ..Logger import Logger
+from ..utils import Logger
 from .. import Config
 from ..Plugsy import Plugsy
 
