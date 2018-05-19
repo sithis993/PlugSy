@@ -8,11 +8,10 @@ import pkgutil
 import sys
 import time
 import inspect
-from toposort import toposort, CircularDependencyError
+from plugsy.utils import *
 
 # Import project libs
 from . import Config
-from .Logger import Logger
 from .Exceptions import *
 
 ####################################
@@ -404,12 +403,12 @@ class Plugsy(Logger):
                     for plugin in plugins:
                         if plugin.get_name().lower() == dependency and plugin not in sorted_plugins:
                             sorted_plugins.append(plugin)
-        except CircularDependencyError as cx:
+        except PluginCircularDependency as px:
             if core_sort or (not core_sort and not ignore_dependency_failures):
                 self.logger.critical(
                     "encountered fatal circular dependency error while loading plugins"
                 )
-                raise PluginCircularDependency()
+                raise px
             else:
                 self.logger.error("Skipping addon plugins due to circular dependency error")
 

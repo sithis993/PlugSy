@@ -7,7 +7,7 @@ import logging
 import os
 
 # import package content
-from . import Config
+from .. import Config
 
 class Logger():
     '''

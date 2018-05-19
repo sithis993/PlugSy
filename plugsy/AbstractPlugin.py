@@ -8,7 +8,7 @@ from threading import Event
 
 # Import package modules
 from . import Config
-from .Logger import Logger
+from .utils import Logger
 
 class AbstractPlugin(Thread, Logger):
 

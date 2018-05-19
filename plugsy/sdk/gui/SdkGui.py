@@ -3,19 +3,15 @@ PlugSy - SDK Gui
 '''
 
 # Import libs
-import wx
 import os
 import re
-import importlib
 from .SdkGuiAbs import PluginsHomeDirDialog
 from .SdkGuiAbs import MainFrame
 from .SdkGuiAbs import NewPluginDialog
 from .ConfirmationDialogs import *
 from ..Sdk import Sdk
-from ..Exceptions import *
-from ...Plugsy import Plugsy
 from ... import Config
-from ...Logger import Logger
+from ...utils import Logger
 
 
 # ======================================

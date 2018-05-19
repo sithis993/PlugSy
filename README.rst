@@ -26,6 +26,7 @@ Features
 ==============
     * Separation of plugins into core and addon packages
     * Cross-platform support
+    * Pure-python, no dependencies required
     * Built-in logging support for the PlugSy manager and each individual plugin
     * SDK GUI for quickly creating and deleting plugins
 
@@ -35,7 +36,6 @@ Roadmap
         * Combining PlugSy and any developed plugins into a PyInstaller executable via SDK and SDK GUI
         * Option to add a Windows service wrapper
     * Further support for additional Python versions
-    * Build Topological Sorting functionality and Remove toposort dependency
 
 Similar Projects
 ================
@@ -119,7 +119,6 @@ Installation of PlugSy is simple using Pip:
 
 Dependencies
 ==================
-    * toposort: (1.5) https://pypi.org/project/toposort/
     * \*wxPython (4.0.1): https://pypi.org/project/wxPython/#description
 
 \*wxPython is only required if you're running Windows and want to use the SDK GUI
