@@ -160,15 +160,3 @@ texinfo_documents = [
 
 
 # -- Extension configuration -------------------------------------------------
-
-# Add mock for wx
-#from unittest.mock import MagicMock
-
-#class Mock(MagicMock):
-#    @classmethod
-#    def __getattr__(cls, item):
-#        return MagicMock()
-
-#MOCK_MODULES = ['wx', 'wx.xrc']
-#sys.modules.update((modname, Mock()) for modname in MOCK_MODULES)
-
