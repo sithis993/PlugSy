@@ -4,7 +4,7 @@ each other. Whilst there are numerous existing Python Plugin frameworks, it's th
 makes PlugSy slightly different.
 
 
- |Documentation|
+|Documentation|
 
 
 Links
