@@ -342,7 +342,6 @@ class ConfirmationDialog ( wx.Dialog ):
 		
 		sbSizer5 = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Confirmation" ), wx.VERTICAL )
 		
-		sbSizer5.SetMinSize( wx.Size( 300,100 ) ) 
 		self.MainPanel = wx.Panel( sbSizer5.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		bSizer17 = wx.BoxSizer( wx.VERTICAL )
 		

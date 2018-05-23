@@ -2648,7 +2648,7 @@
             <object class="wxStaticBoxSizer" expanded="1">
                 <property name="id">wxID_ANY</property>
                 <property name="label">Confirmation</property>
-                <property name="minimum_size">300,100</property>
+                <property name="minimum_size">320,100</property>
                 <property name="name">sbSizer5</property>
                 <property name="orient">wxVERTICAL</property>
                 <property name="parent">1</property>
