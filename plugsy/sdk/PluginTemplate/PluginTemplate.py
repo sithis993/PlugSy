@@ -31,7 +31,7 @@ class PluginTemplate(AbstractPlugin):
         self.logger.info("PluginTemplate running!")
 
         while not self.stop_event.is_set():
-            pass
+            time.sleep(0.1)
 
         self.logger.info("PluginTemplate stopping!")
         self.logger.debug("EXIT!")

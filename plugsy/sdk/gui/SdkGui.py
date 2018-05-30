@@ -414,9 +414,6 @@ class _NewPluginDialog(NewPluginDialog, Logger):
     New Plugin Dialog box for creating a new plugin
     '''
 
-    PLUGIN_NAME_REGEX = re.compile(r"^[A-Za-z][A-Za-z_]{2,20}$")
-    RESERVED_PLUGIN_NAMES = ["core", "addon"]
-
 
     def __init__(self, parent, plugins_home_dir, sdk):
         '''
@@ -458,11 +455,16 @@ class _NewPluginDialog(NewPluginDialog, Logger):
         self.logger.debug("Attempting creation of '%s' plugin of type '%s'" % (name, _type))
 
         # Check plugin name
-        if not self.PLUGIN_NAME_REGEX.match(name):
-            self.StatusLabel.SetLabelText("Error: Invalid plugin name. Must be alphanumeric and 4-20 characters long")
+        if not self.__sdk.is_valid_plugin_name(name):
+            self.StatusLabel.SetLabelText(
+                "Error: Invalid plugin name. Must be alphanumeric and %s-%s characters long" %
+                (self.__sdk.PLUGIN_NAME_MIN_LEN, self.__sdk.PLUGIN_NAME_MAX_LEN)
+            )
             self.logger.error(
-                "The specified plugin name '%s' is invalid and does not match the regex '%s'." % (
-                    name, self.PLUGIN_NAME_REGEX.pattern
+                "The specified plugin name '%s' is invalid. It does not match the regex '%s' and is not between"
+                " %s and %s characters in length" % (
+                    name, self.__sdk.PLUGIN_NAME_REGEX.pattern,
+                    self.__sdk.PLUGIN_NAME_MIN_LEN, self.__sdk.PLUGIN_NAME_MAX_LEN
                 )
             )
             self.logger.debug("EXIT")
@@ -476,7 +478,7 @@ class _NewPluginDialog(NewPluginDialog, Logger):
             return
 
         # Check plugin name isn't reserved
-        if name.lower() in self.RESERVED_PLUGIN_NAMES:
+        if self.__sdk.is_reserved_plugin_name(name):
             self.StatusLabel.SetLabelText("Error: Plugin name is reserved. Please choose another name")
             self.logger.error("The keyword '%s' is reserved and cannot be used as a plugin name" % name)
             self.logger.debug("EXIT")

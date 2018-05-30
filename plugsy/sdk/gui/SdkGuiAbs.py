@@ -53,9 +53,7 @@ class MainFrame ( wx.Frame ):
 		
 		bSizer81.Add( ( 0, 0), 1, wx.EXPAND, 5 )
 		
-		self.PluginNameTextCtrl = wx.TextCtrl( self.m_panel22, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.PluginNameTextCtrl.Enable( False )
-		
+		self.PluginNameTextCtrl = wx.TextCtrl( self.m_panel22, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_READONLY )
 		bSizer81.Add( self.PluginNameTextCtrl, 0, wx.ALL, 5 )
 		
 		
@@ -342,7 +340,7 @@ class ConfirmationDialog ( wx.Dialog ):
 		
 		sbSizer5 = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Confirmation" ), wx.VERTICAL )
 		
-		sbSizer5.SetMinSize( wx.Size( 300,100 ) ) 
+		sbSizer5.SetMinSize( wx.Size( 320,100 ) ) 
 		self.MainPanel = wx.Panel( sbSizer5.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		bSizer17 = wx.BoxSizer( wx.VERTICAL )
 		
