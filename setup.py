@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='PlugSy',
-    version='0.2.30',
+    version='0.2.31',
     packages=[
         "plugsy", "plugsy.utils", "plugsy.sdk", "plugsy.sdk.gui", "plugsy.sdk.PluginTemplate",
         "sample_plugins"
