@@ -24,7 +24,8 @@ class Sdk(Logger):
 
     PLUGIN_NAME_REGEX = re.compile("^[a-zA-Z]+[a-zA-Z0-9_]*$")
     PLUGIN_NAME_MIN_LEN = 3
-    PLUGIN_NAME_MAX_LEN = 35
+    PLUGIN_NAME_MAX_LEN = 60
+    RESERVED_PLUGIN_NAMES = ["core", "addon"]
 
     def __init__(self, plugins_home_path, debug_level="", debug_log_path=""):
         '''
@@ -116,7 +117,7 @@ class Sdk(Logger):
         self.logger.debug("ENTRY")
 
         # Check name
-        if not self.__is_valid_plugin_name(name):
+        if not self.is_valid_plugin_name(name):
             self.logger.error("Could not create plugin due to bad plugin name '%s'" % name)
             raise BadPluginName(name)
         # Check type
@@ -281,7 +282,7 @@ class Sdk(Logger):
         return plugins
 
 
-    def __is_valid_plugin_name(self, name):
+    def is_valid_plugin_name(self, name):
         '''
         Validates the specified plugin name
 
@@ -319,3 +320,20 @@ class Sdk(Logger):
         else:
             self.logger.debug("EXIT with False")
             return False
+
+
+    def is_reserved_plugin_name(self, name):
+        '''
+        Checks if the specified plugin name is a reserved name
+
+        :param name: The name to validate
+        :return: True if the name is reserved and not a permitted plugin names, otherwise False
+        '''
+        self.logger.debug("ENTRY")
+
+        if name.lower() in self.RESERVED_PLUGIN_NAMES:
+            self.logger.debug("EXIT with True for name '%s'" % name)
+            return True
+
+        self.logger.debug("EXIT with False for name '%s'" % name)
+        return False
